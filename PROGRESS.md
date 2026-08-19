@@ -29,6 +29,21 @@ Stand: 2026-08-19
 - Tipp-System inklusive Erkennung falsch gesetzter Brücken.
 - 45 Unit-Tests, davon 200 verifizierte Rätsel je Schwierigkeitsgrad.
 
+### M2 — Rendering und Eingabe (`feat/m2-board`)
+
+- Canvas-Renderer mit zwischengespeichertem Untergrund; gezeichnet wird nur bei
+  Zustandsänderung, die Animationsschleife läuft ausschließlich während des
+  Einschnappens einer Brücke und hält danach von selbst an.
+- Sichtgeometrie (`src/render/view.ts`) als reine Rechnung: Zentrierung, Zoom,
+  Verschiebe-Begrenzung und Trefferprüfung sind ohne Browser testbar.
+- Gestenerkennung (`src/input/gestures.ts`) ebenfalls DOM-frei: Ziehen von Insel zu
+  Insel, Tipp-Tipp als gleichwertige Alternative, Zwei-Finger-Zoom, Verschieben.
+- Trefferfläche mindestens 48 dp, aber kleiner als eine Gitterzelle — damit sich die
+  Bereiche zweier Inseln nie überlappen und ein Tippen nie mehrdeutig wird.
+- Undo/Redo/Leeren, Haptik-Service mit Web-Fallback, Zustand-Store.
+- `npm run ui:check` fährt die App im echten Chromium hoch, spielt beide Bedienarten
+  durch und prüft die Browser-Konsole auf Fehler.
+
 ## Messwerte
 
 Generierungszeit über je 30 Läufe, lokal (Node 22):

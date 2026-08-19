@@ -3,6 +3,7 @@ dist/
 coverage/
 *.log
 npm-debug.log*
+ui-check.png
 
 # Echte AdMob-IDs und Signing-Daten gehoeren nie ins Repo
 .env
