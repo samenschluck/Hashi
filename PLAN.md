@@ -16,7 +16,7 @@ Alle Versionen wurden gegen die npm-Registry geprüft (Stand heute), nicht gerat
 | Paket | Version | Anmerkung |
 |---|---|---|
 | `typescript` | 5.x (strict) | `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` an |
-| `react` / `react-dom` | **18.3.x** (siehe Entscheidung E1) | React 19.2 wäre aktuell |
+| `react` / `react-dom` | **19.2.x** (Entscheidung E1) | |
 | `vite` | 8.x | |
 | `zustand` | 5.x | |
 | `tailwindcss` | 4.x | v4 nutzt CSS-first-Config (`@theme`), keine `tailwind.config.js` mehr |
@@ -342,51 +342,39 @@ Probleme / Entscheidungen für dich).
 
 ---
 
-## 10. Offene Entscheidungen — hier brauche ich dich
+## 10. Entscheidungen (getroffen am 2026-08-19)
 
-**E1 · React 18 oder 19?** Du hast React 18 vorgegeben. React 19.2 ist stabil und für ein
-Greenfield-Projekt heute der naheliegende Default; für unseren Funktionsumfang ist der
-Unterschied gering und der Wechsel später trivial. **Empfehlung: React 19.** Sag Bescheid,
-sonst nehme ich wie vorgegeben 18.
+**E1 · React-Version → React 19.** React 19.2.x statt der ursprünglich vorgegebenen 18.
 
-**E2 · „Experte-Generierung unter 500 ms" — das ist knapp.** Auf 17×17 muss der Generator
-für jeden Kandidaten eine vollständige Eindeutigkeitsprüfung fahren und Kandidaten
-verwerfen, die nicht eindeutig oder zu leicht sind. Der Erwartungswert kann durchaus
-darüber liegen, und ein CI-Test mit harter 500-ms-Grenze wird auf geteilten Runnern
-flackern. **Vorschlag:** (a) im Test der **Median** über mehrere Läufe gegen 500 ms, der
-Ausreißer-Wert (p95) gegen ein großzügigeres Budget; (b) zur Laufzeit läuft die
-Generierung ohnehin in einem **Web Worker**, damit die UI nie blockiert; (c) für den
-Endlosmodus werden Rätsel im Hintergrund vorproduziert. Die 150 ausgelieferten Rätsel pro
-Grad entstehen sowieso zur Build-Zeit, dort ist die Zeit egal. Wenn 500 ms als hartes
-Kriterium bestehen bleiben soll, melde ich nach M1 die echten Messwerte.
+**E2 · „Experte-Generierung unter 500 ms" → Median-Kriterium.** Der Test prüft den
+**Median** der Generierungszeit über mehrere Läufe gegen 500 ms und den p95 gegen ein
+großzügigeres Budget; eine harte Einzelwert-Grenze würde auf geteilten CI-Runnern
+flackern. Zur Laufzeit läuft die Generierung zusätzlich in einem **Web Worker**, damit
+die UI nie blockiert, und der Endlosmodus produziert im Hintergrund vor.
 
-**E3 · 200 Eindeutigkeits-Puzzles pro Grad in jedem CI-Lauf** würde die Pipeline auf
-Minuten aufblähen. **Vorschlag:** Standard-CI prüft 25 pro Grad (schnell, fängt
-Regressionen), ein `test:heavy`-Lauf mit den vollen 200 pro Grad läuft nächtlich und vor
-jedem Release. Die Abdeckung bleibt gleich, das Feedback wird schnell.
+**E3 · Eindeutigkeitsprüfung → volle 200 pro Grad in jedem CI-Lauf**, wie ursprünglich
+vorgegeben (mein Vorschlag einer verkleinerten Standard-Stichprobe wurde nicht
+übernommen). Ich messe die tatsächliche Laufzeit dieses Testblocks und melde sie in
+`PROGRESS.md`; wird sie untragbar, komme ich mit Zahlen zurück statt still zu kürzen.
 
-**E4 · Branch-Strategie.** Du wünschst einen Feature-Branch und PR pro Meilenstein. Diese
-Session ist technisch auf den Branch `claude/new-session-sxbya5` festgelegt und darf ohne
-deine ausdrückliche Erlaubnis nicht auf andere Branches pushen. Zwei Möglichkeiten:
-(a) alles auf diesem Branch, saubere Conventional Commits, ein PR am Ende oder pro
-Meilenstein aus demselben Branch; (b) du erlaubst mir ausdrücklich, pro Meilenstein
-eigene Branches `feat/m1-core` usw. anzulegen und zu pushen. **Empfehlung: (b)**, das
-entspricht deiner ursprünglichen Vorstellung.
+**E4 · Branch-Strategie → Feature-Branch und PR pro Meilenstein**
+(`chore/m0-setup`, `feat/m1-core`, …), Basis-Branch `main`.
 
-**E5 · Bundle-ID und App-Name.** Vorschlag: Bundle-ID `de.samenschluck.hashi`, App-Name
-„Hashi — Bridges" (DE) / „Hashi — Bridges" (EN). Die Bundle-ID ist nach dem ersten
-Play-Upload **unveränderlich**, deshalb möchte ich sie von dir bestätigt haben.
+**E5 · Name und Bundle-ID → „Bridgelet", `com.bridgelet.game`.**
+Der Eigenname „samenschluck" entfällt. Statt „Hashi" als Markenname wird ein eigener,
+geprägter Name verwendet: Nikoli hält für mehrere Rätselnamen Marken, und
+„Hashiwokakero" ist deren Prägung. „Hashi" bzw. „Bridges" erscheint nur **beschreibend**
+im Untertitel und im Store-Text („Bridgelet — Brücken-Logikrätsel" /
+„Bridgelet — Bridges Logic Puzzle"). **Das ist keine Rechtsberatung**; eine Marken- und
+Namensprüfung vor dem Play-Upload bleibt beim Betreiber.
 
-**E6 · Icon-Grafik.** `@capacitor/assets` braucht eine Quelldatei (1024×1024). Ich lege
-ein sauberes, schlichtes Eigen-Design an (Inseln + Brücken, wiedererkennbar als Logo).
-Falls du eigene Grafik hast, liefere sie und ich setze sie ein.
+**E6 · Icon-Grafik → Eigen-Design.** Schlichtes Logo aus Inseln und Brücken, 1024×1024
+als Quelldatei für `@capacitor/assets`. Eigene Grafik kann jederzeit ersetzt werden.
 
-**E7 · Screenshots.** Ich liefere 8 Vorlagen in Play-Maßen, befüllt mit gerenderten
-Spielbildschirmen aus dem Browser-Build plus Textrahmen. Echte Geräte-Screenshots kann
-ich nicht erzeugen — die Vorlagen sind so gebaut, dass du sie 1:1 hochladen kannst.
+**E7 · Screenshots → 8 Vorlagen in Play-Maßen**, befüllt mit gerenderten
+Spielbildschirmen aus dem Browser-Build. Echte Geräte-Screenshots kann ich nicht erzeugen.
 
-**E8 · Daily-Schwierigkeit.** Vorschlag: rotierend über die Woche (Mo/Di einfach,
-Mi/Do mittel, Fr/Sa schwer, So Experte). Alternative: immer mittel. Sag, was dir lieber ist.
+**E8 · Daily-Schwierigkeit → fest „Mittel", keine Rotation.**
 
 ---
 
@@ -405,5 +393,4 @@ Mi/Do mittel, Fr/Sa schwer, So Experte). Alternative: immer mittel. Sag, was dir
 
 ---
 
-**Nächster Schritt:** Dein OK zu diesem Plan, plus Antworten auf E1–E8 (mindestens E4 und
-E5, die blockieren). Danach starte ich mit M0 und M1.
+**Nächster Schritt:** Plan freigegeben, E1–E8 entschieden. Umsetzung startet mit M0 und M1.
