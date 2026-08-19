@@ -25,6 +25,37 @@ export const ISLAND_DENSITY: Readonly<Record<Difficulty, { min: number; max: num
   expert: { min: 0.1, max: 0.16 },
 };
 
+/**
+ * Ab so vielen fortgeschrittenen Schluessen (Isolation, Zusammenhang, Widerspruch)
+ * gilt ein Raetsel als „schwer" statt „mittel".
+ *
+ * Hintergrund: Die reine Regelstufe reicht als Mass nicht aus. In der Messung ueber
+ * mehrere tausend Kandidaten trat der Fall „braucht Zusammenhangsschluesse, aber
+ * keinen Widerspruchsbeweis" praktisch nie als eigene Klasse auf — die
+ * Isolationsregel deckt fast alles ab, was darunter liegt. Deshalb unterscheidet
+ * „mittel" von „schwer" nicht die Art der Schluesse, sondern ihre Anzahl.
+ */
+export const HARD_ADVANCED_STEPS = 4;
+
+/**
+ * Generator-Parameter je Schwierigkeitsgrad.
+ *
+ * `distanceJitter` steuert, wie stark kurze Abstaende bevorzugt werden — dichter
+ * stehende Inseln haben mehr moegliche Nachbarn und damit mehr Ablenkungen.
+ * `doubleBridgeChance` ist die Wahrscheinlichkeit, eine neue Insel gleich mit einer
+ * Doppelbruecke anzuhaengen; hohe Inselwerte sind stark eingeschraenkt und machen
+ * ein Raetsel leichter. Fuer „Experte" steht der Wert deshalb auf 0.
+ * `repairRounds` begrenzt, wie oft nachgebessert wird, bis ein Netz eindeutig ist.
+ */
+export const GENERATOR: Readonly<
+  Record<Difficulty, { distanceJitter: number; doubleBridgeChance: number; repairRounds: number }>
+> = {
+  easy: { distanceJitter: 2.5, doubleBridgeChance: 0.15, repairRounds: 1.5 },
+  medium: { distanceJitter: 2.5, doubleBridgeChance: 0.15, repairRounds: 1.5 },
+  hard: { distanceJitter: 2.5, doubleBridgeChance: 0.15, repairRounds: 1.5 },
+  expert: { distanceJitter: 2.5, doubleBridgeChance: 0, repairRounds: 1.5 },
+};
+
 /** Hoechstzahl an Brueckenenden pro Insel (Hashiwokakero-Regel). */
 export const MAX_ISLAND_VALUE = 8;
 /** Hoechstzahl paralleler Bruecken zwischen zwei Inseln. */
