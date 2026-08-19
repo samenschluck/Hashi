@@ -1,0 +1,75 @@
+@import 'tailwindcss';
+
+/* Farbwelt und Layout-Konstanten. Tailwind 4 wird ueber @theme konfiguriert,
+   eine tailwind.config.js gibt es nicht mehr. */
+@theme {
+  --color-board-bg: #0f172a;
+  --color-board-surface: #1e293b;
+  --color-board-line: #334155;
+  --color-island: #e2e8f0;
+  --color-island-done: #34d399;
+  --color-island-error: #f87171;
+  --color-bridge: #94a3b8;
+  --color-bridge-hint: #fbbf24;
+  --color-accent: #38bdf8;
+}
+
+:root {
+  /* Wird zur Laufzeit vom AdService gesetzt: reservierte Bannerhoehe in px.
+     Startwert 0, damit die App im Browser ohne Ads kein Loch im Layout hat. */
+  --banner-h: 0px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-board-bg);
+  color: var(--color-island);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+
+  /* Auf Android soll nichts gummibandartig scrollen oder Text selektieren. */
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Wurzel-Layout: Kopfbereich + Inhalt + fest reservierte Bannerflaeche.
+   Die Bannerhoehe ist Teil des Flex-Layouts, der Banner ueberlagert nie Inhalt. */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: var(--safe-top);
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+.app-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+}
+
+.app-banner-slot {
+  flex: 0 0 auto;
+  height: calc(var(--banner-h) + var(--safe-bottom));
+}

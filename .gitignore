@@ -1,0 +1,31 @@
+node_modules/
+dist/
+coverage/
+*.log
+npm-debug.log*
+
+# Echte AdMob-IDs und Signing-Daten gehoeren nie ins Repo
+.env
+.env.local
+.env.*.local
+*.keystore
+*.jks
+android/keystore.properties
+
+# Android-Buildartefakte (der Rest von android/ ist committet)
+android/.gradle/
+android/build/
+android/app/build/
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/local.properties
+android/.idea/
+android/captures/
+android/app/release/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
