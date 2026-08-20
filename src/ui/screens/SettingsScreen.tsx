@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Locale, ThemePreference } from '../../core/progression.ts';
+import { useAdStore } from '../../state/adStore.ts';
 import { useAppStore } from '../../state/appStore.ts';
 import { Button, Dialog, ScreenFrame, Select, Toggle } from '../components/Ui.tsx';
 
@@ -9,6 +10,7 @@ export function SettingsScreen(): React.JSX.Element {
   const settings = useAppStore((store) => store.save.settings);
   const update = useAppStore((store) => store.updateSettings);
 
+  const privacyOptionsRequired = useAdStore((store) => store.privacyOptionsRequired);
   const [confirmClear, setConfirmClear] = useState(false);
 
   return (
@@ -60,8 +62,21 @@ export function SettingsScreen(): React.JSX.Element {
         />
       </div>
 
-      {/* Der Menuepunkt fuer die Werbeeinwilligung wird in Meilenstein 4 angeschlossen
-          und nur dann angezeigt, wenn die UMP-SDK ihn verlangt. */}
+      {/* Der Punkt erscheint nur, wenn die UMP-SDK ihn verlangt — dort, wo er
+          rechtlich noetig ist, ist er Pflicht; anderswo waere er eine tote Option. */}
+      {privacyOptionsRequired ? (
+        <div className="mt-6">
+          <Button
+            full
+            onClick={() => {
+              void useAdStore.getState().openPrivacySettings();
+            }}
+          >
+            {t('settings.privacy')}
+          </Button>
+          <p className="mt-1 text-center text-xs text-slate-500">{t('settings.privacyHint')}</p>
+        </div>
+      ) : null}
 
       <div className="mt-8">
         <Button

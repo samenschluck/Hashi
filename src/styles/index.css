@@ -16,8 +16,10 @@
 
 :root {
   /* Wird zur Laufzeit vom AdService gesetzt: reservierte Bannerhoehe in px.
-     Startwert 0, damit die App im Browser ohne Ads kein Loch im Layout hat. */
+     Startwert 0, damit die App ohne Werbung kein Loch im Layout hat. */
   --banner-h: 0px;
+  /* Sicherheitsabstand zwischen Banner und dem naechsten bedienbaren Element. */
+  --banner-gap: 0px;
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -71,5 +73,23 @@ body {
 
 .app-banner-slot {
   flex: 0 0 auto;
-  height: calc(var(--banner-h) + var(--safe-bottom));
+  height: calc(var(--banner-h) + var(--banner-gap) + var(--safe-bottom));
+  /* Der Platzhalter sitzt am unteren Rand des reservierten Bereichs, der
+     Abstand darueber bleibt frei. */
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Nur im Browser sichtbar: zeigt, wie viel Platz der Banner belegt. */
+.app-banner-placeholder {
+  width: 100%;
+  height: var(--banner-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-island) 45%, transparent);
+  background-color: color-mix(in srgb, var(--color-board-surface) 70%, transparent);
 }

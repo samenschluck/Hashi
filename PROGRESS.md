@@ -65,6 +65,23 @@ Stand: 2026-08-19
 - Android-Zurück-Taste auf jedem Bildschirm, Pause/Resume hält die Uhr an.
 - Einstellungen: Ton, Vibration, Dark/Light/System, Linkshänder-Layout, DE/EN.
 
+### M4 — Werbung (`feat/m4-ads`)
+
+- Zentraler `AdService` als einziger Berührungspunkt zur AdMob-SDK, mit Browser-Mock.
+- UMP-Consent **vor** der ersten Ad-Anfrage; ohne `canRequestAds` wird gar nichts
+  angefragt. Menüpunkt „Datenschutzeinstellungen" erscheint nur, wenn die SDK ihn
+  verlangt.
+- Adaptiver Anchored Banner unten, Höhe fest im Flex-Layout reserviert und aus dem
+  `bannerAdSizeChanged`-Ereignis exakt nachgeführt. Dazu 16 dp Sicherheitsabstand
+  zum nächsten bedienbaren Element.
+- Rewarded Video als einziger Weg zu zusätzlichen Tipps: +3 nur nach vollständig
+  angesehenem Video, maximal 5 Videos pro Tag, Vorladen bei Levelstart und nach
+  jedem Video.
+- Test-IDs sind der Standard und lassen sich ohne echte IDs nicht abschalten.
+- `npm run ads:inject-appid` schreibt die App-ID in eine Android-Ressource, weil sie
+  im Manifest stehen muss und keine Laufzeitgröße ist.
+- Kein Interstitial.
+
 ## Messwerte
 
 Generierungszeit über je 30 Läufe, lokal (Node 22):
@@ -87,7 +104,6 @@ Einschränkung im Standard-CI-Lauf.
 ## Offen
 
 - **M2** Canvas-Rendering und Touch-Eingabe
-- **M4** AdMob: Consent, Banner, Rewarded
 - **M5** Android-Build und Store-Readiness
 
 ## Bekannte Probleme und Anmerkungen

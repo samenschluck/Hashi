@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useAppStore } from '../../state/appStore.ts';
+import { RewardDialog } from '../components/RewardDialog.tsx';
 import { Button } from '../components/Ui.tsx';
 
 export function MenuScreen(): React.JSX.Element {
@@ -6,6 +8,7 @@ export function MenuScreen(): React.JSX.Element {
   const navigate = useAppStore((store) => store.navigate);
   const hints = useAppStore((store) => store.save.hints.balance);
   const busy = useAppStore((store) => store.busy);
+  const [showRefill, setShowRefill] = useState(false);
 
   return (
     <div className="flex h-full flex-col justify-between px-6 py-8">
@@ -59,7 +62,25 @@ export function MenuScreen(): React.JSX.Element {
         </Button>
       </div>
 
-      <p className="text-center text-sm text-slate-400">{t('game.hintsLeft', { count: hints })}</p>
+      <div className="flex flex-col items-center gap-1">
+        <p className="text-sm text-slate-400">{t('game.hintsLeft', { count: hints })}</p>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            setShowRefill(true);
+          }}
+        >
+          {t('menu.refillHints')}
+        </Button>
+      </div>
+
+      {showRefill ? (
+        <RewardDialog
+          onClose={() => {
+            setShowRefill(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

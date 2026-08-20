@@ -16,7 +16,8 @@
     "test:perf": "vitest run --config vitest.perf.config.ts",
     "ui:check": "node scripts/ui-check.mjs",
     "puzzles:generate": "node scripts/generate-puzzles.ts",
-    "puzzles:verify": "node scripts/verify-puzzles.ts"
+    "puzzles:verify": "node scripts/verify-puzzles.ts",
+    "ads:inject-appid": "node scripts/inject-admob-appid.ts"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@capacitor-community/admob": "^8.1.0",
     "@capacitor/app": "^8.1.1",
     "@capacitor/core": "^8.5.0",
     "@capacitor/haptics": "^8.0.2",

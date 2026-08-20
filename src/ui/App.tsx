@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { onBackButton, onPause, onResume } from '../services/appLifecycle.ts';
+import { isNativePlatform } from '../services/platform.ts';
+import { useAdStore } from '../state/adStore.ts';
 import { useAppStore, type Screen } from '../state/appStore.ts';
 import { Notice } from './components/Ui.tsx';
 import { DailyScreen } from './screens/DailyScreen.tsx';
@@ -18,9 +20,17 @@ export function App(): React.JSX.Element {
   const ready = useAppStore((store) => store.ready);
   const screen = useAppStore((store) => store.screen);
   const notice = useAppStore((store) => store.notice);
+  const bannerHeightDp = useAdStore((store) => store.bannerHeightDp);
 
   useEffect(() => {
-    void useAppStore.getState().init();
+    void useAppStore
+      .getState()
+      .init()
+      .then(() => {
+        // Werbung startet erst, wenn der Spielstand geladen ist: das Kennzeichen
+        // `adsRemoved` entscheidet, ob ueberhaupt ein Banner angefragt wird.
+        useAdStore.getState().start(useAppStore.getState().save.ads.adsRemoved);
+      });
   }, []);
 
   // Android-Zurueck auf jedem Bildschirm: im Menue beendet es die App, sonst
@@ -62,8 +72,14 @@ export function App(): React.JSX.Element {
         {notice ? <Notice message={notice} /> : null}
         {ready ? renderScreen(screen) : <SplashScreen />}
       </main>
-      {/* Fest reservierte Flaeche fuer den Anchored Banner (Meilenstein 4). */}
-      <div className="app-banner-slot" />
+      {/* Fest reservierte Flaeche fuer den Anchored Banner. Nativ liegt der
+          Banner als Ueberlagerung darueber, im Browser steht hier ein
+          Platzhalter derselben Hoehe. */}
+      <div className="app-banner-slot">
+        {!isNativePlatform() && bannerHeightDp > 0 ? (
+          <div className="app-banner-placeholder">Werbung</div>
+        ) : null}
+      </div>
     </div>
   );
 }

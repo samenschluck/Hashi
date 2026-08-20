@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { HINTS } from '../../config/game.ts';
+import { useAdStore } from '../../state/adStore.ts';
 import { useAppStore } from '../../state/appStore.ts';
 import { useGameStore } from '../../state/gameStore.ts';
 import { BoardCanvas } from '../components/BoardCanvas.tsx';
-import { Button, Dialog } from '../components/Ui.tsx';
+import { RewardDialog } from '../components/RewardDialog.tsx';
 import { formatDuration } from '../format.ts';
 
 /**
@@ -38,6 +38,12 @@ export function GameScreen(): React.JSX.Element {
       clearInterval(timer);
     };
   }, []);
+
+  // Beim Levelstart schon einmal ein Video vorladen, damit der Tipp-Knopf
+  // spaeter nicht ins Leere laeuft.
+  useEffect(() => {
+    useAdStore.getState().preload();
+  }, [active?.levelId]);
 
   // Zwischenstand nach jedem Zug sichern — der Fortschritt ueberlebt damit auch
   // ein hartes Beenden durch Android.
@@ -129,28 +135,11 @@ export function GameScreen(): React.JSX.Element {
       </nav>
 
       {showHintDialog ? (
-        <Dialog
-          title={t('hints.title')}
-          onDismiss={() => {
+        <RewardDialog
+          onClose={() => {
             setShowHintDialog(false);
           }}
-          actions={
-            <>
-              {/* Der Rewarded-Flow wird in Meilenstein 4 angeschlossen. */}
-              <Button
-                variant="secondary"
-                full
-                onClick={() => {
-                  setShowHintDialog(false);
-                }}
-              >
-                {t('hints.later')}
-              </Button>
-            </>
-          }
-        >
-          {t('hints.offer', { count: HINTS.rewardedGrant })}
-        </Dialog>
+        />
       ) : null}
     </div>
   );
