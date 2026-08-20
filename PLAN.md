@@ -228,17 +228,28 @@ Weg, Eindeutigkeit zu **beweisen** statt zu hoffen.
 
 Alles läuft über `rng(seed)` — `generate(seed, difficulty)` ist bitgenau reproduzierbar.
 
-### 4.4 Schwierigkeit = flachste Regelmenge, die das Rätsel löst
+### 4.4 Schwierigkeit = Boardgröße plus nötige Schlussweise
 
-| Grad    | Größe | Erlaubte Regeln zum Lösen |
-| ------- | ----- | ------------------------- |
-| Einfach | 7×7   | D1–D3 (+D4)               |
-| Mittel  | 10×10 | + D5                      |
-| Schwer  | 13×13 | + D6                      |
-| Experte | 17×17 | + D7 (Hypothese) nötig    |
+| Grad    | Größe | Verlangte Schlussweise                                |
+| ------- | ----- | ----------------------------------------------------- |
+| Einfach | 7×7   | nur D1–D4 (Inselgrade und Kreuzungsausschluss)        |
+| Mittel  | 10×10 | zusätzlich D5/D6, aber weniger als 4 solcher Schlüsse |
+| Schwer  | 13×13 | zusätzlich D5/D6, mindestens 4 solcher Schlüsse       |
+| Experte | 17×17 | ohne D7 (Widerspruchsbeweis) nicht lösbar             |
+
+**Korrektur gegenüber der ersten Fassung dieses Plans:** ursprünglich war „Schwer" als
+„braucht D6, aber nicht D7" geplant. Die Messung über mehrere tausend Kandidaten hat
+gezeigt, dass diese Klasse praktisch leer ist — die Isolationsregel D5 deckt fast alles ab,
+was unterhalb des Widerspruchsbeweises liegt, und wo sie nicht reicht, reicht D6 meistens
+auch nicht. Statt eine leere Klasse zu behaupten, unterscheidet „Mittel" von „Schwer"
+jetzt die **Anzahl** der fortgeschrittenen Schlüsse (`HARD_ADVANCED_STEPS` in
+`src/config/game.ts`). Die Vorgabe „Schwierigkeitsgrade über Boardgröße und benötigte
+Deduktionstiefe" bleibt damit erfüllt, nur ist die Tiefe feiner gemessen als über die
+bloße Regelmenge.
 
 Ein Rätsel gilt nur dann als „Experte", wenn es mit den flacheren Mengen **nicht** lösbar
-ist. Damit ist der Grad reproduzierbar definiert und nicht bloß Boardgröße.
+ist. Rätsel, die selbst mit D7 nicht rein deduktiv lösbar sind (die also Raten
+erfordern), werden grundsätzlich verworfen — das Tipp-System könnte sie nicht erklären.
 
 ### 4.5 Tipp-System
 

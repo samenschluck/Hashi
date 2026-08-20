@@ -37,5 +37,8 @@ jobs:
       - name: Unit-Tests
         run: npm test
 
+      - name: Laufzeitmessung der Generierung
+        run: npm run test:perf
+
       - name: Web-Build
         run: npm run build
