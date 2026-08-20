@@ -85,6 +85,8 @@
   "hint.rule.D5_NO_ISOLATION": "This connection would close off a group of islands from the rest. In the end everything has to form a single network.",
   "hint.rule.D6_CONNECTIVITY_BRIDGE": "Without this bridge, part of the board could not be reached at all.",
   "hint.rule.D7_HYPOTHESIS": "Assume the opposite for a moment — a few steps later it leads to a contradiction.",
+  "hint.rule.D8_PARITY_CUT": "This group of islands hangs on this single connection to the rest of the board. Every bridge inside it uses two ends, so the sum of the island numbers over there decides whether this link carries one bridge or two.",
+  "hint.rule.D9_TWIN_PAIR": "Both islands would be full — forming a finished network of their own while the rest of the board is still open. Two 1s can never be joined, and two 2s never doubled.",
 
   "rules.title": "How to play",
   "rules.body": "Connect all islands into a single network.\n\n• Bridges run only horizontally or vertically.\n• At most two bridges between any two islands.\n• Bridges must not cross each other or pass over islands.\n• The number on an island says how many bridge ends meet there.\n• In the end every island must be connected.\n\nDrag from island to island to place a bridge, drag again to double it, a third time removes it. Tapping two islands works the same way.",

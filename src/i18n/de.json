@@ -85,6 +85,8 @@
   "hint.rule.D5_NO_ISOLATION": "Diese Verbindung würde eine Inselgruppe abschließen und vom Rest abschneiden. Am Ende muss alles ein einziges Netz sein.",
   "hint.rule.D6_CONNECTIVITY_BRIDGE": "Ohne diese Brücke wäre ein Teil des Feldes gar nicht mehr erreichbar.",
   "hint.rule.D7_HYPOTHESIS": "Nimm einmal das Gegenteil an — es führt ein paar Schritte später zu einem Widerspruch.",
+  "hint.rule.D8_PARITY_CUT": "Diese Inselgruppe hängt nur noch über diese eine Verbindung am Rest des Feldes. Alle Brücken in ihr belegen je zwei Enden — die Summe der Inselzahlen dort entscheidet deshalb, ob hier eine oder zwei Brücken liegen.",
+  "hint.rule.D9_TWIN_PAIR": "Diese beiden Inseln wären damit beide voll — und hätten ein fertiges Netz nur für sich, während der Rest des Feldes noch offen ist. Zwei Einsen gehen deshalb nie zusammen, zwei Zweien nie doppelt.",
 
   "rules.title": "Spielregeln",
   "rules.body": "Verbinde alle Inseln zu einem einzigen Netz.\n\n• Brücken verlaufen nur waagerecht oder senkrecht.\n• Zwischen zwei Inseln höchstens zwei Brücken.\n• Brücken dürfen sich nicht kreuzen und nicht über Inseln laufen.\n• Die Zahl auf einer Insel sagt, wie viele Brücken dort enden.\n• Am Ende müssen alle Inseln zusammenhängen.\n\nZiehen von Insel zu Insel legt eine Brücke, nochmal ziehen macht sie doppelt, ein drittes Mal entfernt sie. Antippen zweier Inseln geht genauso.",

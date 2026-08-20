@@ -20,13 +20,34 @@ export const RULE_IDS = [
   'D6_CONNECTIVITY_BRIDGE',
   /** Die Gegenannahme fuehrt zu einem Widerspruch. */
   'D7_HYPOTHESIS',
+  /** Paritaetsschluss ueber eine durch eine einzige Kante abgetrennte Inselgruppe. */
+  'D8_PARITY_CUT',
+  /** Zwei gleich grosse Inseln duerfen sich nicht gegenseitig abschliessen. */
+  'D9_TWIN_PAIR',
 ] as const;
 
 export type RuleId = (typeof RULE_IDS)[number];
 
 /**
+ * Grundregeln: rein lokale Schluesse an einer einzelnen Insel oder Kreuzung.
+ * Alles darueber verlangt einen Blick auf das Zusammenspiel mehrerer Inseln —
+ * das ist die Trennlinie, an der sich Schwierigkeit messen laesst.
+ */
+const ROUTINE_RULES: ReadonlySet<RuleId> = new Set<RuleId>([
+  'D1_SATURATED',
+  'D2_FORCED_ALL',
+  'D3_MIN_PER_EDGE',
+  'D4_NO_CROSS',
+]);
+
+/**
  * Deduktionstiefe. Bestimmt, welche Regeln benutzt werden duerfen, und ist damit
  * das Mass fuer die Schwierigkeit eines Raetsels.
+ *
+ * - **1** — D1–D4: Inselgrade und Kreuzungen, alles lokal
+ * - **2** — zusaetzlich D9 und D5: keine vorzeitig geschlossene Teilgruppe
+ * - **3** — zusaetzlich D6 und D8: Zusammenhangs- und Paritaetsschluesse ueber Schnitte
+ * - **4** — zusaetzlich D7: Widerspruchsbeweis
  */
 export const DEDUCTION_LEVELS = [1, 2, 3, 4] as const;
 export type DeductionLevel = (typeof DEDUCTION_LEVELS)[number];
@@ -71,7 +92,7 @@ function rangeMask(low: number, high: number): number {
  *
  * Aenderungen werden auf einem Trail protokolliert, damit der Solver ohne
  * Kopieren zurueckspringen kann — das ist der Unterschied zwischen „laeuft" und
- * „laeuft schnell genug" bei 17x17.
+ * „laeuft schnell genug" bei den grossen Brettern.
  */
 export class ConstraintStore {
   readonly board: Board;
@@ -96,6 +117,15 @@ export class ConstraintStore {
   /** Zaehlt, wie oft jede Regel tatsaechlich etwas bewirkt hat. Grundlage der Einstufung. */
   private readonly usage = new Map<RuleId, number>();
   private counting = true;
+
+  /**
+   * Reihenfolge der angewandten Regeln, nur auf Anforderung.
+   *
+   * Kostet Speicher und Zeit und bleibt deshalb im Solver aus. Die Einstufung
+   * braucht sie, um die laengste Strecke reiner Routinezuege zu messen — genau
+   * die Strecken, die ein Raetsel lang statt schwierig machen.
+   */
+  private trace: RuleId[] | null = null;
 
   /** Kontext fuer die Begruendung der gerade laufenden Regel. */
   private currentRule: RuleId = 'D1_SATURATED';
@@ -134,6 +164,52 @@ export class ConstraintStore {
     this.recordPlacements = false;
     this.usage.clear();
     this.counting = true;
+    this.trace = this.trace === null ? null : [];
+  }
+
+  /** Schaltet die Regelmitschrift ein. Vor `propagate` aufrufen. */
+  enableTrace(): void {
+    this.trace = [];
+  }
+
+  /**
+   * Laengste ununterbrochene Folge reiner Routinezuege (D1–D4) **zwischen** zwei
+   * fortgeschrittenen Schluessen.
+   *
+   * Das Mass fuer Leerlauf: Ein Raetsel mit vier fortgeschrittenen Schluessen,
+   * zwischen denen jeweils dreissig mechanische Zuege liegen, ist nicht schwer,
+   * sondern lang.
+   *
+   * Die Strecke *vor* dem ersten fortgeschrittenen Schluss zaehlt bewusst nicht
+   * mit. Sie ist der Einstieg — die Bruecken, die sich aus den Inselzahlen von
+   * selbst ergeben — und gehoert zu jedem Raetsel dieser Art dazu. Wer sie
+   * mitzaehlte, wuerde grosse Bretter allein fuer ihre Groesse bestrafen und
+   * genau die Boards verwerfen, die spaeter interessant werden.
+   *
+   * Ohne eingeschaltete Mitschrift ist der Wert 0.
+   */
+  get longestRoutineRun(): number {
+    if (this.trace === null) {
+      return 0;
+    }
+    let longest = 0;
+    let current = 0;
+    let seenAdvanced = false;
+    for (const ruleId of this.trace) {
+      if (!ROUTINE_RULES.has(ruleId)) {
+        seenAdvanced = true;
+        current = 0;
+        continue;
+      }
+      if (!seenAdvanced) {
+        continue; // Einstiegsstrecke
+      }
+      current++;
+      if (current > longest) {
+        longest = current;
+      }
+    }
+    return longest;
   }
 
   /**
@@ -161,11 +237,13 @@ export class ConstraintStore {
 
   /** Anwendungen aller Regeln oberhalb der Grundregeln D1–D4. */
   get advancedUsage(): number {
-    return (
-      this.usageOf('D5_NO_ISOLATION') +
-      this.usageOf('D6_CONNECTIVITY_BRIDGE') +
-      this.usageOf('D7_HYPOTHESIS')
-    );
+    let total = 0;
+    for (const ruleId of RULE_IDS) {
+      if (!ROUTINE_RULES.has(ruleId)) {
+        total += this.usageOf(ruleId);
+      }
+    }
+    return total;
   }
 
   lowerBound(edgeId: number): number {
@@ -257,6 +335,19 @@ export class ConstraintStore {
       }
 
       changed = false;
+
+      // Reihenfolge = aufsteigender Aufwand. D9 steht vor D5, damit das
+      // wiedererkennbare Muster die Begruendung liefert und nicht das
+      // allgemeinere Prinzip, das dasselbe abdeckt.
+      if (level >= 2) {
+        changed = this.applyTwinPairRule();
+        if (this.isFailed()) {
+          break;
+        }
+      }
+      if ((stopAtFirstPlacement && this.hasPlacement()) || changed) {
+        continue;
+      }
 
       if (level >= 2) {
         const isolationChanged = this.applyIsolationRule();
@@ -529,6 +620,54 @@ export class ConstraintStore {
   }
 
   // ---------------------------------------------------------------------------
+  // D9: zwei gleich grosse Inseln, die sich gegenseitig abschliessen wuerden
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Zwei Einsen duerfen nie verbunden werden, zwei Zweien nie doppelt: beide
+   * waeren damit voll, und die zwei Inseln bildeten ein fertiges Netz fuer sich,
+   * waehrend der Rest des Feldes noch offen ist.
+   *
+   * Logisch ein Sonderfall von D5 — als eigene Regel gefuehrt, weil sie ein
+   * wiedererkennbares Muster ist. Das Tipp-System soll „zwei Einsen gehen nie"
+   * sagen koennen statt „das wuerde eine Gruppe abschneiden"; Muster lernt man,
+   * allgemeine Prinzipien nicht.
+   */
+  private applyTwinPairRule(): boolean {
+    const islandCount = this.board.islands.length;
+    if (islandCount <= 2) {
+      return false;
+    }
+
+    for (const edge of this.board.edges) {
+      const mask = this.domains[edge.id]!;
+      if (mask === (mask & -mask)) {
+        continue; // bereits entschieden
+      }
+
+      const required = this.board.required[edge.a]!;
+      if (required > 2 || required !== this.board.required[edge.b]) {
+        continue;
+      }
+      // Nur solange beide Inseln noch voellig unbelegt sind: sonst waere die
+      // Saettigung durch diese eine Kante ohnehin nicht mehr moeglich.
+      if (this.sumLow[edge.a] !== 0 || this.sumLow[edge.b] !== 0) {
+        continue;
+      }
+      if ((mask & (1 << required)) === 0) {
+        continue;
+      }
+
+      this.currentRule = 'D9_TWIN_PAIR';
+      this.currentIsland = edge.a;
+      this.restrict(edge.id, mask & ~(1 << required));
+      return true;
+    }
+
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------
   // D6: Bruecken, ohne die das Netz zerfaellt
   // ---------------------------------------------------------------------------
 
@@ -537,6 +676,13 @@ export class ConstraintStore {
    * gesetzte Bruecken zu Komponenten zusammengezogen wurden. Ist eine Kante darin
    * eine Bruecke im graphentheoretischen Sinn, muss sie im Ergebnis vorkommen.
    * Zerfaellt der Graph bereits jetzt, ist die Stellung unmoeglich.
+   *
+   * Dieselbe Tiefensuche liefert nebenbei D8: Fuer eine Schnittkante ist die
+   * abgetrennte Seite nur ueber genau diese Kante erreichbar. Jede Bruecke dort
+   * belegt entweder zwei Enden innerhalb der Gruppe oder eines auf der
+   * Schnittkante — die Summe der Inselzahlen der abgetrennten Seite legt damit
+   * die Parität dieser einen Kante fest. Zusammen mit dem Zusammenhang ist sie
+   * dann vollstaendig bestimmt: ungerade Summe heisst eine Bruecke, gerade zwei.
    */
   private applyConnectivityRule(): boolean {
     const islandCount = this.board.islands.length;
@@ -577,15 +723,24 @@ export class ConstraintStore {
       return false;
     }
 
+    // Summe der Inselzahlen je zusammengezogenem Knoten — Grundlage fuer D8.
+    const requiredPerNode = new Map<number, number>();
+    for (let islandId = 0; islandId < islandCount; islandId++) {
+      const root = this.unionFind.find(islandId);
+      requiredPerNode.set(root, (requiredPerNode.get(root) ?? 0) + this.board.required[islandId]!);
+    }
+
     const discovery = new Map<number, number>();
     const lowLink = new Map<number, number>();
-    const bridges: number[] = [];
+    /** Schnittkanten samt der Inselzahl-Summe auf der abgetrennten Seite. */
+    const cuts: { edgeId: number; requiredSum: number }[] = [];
     let timer = 0;
 
-    const dfs = (node: number, incomingEdge: number): void => {
+    const dfs = (node: number, incomingEdge: number): number => {
       timer++;
       discovery.set(node, timer);
       lowLink.set(node, timer);
+      let subtree = requiredPerNode.get(node) ?? 0;
 
       for (const link of adjacency.get(node) ?? []) {
         if (link.edgeId === incomingEdge) {
@@ -593,16 +748,19 @@ export class ConstraintStore {
         }
         const seen = discovery.get(link.to);
         if (seen === undefined) {
-          dfs(link.to, link.edgeId);
+          const childSum = dfs(link.to, link.edgeId);
+          subtree += childSum;
           const childLow = lowLink.get(link.to)!;
           lowLink.set(node, Math.min(lowLink.get(node)!, childLow));
           if (childLow > discovery.get(node)!) {
-            bridges.push(link.edgeId);
+            cuts.push({ edgeId: link.edgeId, requiredSum: childSum });
           }
         } else {
           lowLink.set(node, Math.min(lowLink.get(node)!, seen));
         }
       }
+
+      return subtree;
     };
 
     dfs(nodes[0]!, -1);
@@ -613,18 +771,36 @@ export class ConstraintStore {
       return false;
     }
 
+    // Keine der folgenden Einschraenkungen entfernt eine Kante aus dem
+    // Moeglichkeitsgraphen — weder eine Untergrenze noch ein Paritaetsschluss
+    // setzt eine Obergrenze auf 0. Die eben berechneten Schnittkanten bleiben
+    // deshalb waehrend der ganzen Schleife gueltig.
     let changed = false;
-    for (const edgeId of bridges) {
-      const mask = this.domains[edgeId]!;
-      if (LOW[mask]! > 0) {
-        continue;
+    for (const cut of cuts) {
+      const mask = this.domains[cut.edgeId]!;
+
+      if (LOW[mask]! === 0) {
+        this.currentRule = 'D6_CONNECTIVITY_BRIDGE';
+        this.currentIsland = null;
+        if (!this.restrict(cut.edgeId, mask & 0b110)) {
+          return changed;
+        }
+        changed = true;
       }
-      this.currentRule = 'D6_CONNECTIVITY_BRIDGE';
-      this.currentIsland = null;
-      if (!this.restrict(edgeId, mask & 0b110)) {
-        return changed;
+
+      // D8: Auf der abgetrennten Seite enden alle Bruecken entweder mit beiden
+      // Enden dort — das sind immer zwei — oder sie laufen ueber diese eine
+      // Schnittkante hinaus. Die Summe der Inselzahlen dort hat deshalb dieselbe
+      // Parität wie die Zahl der Bruecken auf dieser Kante.
+      const parityMask = cut.requiredSum % 2 === 1 ? 0b010 : 0b101;
+      if ((this.domains[cut.edgeId]! & ~parityMask) !== 0) {
+        this.currentRule = 'D8_PARITY_CUT';
+        this.currentIsland = null;
+        if (!this.restrict(cut.edgeId, parityMask)) {
+          return changed;
+        }
+        changed = true;
       }
-      changed = true;
     }
 
     return changed;
@@ -691,7 +867,7 @@ export class ConstraintStore {
   }
 
   /**
-   * Fixpunkt ueber die Regeln D1–D6, ohne Probeannahmen.
+   * Fixpunkt ueber alle Regeln ausser der Probeannahme selbst.
    * Wird innerhalb einer Probeannahme benutzt, um den Widerspruch zu finden.
    */
   private propagateShallow(): void {
@@ -699,6 +875,13 @@ export class ConstraintStore {
     while (changed && !this.isFailed()) {
       if (!this.runLocalFixpoint(false)) {
         return;
+      }
+      changed = this.applyTwinPairRule();
+      if (this.isFailed()) {
+        return;
+      }
+      if (changed) {
+        continue;
       }
       changed = this.applyIsolationRule();
       if (this.isFailed()) {
@@ -733,6 +916,7 @@ export class ConstraintStore {
 
     if (this.counting) {
       this.usage.set(this.currentRule, (this.usage.get(this.currentRule) ?? 0) + 1);
+      this.trace?.push(this.currentRule);
     }
 
     if (this.recordPlacements && !this.placement && LOW[newMask]! > LOW[oldMask]!) {

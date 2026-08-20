@@ -40,12 +40,15 @@ case you want to beat your own best — but it never runs out.
 
 600 HAND-CHECKED PUZZLES
 
-150 puzzles per difficulty, from 7x7 up to 17x17:
+150 puzzles per difficulty, from 7x7 up to 12x12:
 
 • Easy — the basic rules are enough
 • Medium — first arguments about connectivity
-• Hard — the same arguments, but many more of them
+• Hard — the same arguments, packed much more densely
 • Expert — nothing works here without proof by contradiction
+
+Harder does not mean bigger here. The boards stay manageable; what grows is the
+number of places where plain counting no longer gets you through.
 
 Every single puzzle has exactly one solution. That is not a promise but a check: a
 solver works through every shipped puzzle before it reaches the app. You never

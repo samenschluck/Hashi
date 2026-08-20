@@ -41,12 +41,15 @@ willst — sie läuft aber nie ab.
 
 600 HANDVERLESENE RÄTSEL
 
-150 Rätsel je Schwierigkeitsgrad, von 7x7 bis 17x17:
+150 Rätsel je Schwierigkeitsgrad, von 7x7 bis 12x12:
 
 • Einfach — nur die Grundregeln
 • Mittel — erste Schlüsse über den Zusammenhang
-• Schwer — dieselben Schlüsse, aber deutlich mehr davon
+• Schwer — dieselben Schlüsse, aber deutlich dichter
 • Experte — ohne Widerspruchsbeweis geht hier nichts
+
+Schwerer heißt hier nicht größer. Die Bretter bleiben handlich; was zunimmt, ist
+die Zahl der Stellen, an denen einfaches Abzählen nicht mehr weiterhilft.
 
 Jedes einzelne Rätsel hat genau eine Lösung. Das ist kein Versprechen, sondern
 geprüft: ein Solver rechnet jedes ausgelieferte Rätsel durch, bevor es in die App

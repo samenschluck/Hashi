@@ -1,4 +1,4 @@
-import { HARD_ADVANCED_STEPS, type Difficulty } from '../config/game.ts';
+import { DIFFICULTY_CRITERIA, type Difficulty } from '../config/game.ts';
 import { ConstraintStore, DEDUCTION_LEVELS, type DeductionLevel } from './deductions.ts';
 import { isValidSolution } from './solver.ts';
 import type { Board } from './types.ts';
@@ -13,22 +13,29 @@ export interface DifficultyAnalysis {
   readonly level: DeductionLevel | null;
   /** Anzahl der noetigen Schluesse oberhalb der Grundregeln D1–D4. */
   readonly advancedSteps: number;
+  /** Laengste Strecke reiner Routinezuege am Stueck (siehe `ConstraintStore`). */
+  readonly longestRoutineRun: number;
 }
 
 /** Untersucht, welche Schlussweisen ein Board tatsaechlich verlangt. */
 export function analyzeBoard(board: Board): DifficultyAnalysis {
   for (const level of DEDUCTION_LEVELS) {
     const store = new ConstraintStore(board);
+    store.enableTrace();
     const result = store.propagate(level);
     if (
       result.status === 'ok' &&
       result.complete &&
       isValidSolution(board, store.currentAssignment())
     ) {
-      return { level, advancedSteps: store.advancedUsage };
+      return {
+        level,
+        advancedSteps: store.advancedUsage,
+        longestRoutineRun: store.longestRoutineRun,
+      };
     }
   }
-  return { level: null, advancedSteps: 0 };
+  return { level: null, advancedSteps: 0, longestRoutineRun: 0 };
 }
 
 /** Flachste noetige Deduktionstiefe, oder `null` wenn das Raetsel Raten erfordert. */
@@ -37,25 +44,37 @@ export function requiredDeductionLevel(board: Board): DeductionLevel | null {
 }
 
 /**
- * Schwierigkeitsgrad eines Boards, oder `null` wenn es nicht rein deduktiv loesbar ist.
+ * Von streng nach mild geprueft: „schwer" und „mittel" teilen sich eine
+ * Deduktionstiefe und unterscheiden sich nur in der geforderten Menge an
+ * Einsichten, deshalb muss der haertere Grad zuerst zugreifen.
+ */
+const GRADE_ORDER = ['expert', 'hard', 'medium', 'easy'] as const;
+
+/**
+ * Schwierigkeitsgrad eines Boards, oder `null` wenn es zu keinem Grad passt.
  *
- * - **easy**: nur Inselgrade und Kreuzungsausschluss (D1–D4)
- * - **medium**: zusaetzlich Isolations- oder Zusammenhangsschluesse, aber wenige
- * - **hard**: dieselben Schlussweisen, aber oft genug, um echte Arbeit zu sein
- * - **expert**: ohne Widerspruchsbeweis (D7) nicht loesbar
- *
- * Ergaenzt wird das im Generator durch die Boardgroesse je Grad.
+ * Geprueft wird gegen `DIFFICULTY_CRITERIA`: noetige Deduktionstiefe, Menge der
+ * fortgeschrittenen Schluesse und die laengste Leerlaufstrecke dazwischen. Ein
+ * Board, das keinem Grad genuegt, wird verworfen und nicht etwa herabgestuft —
+ * ein herabgestuftes Raetsel truege seinen Leerlauf einfach in den naechsten
+ * Grad weiter, und dort waere es ausserdem fuer die Brettgroesse zu gross.
  */
 export function classifyDifficulty(board: Board): Difficulty | null {
-  const { level, advancedSteps } = analyzeBoard(board);
+  const { level, advancedSteps, longestRoutineRun } = analyzeBoard(board);
   if (level === null) {
     return null;
   }
-  if (level === 1) {
-    return 'easy';
+
+  for (const grade of GRADE_ORDER) {
+    const criteria = DIFFICULTY_CRITERIA[grade];
+    if (
+      criteria.levels.includes(level) &&
+      advancedSteps >= criteria.minAdvancedSteps &&
+      longestRoutineRun <= criteria.maxRoutineRun
+    ) {
+      return grade;
+    }
   }
-  if (level === 4) {
-    return 'expert';
-  }
-  return advancedSteps >= HARD_ADVANCED_STEPS ? 'hard' : 'medium';
+
+  return null;
 }

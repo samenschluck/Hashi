@@ -126,7 +126,7 @@ describe('Deduktionsregeln', () => {
     expect(result.firstPlacement!.ruleId).toBe('D2_FORCED_ALL');
   });
 
-  it('D5: zwei benachbarte Einsen duerfen sich nicht verbinden, solange andere Inseln offen sind', () => {
+  it('D9: zwei benachbarte Einsen duerfen sich nicht verbinden, solange andere Inseln offen sind', () => {
     // Klassischer 1–1-Fall: die Verbindung der beiden Einsen waere sofort
     // abgeschlossen und der Rest des Feldes abgehaengt.
     const board = parseBoard(`
@@ -142,11 +142,68 @@ describe('Deduktionsregeln', () => {
     );
     expect(between).toBeDefined();
     expect(store.upperBound(between!.id)).toBe(0);
-    expect(store.usageOf('D5_NO_ISOLATION')).toBeGreaterThan(0);
+    // D9 steht vor D5 und beansprucht das Muster fuer sich — genau dafuer gibt
+    // es die Regel: die Begruendung im Tipp soll „zwei Einsen gehen nie" lauten
+    // und nicht das allgemeinere „das wuerde eine Gruppe abschneiden".
+    expect(store.usageOf('D9_TWIN_PAIR')).toBeGreaterThan(0);
 
-    // Ohne die Isolationsregel bliebe die Kante offen — sie ist hier der Schluessel.
+    // Ohne die Abschlussregeln bliebe die Kante offen — sie ist hier der Schluessel.
     const basicOnly = new ConstraintStore(board);
     basicOnly.propagate(1);
     expect(basicOnly.upperBound(between!.id)).toBe(1);
+  });
+
+  it('D9 laesst zwei Zweien einfach, aber nicht doppelt verbinden', () => {
+    const board = parseBoard(`
+      2.2
+      ...
+      2.2
+    `);
+    const store = new ConstraintStore(board);
+    store.propagate(2);
+
+    const top = board.edges.find(
+      (edge) => board.islands[edge.a]!.y === 0 && board.islands[edge.b]!.y === 0,
+    );
+    expect(top).toBeDefined();
+    expect(store.upperBound(top!.id)).toBe(1);
+    expect(store.usageOf('D9_TWIN_PAIR')).toBeGreaterThan(0);
+  });
+
+  it('D8: die Paritaet einer Schnittkante folgt aus den Inselzahlen dahinter', () => {
+    // Die rechte Insel haengt nur ueber eine einzige moegliche Verbindung am
+    // Rest. Ihre Inselzahl ist gerade, also muss die Kante zwei Bruecken tragen.
+    const board = parseBoard(`
+      .1.1.
+      .....
+      3.4.2
+    `);
+    const store = new ConstraintStore(board);
+    store.propagate(3);
+
+    const rightmost = board.islands.reduce((best, island) => (island.x > best.x ? island : best));
+    expect(rightmost.required).toBe(2);
+    for (const edgeId of board.edgesByIsland[rightmost.id]!) {
+      expect(store.lowerBound(edgeId)).toBe(store.upperBound(edgeId));
+    }
+  });
+
+  it('zaehlt Leerlauf nur zwischen zwei fortgeschrittenen Schluessen', () => {
+    const board = parseBoard(`
+      1.1
+      ...
+      2.2
+    `);
+    const store = new ConstraintStore(board);
+    store.enableTrace();
+    store.propagate(2);
+
+    // Die Einstiegszuege vor dem ersten fortgeschrittenen Schluss zaehlen nicht
+    // mit, sonst wuerde jedes groessere Brett allein fuer seine Groesse bestraft.
+    expect(store.longestRoutineRun).toBeLessThan(store.usageOf('D3_MIN_PER_EDGE') + 1);
+
+    const withoutTrace = new ConstraintStore(board);
+    withoutTrace.propagate(2);
+    expect(withoutTrace.longestRoutineRun).toBe(0);
   });
 });
