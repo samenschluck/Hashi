@@ -1,11 +1,10 @@
-# PLAN.md — Hashi (Hashiwokakero) für Android
+# PLAN.md — Bridgelet (Hashiwokakero) für Android
 
-Stand: 2026-08-19 · Status: **wartet auf dein OK**
+Stand: 2026-08-19 · Status: **freigegeben, Umsetzung läuft**
 
 Dieses Dokument beschreibt Architektur, Datenmodell, Algorithmen, Build-Pipeline und
-Meilensteine. Es wird erst Code geschrieben, wenn du dieses Dokument freigegeben hast.
-Ganz unten stehen **offene Entscheidungen** und **fachliche Einwände** — bitte dort
-zuerst schauen.
+Meilensteine. Abschnitt 10 hält die getroffenen Entscheidungen fest, Abschnitt 11 die
+bekannten Risiken.
 
 ---
 
@@ -13,21 +12,21 @@ zuerst schauen.
 
 Alle Versionen wurden gegen die npm-Registry geprüft (Stand heute), nicht geraten.
 
-| Paket | Version | Anmerkung |
-|---|---|---|
-| `typescript` | 5.x (strict) | `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` an |
-| `react` / `react-dom` | **19.2.x** (Entscheidung E1) | |
-| `vite` | 8.x | |
-| `zustand` | 5.x | |
-| `tailwindcss` | 4.x | v4 nutzt CSS-first-Config (`@theme`), keine `tailwind.config.js` mehr |
-| `vitest` | 4.x | |
-| `@capacitor/core`, `cli`, `android` | **8.5.0** | „Capacitor 6+" ist erfüllt; 8 ist aktuell |
-| `@capacitor-community/admob` | **8.1.0** | |
-| `@capacitor/preferences` | 8.0.1 | |
-| `@capacitor/haptics` | 8.0.2 | |
-| `@capacitor/app` | 8.1.1 | Back-Button, Pause/Resume |
-| `@capacitor/status-bar` | 8.0.3 | |
-| `@capacitor/assets` | 3.0.5 | Icon-/Splash-Generierung |
+| Paket                               | Version                      | Anmerkung                                                             |
+| ----------------------------------- | ---------------------------- | --------------------------------------------------------------------- |
+| `typescript`                        | 5.x (strict)                 | `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` an           |
+| `react` / `react-dom`               | **19.2.x** (Entscheidung E1) |                                                                       |
+| `vite`                              | 8.x                          |                                                                       |
+| `zustand`                           | 5.x                          |                                                                       |
+| `tailwindcss`                       | 4.x                          | v4 nutzt CSS-first-Config (`@theme`), keine `tailwind.config.js` mehr |
+| `vitest`                            | 4.x                          |                                                                       |
+| `@capacitor/core`, `cli`, `android` | **8.5.0**                    | „Capacitor 6+" ist erfüllt; 8 ist aktuell                             |
+| `@capacitor-community/admob`        | **8.1.0**                    |                                                                       |
+| `@capacitor/preferences`            | 8.0.1                        |                                                                       |
+| `@capacitor/haptics`                | 8.0.2                        |                                                                       |
+| `@capacitor/app`                    | 8.1.1                        | Back-Button, Pause/Resume                                             |
+| `@capacitor/status-bar`             | 8.0.3                        |                                                                       |
+| `@capacitor/assets`                 | 3.0.5                        | Icon-/Splash-Generierung                                              |
 
 Capacitor 8 setzt `minSdk 24`, `compileSdk 36`, `targetSdk 36` (aus
 `@capacitor/android/capacitor/build.gradle` ausgelesen). Das deckt die aktuelle
@@ -109,14 +108,26 @@ deutsch, Bezeichner englisch.
 ```ts
 type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
-interface Island { readonly id: number; readonly x: number; readonly y: number; readonly required: number; } // 1..8
-interface EdgeDef { readonly id: number; readonly a: number; readonly b: number; readonly horizontal: boolean; } // a < b, benachbart, freie Linie
+interface Island {
+  readonly id: number;
+  readonly x: number;
+  readonly y: number;
+  readonly required: number;
+} // 1..8
+interface EdgeDef {
+  readonly id: number;
+  readonly a: number;
+  readonly b: number;
+  readonly horizontal: boolean;
+} // a < b, benachbart, freie Linie
 interface Puzzle {
-  readonly id: string;            // z.B. "easy-0042" oder "daily-2026-08-19"
-  readonly seed: string; readonly difficulty: Difficulty;
-  readonly width: number; readonly height: number;
+  readonly id: string; // z.B. "easy-0042" oder "daily-2026-08-19"
+  readonly seed: string;
+  readonly difficulty: Difficulty;
+  readonly width: number;
+  readonly height: number;
   readonly islands: readonly Island[];
-  readonly solution: readonly (0|1|2)[]; // pro EdgeDef-Index — eindeutig, verifiziert
+  readonly solution: readonly (0 | 1 | 2)[]; // pro EdgeDef-Index — eindeutig, verifiziert
 }
 ```
 
@@ -135,14 +146,30 @@ interface Puzzle {
 ```ts
 interface SaveData {
   schemaVersion: 1;
-  settings: { sound: boolean; vibration: boolean; theme: 'dark'|'light'|'system'; leftHanded: boolean; locale: 'de'|'en' };
-  levels: Record<string, { solved: boolean; bestTimeMs: number|null; hintsUsed: number }>;
+  settings: {
+    sound: boolean;
+    vibration: boolean;
+    theme: 'dark' | 'light' | 'system';
+    leftHanded: boolean;
+    locale: 'de' | 'en';
+  };
+  levels: Record<string, { solved: boolean; bestTimeMs: number | null; hintsUsed: number }>;
   inProgress: Record<string, { moves: [edgeId: number, count: number][]; elapsedMs: number }>;
-  daily: { streak: number; longestStreak: number; lastSolvedDay: string|null; solvedDays: string[] };
-  hints: { balance: number; lastFreeGrantDay: string|null };
-  ads: { rewardedCountToday: number; rewardedDay: string|null; adsRemoved: boolean; consentDone: boolean };
+  daily: {
+    streak: number;
+    longestStreak: number;
+    lastSolvedDay: string | null;
+    solvedDays: string[];
+  };
+  hints: { balance: number; lastFreeGrantDay: string | null };
+  ads: {
+    rewardedCountToday: number;
+    rewardedDay: string | null;
+    adsRemoved: boolean;
+    consentDone: boolean;
+  };
   stats: { solvedTotal: number; totalTimeMs: number; hintsSpent: number };
-  clock: { lastSeenEpochMs: number };   // Schutz gegen Uhr-Zurückstellen
+  clock: { lastSeenEpochMs: number }; // Schutz gegen Uhr-Zurückstellen
 }
 ```
 
@@ -167,15 +194,15 @@ und mehr ist ohne Backend auch nicht möglich.
 Für jede Insel: `remaining = required − gesetzteBrückenenden`, Kandidatenkanten mit
 Restkapazität `cap_i ∈ {0,1,2}`.
 
-| ID | Regel | Beispiel-Begründung (Tipp-Text) |
-|---|---|---|
-| `D1_SATURATED` | `remaining == 0` → alle Restkanten auf 0 fixieren | „Diese Insel ist voll — die restlichen Verbindungen entfallen." |
-| `D2_FORCED_ALL` | `Σ cap_i == remaining` → alle Kanten auf `cap_i` | „Diese 4 hat nur zwei Nachbarn, also gehen zu beiden zwei Brücken." |
-| `D3_MIN_PER_EDGE` | `min_i = max(0, remaining − Σ_{j≠i} cap_j) > 0` → mindestens `min_i` setzen | „Selbst wenn alle anderen Nachbarn voll ausgelastet sind, bleibt hier mindestens eine Brücke übrig." |
-| `D4_NO_CROSS` | Kante > 0 verbietet alle kreuzenden Kanten | „Diese Brücke kreuzt die andere — nur eine davon kann existieren." |
-| `D5_NO_ISOLATION` | Ein Zug, der eine geschlossene Teilkomponente < alle Inseln erzeugt, ist verboten (klassisch: 1–1 und 2=2 zwischen zwei Inseln) | „Damit wäre dieser Teil vom Rest abgeschnitten — alle Inseln müssen zusammenhängen." |
-| `D6_CONNECTIVITY_BRIDGE` | Kante, ohne die eine Inselgruppe unerreichbar wird, ist erzwungen | „Ohne diese Brücke kommt der rechte Teil des Feldes nicht mehr ans Netz." |
-| `D7_HYPOTHESIS` | Probeannahme auf einer Kante, führt in ≤ N Schritten zum Widerspruch → Gegenwert erzwungen | „Wäre hier keine Brücke, ergäbe sich weiter unten ein Widerspruch." |
+| ID                       | Regel                                                                                                                           | Beispiel-Begründung (Tipp-Text)                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `D1_SATURATED`           | `remaining == 0` → alle Restkanten auf 0 fixieren                                                                               | „Diese Insel ist voll — die restlichen Verbindungen entfallen."                                      |
+| `D2_FORCED_ALL`          | `Σ cap_i == remaining` → alle Kanten auf `cap_i`                                                                                | „Diese 4 hat nur zwei Nachbarn, also gehen zu beiden zwei Brücken."                                  |
+| `D3_MIN_PER_EDGE`        | `min_i = max(0, remaining − Σ_{j≠i} cap_j) > 0` → mindestens `min_i` setzen                                                     | „Selbst wenn alle anderen Nachbarn voll ausgelastet sind, bleibt hier mindestens eine Brücke übrig." |
+| `D4_NO_CROSS`            | Kante > 0 verbietet alle kreuzenden Kanten                                                                                      | „Diese Brücke kreuzt die andere — nur eine davon kann existieren."                                   |
+| `D5_NO_ISOLATION`        | Ein Zug, der eine geschlossene Teilkomponente < alle Inseln erzeugt, ist verboten (klassisch: 1–1 und 2=2 zwischen zwei Inseln) | „Damit wäre dieser Teil vom Rest abgeschnitten — alle Inseln müssen zusammenhängen."                 |
+| `D6_CONNECTIVITY_BRIDGE` | Kante, ohne die eine Inselgruppe unerreichbar wird, ist erzwungen                                                               | „Ohne diese Brücke kommt der rechte Teil des Feldes nicht mehr ans Netz."                            |
+| `D7_HYPOTHESIS`          | Probeannahme auf einer Kante, führt in ≤ N Schritten zum Widerspruch → Gegenwert erzwungen                                      | „Wäre hier keine Brücke, ergäbe sich weiter unten ein Widerspruch."                                  |
 
 Propagation läuft als Worklist bis zum Fixpunkt. `D7` ist der teure Fall und wird nur für
 `hard`/`expert` und im Tipp-System als letzte Stufe eingeschaltet.
@@ -203,12 +230,12 @@ Alles läuft über `rng(seed)` — `generate(seed, difficulty)` ist bitgenau rep
 
 ### 4.4 Schwierigkeit = flachste Regelmenge, die das Rätsel löst
 
-| Grad | Größe | Erlaubte Regeln zum Lösen |
-|---|---|---|
-| Einfach | 7×7 | D1–D3 (+D4) |
-| Mittel | 10×10 | + D5 |
-| Schwer | 13×13 | + D6 |
-| Experte | 17×17 | + D7 (Hypothese) nötig |
+| Grad    | Größe | Erlaubte Regeln zum Lösen |
+| ------- | ----- | ------------------------- |
+| Einfach | 7×7   | D1–D3 (+D4)               |
+| Mittel  | 10×10 | + D5                      |
+| Schwer  | 13×13 | + D6                      |
+| Experte | 17×17 | + D7 (Hypothese) nötig    |
 
 Ein Rätsel gilt nur dann als „Experte", wenn es mit den flacheren Mengen **nicht** lösbar
 ist. Damit ist der Grad reproduzierbar definiert und nicht bloß Boardgröße.
@@ -312,14 +339,14 @@ GitHub-Secret. Die **Ad-Unit-IDs** kommen normal über `import.meta.env` in den 
 
 ## 8. Meilensteine
 
-| M | Inhalt | Definition of Done |
-|---|---|---|
-| **M0** | Repo-Setup: Vite+React+TS strict, Tailwind, ESLint/Prettier, Vitest, CI, `PROGRESS.md` | CI grün auf leerem Gerüst |
-| **M1** | `src/core/`: State, Regeln, Union-Find, Deduktionen, Solver, Generator, Difficulty | Tests aus Abschnitt 9 grün |
-| **M2** | Canvas-Renderer, Pointer-Eingabe, Zoom/Pan, Undo/Redo/Reset, Haptik | Spielbar im Browser, Board füllt jede Fenstergröße |
-| **M3** | Screens, Level-Auswahl, 4×150 vorgenerierte Rätsel, Endlosmodus, Daily+Streak, Persistenz, Settings, i18n, **Tipp-System** | Fortschritt überlebt Reload, Tipps mit Begründung |
-| **M4** | `AdService`, UMP-Consent, Banner mit reservierter Höhe, Rewarded-Flow, Limits, `adsRemoved` | Spiel voll funktionsfähig auch bei komplett fehlenden Ads |
-| **M5** | Capacitor + `android/`, Signing, Icons/Splash, `store/`-Inhalte, README, Qualitätscheck | AAB aus dem CI-Workflow, Store-Unterlagen vollständig |
+| M      | Inhalt                                                                                                                     | Definition of Done                                        |
+| ------ | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| **M0** | Repo-Setup: Vite+React+TS strict, Tailwind, ESLint/Prettier, Vitest, CI, `PROGRESS.md`                                     | CI grün auf leerem Gerüst                                 |
+| **M1** | `src/core/`: State, Regeln, Union-Find, Deduktionen, Solver, Generator, Difficulty                                         | Tests aus Abschnitt 9 grün                                |
+| **M2** | Canvas-Renderer, Pointer-Eingabe, Zoom/Pan, Undo/Redo/Reset, Haptik                                                        | Spielbar im Browser, Board füllt jede Fenstergröße        |
+| **M3** | Screens, Level-Auswahl, 4×150 vorgenerierte Rätsel, Endlosmodus, Daily+Streak, Persistenz, Settings, i18n, **Tipp-System** | Fortschritt überlebt Reload, Tipps mit Begründung         |
+| **M4** | `AdService`, UMP-Consent, Banner mit reservierter Höhe, Rewarded-Flow, Limits, `adsRemoved`                                | Spiel voll funktionsfähig auch bei komplett fehlenden Ads |
+| **M5** | Capacitor + `android/`, Signing, Icons/Splash, `store/`-Inhalte, README, Qualitätscheck                                    | AAB aus dem CI-Workflow, Store-Unterlagen vollständig     |
 
 `PROGRESS.md` wird nach jedem Meilenstein aktualisiert (erledigt / offen / bekannte
 Probleme / Entscheidungen für dich).
