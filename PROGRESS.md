@@ -97,6 +97,9 @@ Stand: 2026-08-19
   ausgefülltes Data-Safety-Formular, Antworten zum Content-Rating.
 - `README.md` mit vollständiger Anleitung von `npm install` bis zum Play-Upload.
 - Manuell auslösbarer Workflow **Android Release (AAB)**.
+- **Nachgereicht:** Klangeffekte. Beim Abgleich mit der Anforderungsliste fiel auf,
+  dass es zwar einen Ton-Schalter in den Einstellungen gab, aber keinen Ton. Die
+  vier Effekte werden mit der Web Audio API erzeugt, ganz ohne Audiodateien.
 
 ## Messwerte
 

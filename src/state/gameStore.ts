@@ -3,6 +3,12 @@ import { buildBoard } from '../core/geometry.ts';
 import { PuzzleState } from '../core/puzzleState.ts';
 import { clampZoom } from '../input/gestures.ts';
 import {
+  soundBridgePlaced,
+  soundIslandSatisfied,
+  soundRejected,
+  soundSolved,
+} from '../services/audio.ts';
+import {
   hapticBridgePlaced,
   hapticIslandSatisfied,
   hapticRejected,
@@ -63,6 +69,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     });
     if (solved && !previousSolved) {
       hapticSolved();
+      soundSolved();
     }
   };
 
@@ -122,6 +129,7 @@ export const useGameStore = create<GameStore>((set, get) => {
       if (!move) {
         // Geometrisch unzulaessig — der einzige Fall, in dem ein Zug abgelehnt wird.
         hapticRejected();
+        soundRejected();
         return;
       }
 
@@ -132,8 +140,10 @@ export const useGameStore = create<GameStore>((set, get) => {
 
       if (satisfiedAfter && !satisfiedBefore) {
         hapticIslandSatisfied();
+        soundIslandSatisfied();
       } else {
         hapticBridgePlaced();
+        soundBridgePlaced();
       }
 
       commit(edgeId, wasSolved);
@@ -148,9 +158,11 @@ export const useGameStore = create<GameStore>((set, get) => {
       const move = state.set(edgeId, count);
       if (!move) {
         hapticRejected();
+        soundRejected();
         return;
       }
       hapticBridgePlaced();
+      soundBridgePlaced();
       commit(edgeId, wasSolved);
     },
 

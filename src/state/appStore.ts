@@ -20,6 +20,7 @@ import {
 import { deserializeCounts } from '../core/parse.ts';
 import { loadLevel, loadPack } from '../data/puzzles.ts';
 import { translate, type TranslationKey } from '../i18n/index.ts';
+import { setSoundEnabled } from '../services/audio.ts';
 import { generatePuzzle } from '../services/puzzleFactory.ts';
 import { setHapticsEnabled } from '../services/haptics.ts';
 import { clearSave, flushSave, loadSave, scheduleSave } from '../services/storage.ts';
@@ -113,6 +114,7 @@ export const useAppStore = create<AppStore>((set, get) => {
 
   const applySettings = (settings: Settings): void => {
     setHapticsEnabled(settings.vibration);
+    setSoundEnabled(settings.sound);
     if (typeof document !== 'undefined') {
       document.documentElement.dataset['theme'] = settings.theme;
       document.documentElement.lang = settings.locale;
