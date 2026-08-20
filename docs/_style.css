@@ -1,0 +1,133 @@
+/* Gemeinsames Aussehen der veroeffentlichten Rechtstexte.
+   Bewusst schlicht und ohne externe Abhaengigkeiten: die Seite muss auch dann
+   lesbar sein, wenn ein Prueflabor sie ohne Netz oder mit blockierten Skripten
+   oeffnet. */
+
+:root {
+  --bg: #ffffff;
+  --fg: #1f2933;
+  --muted: #5c6b7a;
+  --accent: #0b6fa4;
+  --border: #dfe6ec;
+  --note-bg: #fdf6e3;
+  --note-border: #e8d9a8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #10161c;
+    --fg: #e6edf3;
+    --muted: #9bb0c3;
+    --accent: #63b3ed;
+    --border: #24313d;
+    --note-bg: #241f12;
+    --note-border: #4a3f22;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  max-width: 46rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  overflow-wrap: break-word;
+}
+
+h1 {
+  font-size: 1.7rem;
+  line-height: 1.25;
+  margin-bottom: 0.25rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin-top: 2.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+h3 {
+  font-size: 1.02rem;
+  margin-top: 1.5rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0 0 1.5rem;
+}
+
+.lang {
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.note {
+  background: var(--note-bg);
+  border: 1px solid var(--note-border);
+  border-radius: 0.5rem;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.95rem;
+}
+
+.todo {
+  background: #ffe8e8;
+  border: 1px solid #f5b5b5;
+  color: #7a1f1f;
+  border-radius: 0.4rem;
+  padding: 0.15rem 0.45rem;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .todo {
+    background: #3a1a1a;
+    border-color: #6b2b2b;
+    color: #ffb4b4;
+  }
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+th,
+td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.9rem;
+}

@@ -195,8 +195,7 @@ hoch. Dafür müssen diese Repository-Secrets gesetzt sein:
    Grafiken: `assets/icon.png` (512×512 als Store-Icon), `store/feature-graphic.png`,
    Screenshots aus `store/screenshots/de` beziehungsweise `store/screenshots/en`.
 4. **App-Inhalte** ausfüllen:
-   - Datenschutzerklärung veröffentlichen und URL eintragen
-     (Entwurf: `store/privacy-policy-de.md`),
+   - Datenschutzerklärung veröffentlichen und URL eintragen (siehe unten),
    - Datensicherheit nach `store/data-safety.md`,
    - Content-Rating nach `store/content-rating.md`,
    - Werbung: „Diese App enthält Werbung" **anhaken**,
@@ -211,6 +210,30 @@ Die Bundle-ID `com.bridgelet.game` ist nach dem ersten Upload **unveränderlich*
 
 ---
 
+## Datenschutzerklärung veröffentlichen
+
+Sowohl AdMob (beim Anlegen der DSGVO-Nachricht) als auch die Play Console verlangen eine
+**öffentlich erreichbare URL**. Die fertigen Seiten liegen unter `docs/` und werden über
+GitHub Pages ausgeliefert.
+
+**Einmalig einschalten:** Settings → Pages → Source: _Deploy from a branch_ →
+Branch `main`, Ordner `/docs` → Save. Nach ein bis zwei Minuten sind erreichbar:
+
+| Seite                     | URL                                                     |
+| ------------------------- | ------------------------------------------------------- |
+| Übersicht                 | `https://samenschluck.github.io/Hashi/`                 |
+| Datenschutzerklärung (DE) | `https://samenschluck.github.io/Hashi/datenschutz.html` |
+| Privacy Policy (EN)       | `https://samenschluck.github.io/Hashi/privacy.html`     |
+
+**Vorher ausfüllen** — in `docs/datenschutz.html` und `docs/privacy.html` stehen drei rot
+markierte Platzhalter (`class="todo"`): Datum, Verantwortlicher mit Anschrift, Kontakt-E-Mail.
+Die Angabe des Verantwortlichen ist rechtlich erforderlich und lässt sich nicht weglassen.
+
+Die Markdown-Fassungen unter `store/` bleiben als Arbeitsgrundlage bestehen; ausgeliefert wird
+das HTML unter `docs/`. Wer eine Fassung ändert, sollte die andere nachziehen.
+
+---
+
 ## Vor dem Release prüfen
 
 - [ ] `npm run lint`, `npm run typecheck`, `npm test`, `npm run puzzles:verify` grün
@@ -221,6 +244,8 @@ Die Bundle-ID `com.bridgelet.game` ist nach dem ersten Upload **unveränderlich*
       nichts, belohntes Video schreibt Tipps gut
 - [ ] Zurück-Taste auf jedem Bildschirm, Fortschritt überlebt ein Force-Close
 - [ ] Marken- und Namensprüfung für „Bridgelet" abgeschlossen
+- [ ] Datenschutzerklärung veröffentlicht, Platzhalter ausgefüllt, URL in AdMob und
+      Play Console eingetragen
 
 ## Lizenz
 
