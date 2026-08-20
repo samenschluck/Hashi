@@ -51,6 +51,7 @@ belohntes Video wird simuliert.
 | `npm run puzzles:verify`    | Prüft jedes ausgelieferte Rätsel gegen den Solver       |
 | `npm run ui:check`          | Rauchtest im echten Browser (`npm run dev` muss laufen) |
 | `npm run store:screenshots` | Erzeugt die Play-Store-Screenshots                      |
+| `npm run pages:play`        | Browser-Fassung nach `docs/play/` bauen                 |
 
 ## Projektaufbau
 
@@ -237,6 +238,11 @@ Branch `main`, Ordner `/docs` → Save. Nach ein bis zwei Minuten sind erreichba
 | Übersicht                 | `https://samenschluck.github.io/Hashi/`                 |
 | Datenschutzerklärung (DE) | `https://samenschluck.github.io/Hashi/datenschutz.html` |
 | Privacy Policy (EN)       | `https://samenschluck.github.io/Hashi/privacy.html`     |
+| Browser-Fassung           | `https://samenschluck.github.io/Hashi/play/`            |
+
+Die Datei `docs/.nojekyll` muss bestehen bleiben. Ohne sie schiebt GitHub Pages die Dateien
+durch Jekyll, und Jekyll wirft alles weg, was mit einem Unterstrich beginnt — also
+`docs/_style.css`. Die Rechtstexte wären dann unformatiert.
 
 **Vorher ausfüllen** — in `docs/datenschutz.html` und `docs/privacy.html` stehen drei rot
 markierte Platzhalter (`class="todo"`): Datum, Verantwortlicher mit Anschrift, Kontakt-E-Mail.
@@ -244,6 +250,38 @@ Die Angabe des Verantwortlichen ist rechtlich erforderlich und lässt sich nicht
 
 Die Markdown-Fassungen unter `store/` bleiben als Arbeitsgrundlage bestehen; ausgeliefert wird
 das HTML unter `docs/`. Wer eine Fassung ändert, sollte die andere nachziehen.
+
+---
+
+## Browser-Fassung zum Testen
+
+Unter `docs/play/` liegt ein fertiger Web-Build, damit sich das Spiel ohne Android-SDK und
+ohne Installation auf einem Telefon ausprobieren lässt — nützlich, solange der Release-Build
+noch nicht steht.
+
+```bash
+npm run pages:play
+```
+
+Der Befehl baut nach `docs/play/` mit dem Basis-Pfad `/Hashi/play/`. Das Ergebnis ist bewusst
+eingecheckt, weil GitHub Pages hier direkt aus `main` / `/docs` ausliefert.
+
+Was sich gegenüber der Android-App unterscheidet:
+
+| Bereich      | Android                  | Browser                                    |
+| ------------ | ------------------------ | ------------------------------------------ |
+| Spiellogik   | `src/core/`              | identisch                                  |
+| Spielstand   | `@capacitor/preferences` | `localStorage`                             |
+| Vibration    | `@capacitor/haptics`     | `navigator.vibrate`, falls vorhanden       |
+| Werbung      | echtes AdMob-SDK         | Platzhalter, reserviert nur die Bannerhöhe |
+| Zurück-Taste | Android-Hardware-Taste   | Browser-Zurück                             |
+
+Echte Werbung, der Einwilligungsdialog und das belohnte Video lassen sich hier also **nicht**
+prüfen — dafür braucht es den Android-Build auf einem Gerät.
+
+Nach jeder Änderung am Spiel wird der Ordner komplett neu erzeugt (`--emptyOutDir`); alte
+Asset-Dateien mit anderem Hash bleiben nicht liegen. Vor der Veröffentlichung im Play Store
+kann `docs/play/` ersatzlos gelöscht werden, ohne dass etwas anderes davon abhängt.
 
 ---
 
