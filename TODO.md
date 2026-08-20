@@ -49,13 +49,23 @@ liesse sich über den Play-Support zurücksetzen — angenehm ist das trotzdem n
 
 ### 4. Test auf einem echten Gerät — ✅ Debug-Build geprüft
 
-**Erledigt am 20.08.2026** über eine Debug-APK aus Android Studio: Bedienung,
-Darstellung und Ablauf laufen auf echter Hardware. Damit ist die Annahme bestätigt,
-dass sich die Web-Fassung und die App gleich verhalten.
+**Erledigt am 20.08.2026** über eine Debug-APK aus Android Studio. Geprüft und in
+Ordnung:
 
-**Offen bleibt der Test mit echten Anzeigen** — Einwilligungsdialog, geladene Anzeigen
-und belohntes Video lassen sich nur über einen internen Test in der Play Console prüfen,
-weil der Debug-Build bewusst Googles Test-IDs benutzt.
+- Bedienung, Darstellung und Ablauf auf echter Hardware
+- Einwilligungsdialog erscheint direkt beim ersten Start, **vor** der ersten
+  Anzeigenanfrage
+- Banner lädt und überlagert nichts
+- Belohntes Video läuft und schreibt die Tipps gut
+
+Damit ist die vollständige Kette Einwilligung → Anzeigenanfrage → Banner → belohntes
+Video → Gutschrift einmal nachgewiesen.
+
+**Eine Restposition bleibt: die eigene DSGVO-Nachricht.** Die UMP-Bibliothek lädt die
+Einwilligungskonfiguration anhand der App-ID aus dem Manifest, und im Debug-Build steht
+dort Googles Test-App-ID. Der gesehene Dialog belegt also den _Ablauf_, nicht die eigene
+veröffentlichte Nachricht. Das zeigt erst ein Build mit der echten App-ID, also der
+interne Test in der Play Console.
 
 **Ein AAB lässt sich nicht direkt auf ein Telefon installieren** — es ist ein Format für
 die Play Console, kein Installationspaket. Zwei Wege zum Gerät:
