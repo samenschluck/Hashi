@@ -7,22 +7,14 @@ muss und nicht im Code steckt. Der Code selbst ist fertig — Stand siehe `PROGR
 
 ## 🔴 Blockiert die Veröffentlichung
 
-### 1. Name und ladungsfähige Anschrift in die Datenschutzerklärung
+### 1. Name und ladungsfähige Anschrift in die Datenschutzerklärung — ✅ erledigt
 
-**Wo:** `docs/datenschutz.html` und `docs/privacy.html`, jeweils der rot markierte Absatz
-oben (`class="todo"`).
+Eingetragen am 20.08.2026 in `docs/datenschutz.html` und `docs/privacy.html`:
+Verantwortlicher mit Name, Anschrift und Kontakt-E-Mail. Der rote Platzhalter ist
+entfallen, die zugehörige CSS-Klasse `.todo` ebenfalls.
 
-**Warum das nicht optional ist:** Die Nennung des Verantwortlichen mit erreichbarer
-Anschrift ist datenschutzrechtlich vorgeschrieben. Eine Datenschutzerklärung ohne sie ist
-unvollständig — das gilt auch für eine Hobby-App.
-
-**Aktueller Zwischenstand:** Kontakt-E-Mail (`austricraft@gmail.com`) und Datum stehen
-drin, die Seite ist damit als Entwurf online und für AdMob nutzbar. Der rote Hinweis sagt
-offen, dass die Anschrift nachgereicht wird.
-
-**Offene Entscheidung:** Privatadresse oder Postfach / Ladungsfähige-Adresse-Dienst.
-
-**Nicht vergessen:** Beim Nachtragen auch das Datum unter „Stand" aktualisieren.
+**Bei jeder inhaltlichen Änderung** an einer der beiden Fassungen auch das Datum unter
+„Stand" bzw. „Last updated" mitziehen — und die jeweils andere Sprachfassung nachziehen.
 
 ### 2. Echte AdMob-IDs und veröffentlichte DSGVO-Nachricht — ✅ erledigt
 
