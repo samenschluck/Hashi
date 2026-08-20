@@ -37,6 +37,13 @@
   "result.next": "Next puzzle",
   "result.replay": "Play again",
   "result.toLevels": "Back to levels",
+  "result.starsLabel": "{count} of {max} stars",
+  "result.stars3": "Solved without a hint and without undo.",
+  "result.stars2": "Solved — using undo. Without it, that would be three stars.",
+  "result.stars1": "Solved — using a hint. Without hints there are more stars.",
+  "result.newBestStars": "Best rating for this level",
+  "levels.stars": "{earned} of {total} stars",
+  "stats.stars": "Stars collected",
 
   "daily.title": "Daily puzzle",
   "daily.streak": "Streak: {count} days",

@@ -1,4 +1,4 @@
-import { DIFFICULTIES, STORAGE, type Difficulty } from '../config/game.ts';
+import { DIFFICULTIES, STARS, STORAGE, type Difficulty } from '../config/game.ts';
 import {
   createDefaultSave,
   DEFAULT_SETTINGS,
@@ -167,6 +167,10 @@ function readLevels(value: unknown): Record<string, LevelProgress> {
       solved: readBoolean(entry['solved'], false),
       bestTimeMs: typeof bestTime === 'number' && Number.isFinite(bestTime) ? bestTime : null,
       hintsUsed: Math.max(0, readNumber(entry['hintsUsed'], 0)),
+      // Aeltere Spielstaende kennen keine Sterne. Sie bekommen 0 und koennen
+      // sie beim naechsten Durchgang verdienen — ein bereits geloestes Level
+      // rueckwirkend zu bewerten waere geraten.
+      stars: Math.min(STARS.max, Math.max(0, readNumber(entry['stars'], 0))),
     };
   }
   return result;

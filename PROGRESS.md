@@ -155,6 +155,46 @@ Ergebnis (Median über je 150 Rätsel):
 
 Alle 600 Rätsel wurden neu erzeugt und erneut auf Eindeutigkeit geprüft.
 
+## Nachbesserung 2: Mauern, verborgene Zahlen, Sterne
+
+Rückmeldung nach dem Spieltest: „Schwer" besteht fast nur aus Einsen und Zweien
+und lässt sich durch Probieren lösen. Die Messung bestätigte den ersten Teil —
+bei „Experte" war fast die Hälfte aller Inseln eine Zwei und es gab keine
+einzige über 4.
+
+Die naheliegende Gegenmaßnahme wurde geprüft und **verworfen**: Ein Generator
+mit Knotenpunkt-Bevorzugung hob den Anteil hoher Inselzahlen von 9,6 auf 22,6 %,
+senkte dabei aber den Anteil fortgeschrittener Schlüsse von 15,1 auf 12,0 %.
+Hohe Zahlen sind stark eingeschränkt und damit Geschenke, keine Hürden.
+
+Was stattdessen gebaut wurde:
+
+- **Mauern** — gesperrte Zellen, die Sichtlinien unterbrechen. Wirkung auf die
+  messbare Deduktionstiefe: leicht negativ. Sie bleiben, weil sie eine Art von
+  Arbeit hinzufügen, die der Solver nicht kennt (Sichtlinien mit dem Auge
+  verfolgen). Das ist eine bewusste Entscheidung gegen die Messung, kein
+  Versehen.
+- **Inseln mit verborgener Zahl** — der wirksamste Hebel. Anteil
+  fortgeschrittener Schlüsse bei „Schwer" 14,9 → 18,0 %, bei „Experte"
+  21,0 → 39,1 %. Stufe 3 ist damit zum ersten Mal keine leere Klasse mehr.
+- **Sterne pro Level** — 3 ohne Tipp und Rückgängig, 2 mit Rückgängig, 1 mit
+  Tipp. Bestes Ergebnis bleibt gespeichert, blockiert nie den Fortschritt.
+
+Ebenfalls vorgeschlagen und **abgelehnt**: begrenztes Rückgängig mit belohnten
+Videos für weitere Versuche. Begründung in `PLAN.md`, Abschnitt 4.4c —
+kurz: Es widerspricht der Vorgabe „keine Verlierbedingung", macht das Rätsel
+nicht schwerer, sondern nur die Strafe größer, und bestraft auf einem Telefon
+Fehlgriffe statt Denkfehler.
+
+Stand danach (Median über je 150 Rätsel):
+
+| Grad    | Inseln | Schritte | Anteil Einsichten | mit D1–D4 allein lösbar |
+| ------- | ------ | -------- | ----------------- | ----------------------- |
+| Einfach | 10     | 14       | 0 %               | 100 %                   |
+| Mittel  | 15     | 33       | 10,3 %            | 37 %                    |
+| Schwer  | 21     | 52       | 18,0 %            | 29 %                    |
+| Experte | 31     | 82       | 39,1 %            | 3 %                     |
+
 ## Bekannte Probleme und Anmerkungen
 
 - Kein Android SDK in der Entwicklungsumgebung: Der Gradle-/AAB-Build ist nur über den

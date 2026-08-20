@@ -37,6 +37,13 @@
   "result.next": "Nächstes Rätsel",
   "result.replay": "Nochmal",
   "result.toLevels": "Zur Übersicht",
+  "result.starsLabel": "{count} von {max} Sternen",
+  "result.stars3": "Ohne Tipp und ohne Rückgängig gelöst.",
+  "result.stars2": "Gelöst — mit Rückgängig. Ohne wären es drei Sterne.",
+  "result.stars1": "Gelöst — mit Tipp. Ohne Tipp gibt es mehr Sterne.",
+  "result.newBestStars": "Beste Bewertung für dieses Level",
+  "levels.stars": "{earned} von {total} Sternen",
+  "stats.stars": "Gesammelte Sterne",
 
   "daily.title": "Tagesrätsel",
   "daily.streak": "Serie: {count} Tage",

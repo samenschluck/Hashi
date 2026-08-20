@@ -11,6 +11,7 @@ function sampleSave(): SaveData {
     difficulty: 'medium',
     timeMs: 61_000,
     hintsUsed: 2,
+    undosUsed: 0,
   });
 }
 
@@ -52,7 +53,7 @@ describe('migrateSave', () => {
         schemaVersion: 1,
         settings: { locale: 'en', theme: 'unsinn', vibration: false },
         levels: {
-          'easy-0001': { solved: true, bestTimeMs: 1234, hintsUsed: 1 },
+          'easy-0001': { solved: true, bestTimeMs: 1234, hintsUsed: 1, undosUsed: 0 },
           kaputt: 'kein Objekt',
         },
         hints: { balance: 3 },
@@ -67,7 +68,14 @@ describe('migrateSave', () => {
     expect(save.settings.theme).toBe('system');
     expect(save.settings.sound).toBe(true);
 
-    expect(save.levels['easy-0001']).toEqual({ solved: true, bestTimeMs: 1234, hintsUsed: 1 });
+    // Ein alter Spielstand kennt keine Sterne: er bekommt 0 und kann sie beim
+    // naechsten Durchgang verdienen. Rueckwirkend zu bewerten waere geraten.
+    expect(save.levels['easy-0001']).toEqual({
+      solved: true,
+      bestTimeMs: 1234,
+      hintsUsed: 1,
+      stars: 0,
+    });
     expect(save.levels['kaputt']).toBeUndefined();
 
     expect(save.hints.balance).toBe(3);

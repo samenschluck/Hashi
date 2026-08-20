@@ -175,3 +175,33 @@ export function Notice({ message }: { readonly message: string }): React.JSX.Ele
     </div>
   );
 }
+
+interface StarsProps {
+  readonly earned: number;
+  /** Kantenlaenge in Tailwind-Einheiten, z. B. `text-2xl`. */
+  readonly size?: string;
+  readonly label: string;
+}
+
+/**
+ * Sternebewertung als Text, nicht als Grafik.
+ *
+ * Bewusst mit ausgeschriebenem `aria-label`: Ein Bildschirmleser soll „2 von 3
+ * Sternen" vorlesen und nicht dreimal „Stern". Die Sterne selbst sind fuer ihn
+ * ausgeblendet.
+ */
+export function Stars({ earned, size = 'text-2xl', label }: StarsProps): React.JSX.Element {
+  return (
+    <span className={`inline-flex gap-0.5 ${size}`} role="img" aria-label={label}>
+      {[0, 1, 2].map((index) => (
+        <span
+          key={index}
+          aria-hidden="true"
+          className={index < earned ? 'text-amber-400' : 'text-slate-600'}
+        >
+          {index < earned ? '★' : '☆'}
+        </span>
+      ))}
+    </span>
+  );
+}

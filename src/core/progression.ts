@@ -1,4 +1,4 @@
-import { ADS, HINTS, STORAGE, type Difficulty } from '../config/game.ts';
+import { ADS, HINTS, STARS, STORAGE, type Difficulty } from '../config/game.ts';
 
 export type ThemePreference = 'dark' | 'light' | 'system';
 export type Locale = 'de' | 'en';
@@ -16,6 +16,8 @@ export interface LevelProgress {
   readonly solved: boolean;
   readonly bestTimeMs: number | null;
   readonly hintsUsed: number;
+  /** Beste je erreichte Sternezahl, 0 bis `STARS.max`. Sinkt nie. */
+  readonly stars: number;
 }
 
 export interface InProgressEntry {
@@ -222,6 +224,22 @@ export interface SolveRecord {
   readonly difficulty: Difficulty;
   readonly timeMs: number;
   readonly hintsUsed: number;
+  readonly undosUsed: number;
+}
+
+/**
+ * Sterne fuer einen Durchgang.
+ *
+ * Bewusst als Belohnung und nicht als Huerde gebaut: Wer Tipps und
+ * Rueckgaengig benutzt, loest das Level trotzdem und kommt weiter — er bekommt
+ * nur weniger Sterne. Ein begrenztes Rueckgaengig waere das Gegenteil davon und
+ * widerspraeche der Grundregel des Spiels, dass es keine Verlierbedingung gibt.
+ */
+export function starsFor(record: { hintsUsed: number; undosUsed: number }): number {
+  if (record.hintsUsed > 0) {
+    return STARS.withHint;
+  }
+  return record.undosUsed > 0 ? STARS.withUndo : STARS.max;
 }
 
 /** Traegt ein geloestes Level ein und aktualisiert Bestzeit und Statistik. */
@@ -240,6 +258,7 @@ export function recordSolved(save: SaveData, record: SolveRecord): SaveData {
           solved: true,
           bestTimeMs,
           hintsUsed: (previous?.hintsUsed ?? 0) + record.hintsUsed,
+          stars: Math.max(previous?.stars ?? 0, starsFor(record)),
         },
       },
       stats: {
@@ -297,4 +316,13 @@ export function averageSolveTime(save: SaveData): number | null {
   return save.stats.solvedTotal === 0
     ? null
     : Math.round(save.stats.totalTimeMs / save.stats.solvedTotal);
+}
+
+/** Summe aller je verdienten Sterne ueber alle Level. */
+export function totalStars(save: SaveData): number {
+  let total = 0;
+  for (const progress of Object.values(save.levels)) {
+    total += progress.stars;
+  }
+  return total;
 }

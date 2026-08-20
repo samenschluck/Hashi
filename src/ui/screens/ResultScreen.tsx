@@ -1,6 +1,18 @@
+import { STARS } from '../../config/game.ts';
+import type { TranslationKey } from '../../i18n/index.ts';
 import { useAppStore } from '../../state/appStore.ts';
-import { Button } from '../components/Ui.tsx';
+import { Button, Stars } from '../components/Ui.tsx';
 import { formatDuration } from '../format.ts';
+
+/**
+ * Begruendung zur Sternezahl. Als feste Zuordnung statt zusammengesetztem
+ * Schluessel, damit fehlende Uebersetzungen beim Typcheck auffallen.
+ */
+const STAR_MESSAGES: Readonly<Record<number, TranslationKey>> = {
+  1: 'result.stars1',
+  2: 'result.stars2',
+  3: 'result.stars3',
+};
 
 export function ResultScreen(): React.JSX.Element {
   const t = useAppStore((store) => store.t);
@@ -18,6 +30,17 @@ export function ResultScreen(): React.JSX.Element {
         <h2 className="mt-4 text-3xl font-semibold tracking-tight">{t('result.title')}</h2>
         {result ? (
           <div className="mt-6 space-y-1 text-sm text-slate-300">
+            <p className="mb-3">
+              <Stars
+                earned={result.stars}
+                size="text-4xl"
+                label={t('result.starsLabel', { count: result.stars, max: STARS.max })}
+              />
+            </p>
+            <p className="text-slate-400">{t(STAR_MESSAGES[result.stars] ?? 'result.stars1')}</p>
+            {result.isNewBestStars ? (
+              <p className="text-amber-400">{t('result.newBestStars')}</p>
+            ) : null}
             <p>
               {t('result.time')}: <strong>{formatDuration(result.timeMs)}</strong>
             </p>

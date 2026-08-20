@@ -51,6 +51,14 @@ willst — sie läuft aber nie ab.
 Schwerer heißt hier nicht größer. Die Bretter bleiben handlich; was zunimmt, ist
 die Zahl der Stellen, an denen einfaches Abzählen nicht mehr weiterhilft.
 
+Ab „Mittel" kommen zwei Dinge dazu: Mauern, durch die keine Brücke passt, und
+Inseln mit verborgener Zahl — ein ?, dessen Wert sich erst aus dem Rest des
+Feldes ergibt.
+
+Für jedes Level gibt es bis zu drei Sterne: drei ohne Tipp und ohne Rückgängig.
+Sterne sind eine Belohnung, keine Hürde — gelöst ist gelöst, und weiter geht es
+immer.
+
 Jedes einzelne Rätsel hat genau eine Lösung. Das ist kein Versprechen, sondern
 geprüft: ein Solver rechnet jedes ausgelieferte Rätsel durch, bevor es in die App
 kommt. Du musst nie raten.

@@ -300,6 +300,62 @@ Ein Rätsel gilt nur dann als „Experte", wenn es mit den flacheren Mengen **ni
 ist. Rätsel, die selbst mit D7 nicht rein deduktiv lösbar sind (die also Raten
 erfordern), werden grundsätzlich verworfen — das Tipp-System könnte sie nicht erklären.
 
+### 4.4b Erweiterungen des Rätseltyps
+
+Nach dem ersten spielbaren Stand fiel auf, dass „Schwer" sich vor allem aus
+Einsen und Zweien zusammensetzte und sich durch Probieren lösen ließ. Drei
+Erweiterungen sollten das ändern; nur zwei davon haben messbar gewirkt.
+
+**Mauern** (`WALL_DENSITY`) — gesperrte Zellen, über die keine Brücke läuft.
+Sie unterbrechen die Sichtlinie: hinter einer Mauer liegt kein Nachbar mehr.
+
+Erwartet war, dass dadurch Engstellen entstehen, an denen D6 und D8 greifen.
+Gemessen: Der Effekt existiert, ist aber schwach (bei „Experte" sieben statt
+eine Anwendung auf 60 Brettern), und der Anteil fortgeschrittener Schlüsse
+sinkt sogar leicht, weil Mauern Nachbarschaften und damit Mehrdeutigkeit
+entfernen. Auch höhere Inseldichte gleicht das nicht aus. Sie bleiben trotzdem,
+mit moderater Dichte: Der Solver sieht das ganze Brett auf einmal, ein Mensch
+muss Sichtlinien mit dem Auge verfolgen — genau diese Arbeit fügen Mauern
+hinzu, und genau sie kann die Messung nicht erfassen.
+
+**Inseln mit verborgener Zahl** (`HIDDEN_ISLANDS`) — der wirksamste Hebel im
+ganzen Projekt. Eine verdeckte Insel zeigt `?`; ihre Zahl ist **keine
+Bedingung mehr**, sie muss nur mindestens eine Brücke haben.
+
+Der Punkt, an dem das kippen kann: Wer nur die Anzeige verdeckt und intern
+weiter mit dem echten Wert rechnet, hält Bretter für eindeutig, die es aus
+Spielersicht nicht sind. Die Bedingung fällt deshalb überall gemeinsam weg —
+`isValidSolution`, `allIslandsSatisfied`, D1–D3, der Abschluss-Teil von D5 und
+D9, und D8 für jede Schnittseite mit einer verborgenen Insel. Der Generator
+zählt nach jedem Verdecken neu und nimmt es zurück, wenn die Eindeutigkeit
+fällt oder der Grad sich ändert.
+
+Wirkung: Anteil fortgeschrittener Schlüsse bei „Schwer" von 14,9 auf 18,0 %,
+bei „Experte" von 21,0 auf 39,1 %. Zum ersten Mal ist Stufe 3 keine leere
+Klasse mehr — D6 feuert bei „Schwer" 7,8-mal je Brett statt 0,0-mal.
+
+**Farbregel** — vorgeschlagen, aber nicht gebaut. „Rot darf nicht an Rot"
+entfernt Verbindungsmöglichkeiten; weniger Möglichkeiten heißt pro Zug
+_weniger_ zu prüfen, nicht mehr. Dazu käme, dass Farbe als tragende Mechanik
+Rot-Grün-Blinde ausschließt und das Spiel kein Hashiwokakero mehr wäre. Falls
+sie kommt, dann als eigener Modus mit Symbolen zusätzlich zur Farbe.
+
+### 4.4c Sterne statt Strafen
+
+Drei Sterne ohne Tipp und ohne Rückgängig, zwei mit Rückgängig, einer mit Tipp
+(`STARS`, `starsFor`). Gespeichert wird immer das beste Ergebnis; ein Stern
+lässt sich nicht verlieren.
+
+**Warum nicht begrenztes Rückgängig.** Vorgeschlagen war, Rückgängig pro Level
+zu limitieren und weitere Versuche über belohnte Videos zu verkaufen. Dagegen
+sprechen vier Dinge: Es widerspricht der Grundregel dieses Spiels, dass es
+keine Verlierbedingung gibt (ein erzwungener Neustart ist eine, und zwar die
+härteste). Es macht das Rätsel nicht schwerer, sondern nur die Strafe größer.
+Auf einem Telefon bestraft es Fehlgriffe statt Denkfehler. Und ein belohntes
+Video, das den eigenen Fehler zurücknimmt, liest sich als Lösegeld — Videos
+funktionieren, wenn sie etwas Positives geben. Die Sterne erreichen dasselbe
+Ziel, ohne jemanden zu blockieren.
+
 ### 4.5 Tipp-System
 
 Weil die Lösung eindeutig und gespeichert ist, wird zuerst geprüft, ob der aktuelle

@@ -185,6 +185,23 @@ export const PREGENERATED_PUZZLES_PER_DIFFICULTY = 150;
 /** Schwierigkeitsgrad des taeglichen Raetsels (Entscheidung E8: keine Rotation). */
 export const DAILY_DIFFICULTY: Difficulty = 'medium';
 
+/**
+ * Sternebewertung je Level.
+ *
+ * Belohnt sauberes Spiel, statt Fehler zu bestrafen: Es gibt keine Stufe, die
+ * den Fortschritt blockiert, und kein Stern laesst sich verlieren — gespeichert
+ * wird immer das beste Ergebnis. Ein Level ohne Sterne bleibt gespielt und
+ * geloest.
+ */
+export const STARS = {
+  /** Ohne Tipp und ohne Rueckgaengig geloest. */
+  max: 3,
+  /** Ohne Tipp, aber mit Rueckgaengig. */
+  withUndo: 2,
+  /** Mit mindestens einem Tipp. */
+  withHint: 1,
+} as const;
+
 /** Tipp-System (Meilenstein 3). */
 export const HINTS = {
   /** Startguthaben bei der allerersten Installation. */

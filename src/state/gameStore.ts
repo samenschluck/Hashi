@@ -31,6 +31,13 @@ export interface GameStore {
   readonly solved: boolean;
   readonly canUndo: boolean;
   readonly canRedo: boolean;
+  /**
+   * Wie oft in diesem Level zurueckgenommen wurde. Grundlage der Sterne.
+   *
+   * Zaehlt nur tatsaechlich ausgefuehrte Ruecknahmen, nicht Klicks auf einen
+   * ausgegrauten Knopf, und wird bei jedem geladenen Raetsel zurueckgesetzt.
+   */
+  readonly undoCount: number;
   readonly zoom: number;
   readonly panX: number;
   readonly panY: number;
@@ -84,6 +91,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     solved: false,
     canUndo: false,
     canRedo: false,
+    undoCount: 0,
     zoom: 1,
     panX: 0,
     panY: 0,
@@ -107,6 +115,7 @@ export const useGameStore = create<GameStore>((set, get) => {
         solved: state.isSolved(),
         canUndo: false,
         canRedo: false,
+        undoCount: 0,
         zoom: 1,
         panX: 0,
         panY: 0,
@@ -174,6 +183,7 @@ export const useGameStore = create<GameStore>((set, get) => {
       const wasSolved = get().solved;
       const move = state.undo();
       if (move) {
+        set({ undoCount: get().undoCount + 1 });
         commit(move.edgeId, wasSolved);
       }
     },
