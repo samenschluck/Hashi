@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Bridgelet-Logo: zwei Inseln, verbunden durch eine Doppelbruecke.
+       Bewusst nur zwei Inseln, damit die Form auch bei 48 px noch lesbar ist. -->
+  <rect width="1024" height="1024" rx="0" fill="#0f172a"/>
+  <g stroke="#94a3b8" stroke-width="46" stroke-linecap="round">
+    <line x1="300" y1="470" x2="724" y2="470"/>
+    <line x1="300" y1="554" x2="724" y2="554"/>
+  </g>
+  <g fill="#38bdf8">
+    <circle cx="272" cy="512" r="150"/>
+    <circle cx="752" cy="512" r="150"/>
+  </g>
+  <g fill="#0f172a" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+     font-size="180" font-weight="700" text-anchor="middle" dominant-baseline="central">
+    <text x="272" y="512">2</text>
+    <text x="752" y="512">2</text>
+  </g>
+</svg>

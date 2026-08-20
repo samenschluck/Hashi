@@ -82,6 +82,22 @@ Stand: 2026-08-19
   im Manifest stehen muss und keine Laufzeitgröße ist.
 - Kein Interstitial.
 
+### M5 — Android-Build und Store-Unterlagen (`feat/m5-android`)
+
+- Capacitor initialisiert, Bundle-ID `com.bridgelet.game`, nur Android, `android/`
+  committet. `minSdk 24`, `compileSdk 36`, `targetSdk 36`.
+- Manifest: nur `INTERNET` und `AD_ID`, dazu die AdMob-App-ID als Ressourcenverweis.
+- Release-Signierung über `android/keystore.properties` (gitignored); fehlt die
+  Datei, wird mit dem Debug-Schlüssel signiert — das fällt beim Upload auf, statt
+  still etwas Falsches zu erzeugen.
+- Icons und Splash über `@capacitor/assets` aus einer Quelldatei, adaptives
+  Android-Icon inklusive.
+- `store/`: Listings DE und EN, je 8 echte Screenshots in 1080×1920, Feature
+  Graphic 1024×500, Store-Icon 512×512, Datenschutzerklärung DE/EN,
+  ausgefülltes Data-Safety-Formular, Antworten zum Content-Rating.
+- `README.md` mit vollständiger Anleitung von `npm install` bis zum Play-Upload.
+- Manuell auslösbarer Workflow **Android Release (AAB)**.
+
 ## Messwerte
 
 Generierungszeit über je 30 Läufe, lokal (Node 22):
@@ -103,8 +119,8 @@ Einschränkung im Standard-CI-Lauf.
 
 ## Offen
 
-- **M2** Canvas-Rendering und Touch-Eingabe
-- **M5** Android-Build und Store-Readiness
+Alle geplanten Meilensteine sind umgesetzt. Was noch aussteht, steht unten unter
+„Entscheidungen, die beim Betreiber liegen" und unter „Bekannte Probleme".
 
 ## Bekannte Probleme und Anmerkungen
 

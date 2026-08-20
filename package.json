@@ -17,7 +17,9 @@
     "ui:check": "node scripts/ui-check.mjs",
     "puzzles:generate": "node scripts/generate-puzzles.ts",
     "puzzles:verify": "node scripts/verify-puzzles.ts",
-    "ads:inject-appid": "node scripts/inject-admob-appid.ts"
+    "ads:inject-appid": "node scripts/inject-admob-appid.ts",
+    "store:screenshots": "node scripts/store-screenshots.mjs",
+    "android:prepare": "npm run ads:inject-appid && npm run build && npx cap sync android"
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,7 @@
   "type": "module",
   "dependencies": {
     "@capacitor-community/admob": "^8.1.0",
+    "@capacitor/android": "^8.5.0",
     "@capacitor/app": "^8.1.1",
     "@capacitor/core": "^8.5.0",
     "@capacitor/haptics": "^8.0.2",
@@ -40,6 +43,8 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.0",
     "@eslint/js": "^9.39.5",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.2.0",

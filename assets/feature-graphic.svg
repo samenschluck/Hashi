@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 500" width="1024" height="500">
+  <!-- Feature Graphic fuer den Play-Store-Eintrag, 1024x500.
+       Links der Name, rechts ein angedeutetes geloestes Brett. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="500" fill="url(#bg)" />
+
+  <!-- Das abgebildete Brett ist eine gueltige Loesung: Doppelbruecke oben,
+       je eine Einzelbruecke an den drei anderen Seiten. Die Zahlen 3/3/2/2
+       stimmen damit genau. Ein regelwidriges Brett im Store-Bild faellt jedem
+       auf, der das Spiel kennt. -->
+  <g transform="translate(640 100)">
+    <g stroke="#64748b" stroke-width="9" stroke-linecap="round">
+      <line x1="52" y1="52" x2="222" y2="52" />
+      <line x1="52" y1="72" x2="222" y2="72" />
+      <line x1="222" y1="84" x2="222" y2="212" />
+      <line x1="52" y1="84" x2="52" y2="212" />
+      <line x1="64" y1="234" x2="200" y2="234" />
+    </g>
+    <g fill="#38bdf8">
+      <circle cx="52" cy="62" r="38" />
+      <circle cx="222" cy="62" r="38" />
+      <circle cx="222" cy="234" r="38" />
+      <circle cx="52" cy="234" r="38" />
+    </g>
+    <g
+      fill="#0f172a"
+      font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+      font-size="42"
+      font-weight="700"
+      text-anchor="middle"
+      dominant-baseline="central"
+    >
+      <text x="52" y="62">3</text>
+      <text x="222" y="62">3</text>
+      <text x="222" y="234">2</text>
+      <text x="52" y="234">2</text>
+    </g>
+  </g>
+
+  <g font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+    <text x="72" y="215" fill="#e2e8f0" font-size="86" font-weight="700">Bridgelet</text>
+    <text x="74" y="278" fill="#38bdf8" font-size="34" font-weight="600">Brücken-Logikrätsel</text>
+    <text x="74" y="336" fill="#94a3b8" font-size="26">600 Rätsel · Tagesrätsel · Endlos</text>
+    <text x="74" y="378" fill="#94a3b8" font-size="26">Offline spielbar · kein Zeitdruck</text>
+  </g>
+</svg>

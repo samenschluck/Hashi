@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Vordergrund des adaptiven Android-Icons. Der Inhalt bleibt innerhalb des
+       sicheren Kreises von 66 % Durchmesser, damit nichts weggeschnitten wird. -->
+  <g stroke="#94a3b8" stroke-width="34" stroke-linecap="round">
+    <line x1="410" y1="484" x2="614" y2="484"/>
+    <line x1="410" y1="540" x2="614" y2="540"/>
+  </g>
+  <g fill="#38bdf8">
+    <circle cx="390" cy="512" r="104"/>
+    <circle cx="634" cy="512" r="104"/>
+  </g>
+  <g fill="#0f172a" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+     font-size="126" font-weight="700" text-anchor="middle" dominant-baseline="central">
+    <text x="390" y="512">2</text>
+    <text x="634" y="512">2</text>
+  </g>
+</svg>
