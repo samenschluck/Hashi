@@ -31,6 +31,11 @@ offen, dass die Anschrift nachgereicht wird.
   sonst liefert `showConsentForm()` nichts zurück
 - IDs als GitHub-Secrets hinterlegen (siehe `README.md`)
 
+**Die echten IDs gehören nicht ins Repository.** Es ist öffentlich, und veröffentlichte
+Werbe-IDs laden dazu ein, sie in fremden Apps für ungültigen Traffic zu missbrauchen —
+gesperrt würde dann das eigene AdMob-Konto. Sie gehören ausschließlich in die lokale
+`.env` (gitignored) und in die GitHub-Secrets.
+
 ### 3. Release-Keystore
 
 - Erzeugen und **sicher aufbewahren** — ohne ihn ist kein Update der App mehr möglich

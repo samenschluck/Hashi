@@ -79,6 +79,12 @@ npm run android:prepare      # AdMob-App-ID eintragen, Web-Build, cap sync
 npx cap open android         # Android Studio öffnen (optional)
 ```
 
+> **Nach dem Klonen ist dieser Schritt Pflicht.** Die Datei
+> `android/app/src/main/res/values/admob.xml` wird erzeugt, nicht eingecheckt — sie
+> enthält die AdMob-App-ID, und das Repository ist öffentlich. Ohne sie bricht der
+> Android-Build mit „resource not found" ab. Ein Aufruf von `npm run ads:inject-appid`
+> genügt; ohne gesetzte `ADMOB_APP_ID` landet Googles Test-ID darin.
+
 `android:prepare` erledigt drei Dinge:
 
 1. `ads:inject-appid` schreibt die AdMob-App-ID nach
@@ -90,6 +96,12 @@ npx cap open android         # Android Studio öffnen (optional)
 aus dem `AndroidManifest.xml` und nicht zur Laufzeit. Sie kann deshalb nicht wie
 die Ad-Unit-IDs über `import.meta.env` in den Web-Bundle wandern. Ohne gesetzte ID
 stürzt die App beim Start ab — deshalb steht standardmäßig Googles Test-ID drin.
+
+**Warum die erzeugte Datei nicht eingecheckt ist:** Ad-IDs sind keine Passwörter, sie
+stecken ohnehin in jedem ausgelieferten APK. In einem öffentlichen Repository sind sie
+aber im Klartext auffindbar, und fremde Apps mit den eigenen Unit-IDs erzeugen
+ungültigen Traffic — gesperrt wird dann das eigene AdMob-Konto. Deshalb bleiben alle
+echten IDs in `.env` und in GitHub-Secrets.
 
 ### Debug-Build
 
