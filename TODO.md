@@ -24,24 +24,39 @@ offen, dass die Anschrift nachgereicht wird.
 
 **Nicht vergessen:** Beim Nachtragen auch das Datum unter „Stand" aktualisieren.
 
-### 2. Echte AdMob-IDs und veröffentlichte DSGVO-Nachricht
+### 2. Echte AdMob-IDs und veröffentlichte DSGVO-Nachricht — ✅ erledigt
 
-- App-ID, Banner-Unit-ID, Rewarded-Unit-ID aus der AdMob-Konsole
-- Die EU-Einwilligungsnachricht muss **veröffentlicht** sein, nicht nur angelegt —
-  sonst liefert `showConsentForm()` nichts zurück
-- IDs als GitHub-Secrets hinterlegen (siehe `README.md`)
+- App-ID, Banner-Unit-ID, Rewarded-Unit-ID aus der AdMob-Konsole ✅
+- EU-Einwilligungsnachricht angelegt **und veröffentlicht** ✅ (unveröffentlicht liefert
+  `showConsentForm()` nichts zurück)
+- IDs als GitHub-Secrets hinterlegt ✅
+
+Ob der Einwilligungsdialog tatsächlich erscheint, zeigt erst der Gerätetest.
 
 **Die echten IDs gehören nicht ins Repository.** Es ist öffentlich, und veröffentlichte
 Werbe-IDs laden dazu ein, sie in fremden Apps für ungültigen Traffic zu missbrauchen —
 gesperrt würde dann das eigene AdMob-Konto. Sie gehören ausschließlich in die lokale
 `.env` (gitignored) und in die GitHub-Secrets.
 
-### 3. Release-Keystore
+### 3. Release-Keystore — ✅ erledigt
 
-- Erzeugen und **sicher aufbewahren** — ohne ihn ist kein Update der App mehr möglich
-- Als Base64-Secret in GitHub hinterlegen
+- Erzeugt, Alias `bridgelet`, gültig bis Januar 2054 ✅
+- Als vier Secrets in GitHub hinterlegt ✅
+- Der erste Release-Build (20.08.2026) bestätigt die Signatur mit dem Release-Schlüssel ✅
+
+**Weiter sicher aufbewahren.** Mit Play App Signing ist er nur der Upload-Schlüssel und
+liesse sich über den Play-Support zurücksetzen — angenehm ist das trotzdem nicht.
 
 ### 4. Test auf einem echten Gerät
+
+**Ein AAB lässt sich nicht direkt auf ein Telefon installieren** — es ist ein Format für
+die Play Console, kein Installationspaket. Zwei Wege zum Gerät:
+
+- **Debug-APK** über Android Studio: zeigt Test-Anzeigen, Klicks darauf sind
+  unbedenklich. Der richtige Weg für Bedienung, Bildrate und Spielgefühl.
+- **Interner Test in der Play Console**: das AAB hochladen und über den Play-Link
+  installieren. Nur so lassen sich echter Einwilligungsdialog, echte Anzeigen und
+  belohntes Video prüfen — dort dann **nie selbst auf eine Anzeige klicken**.
 
 Was in der Entwicklungsumgebung nicht prüfbar war:
 

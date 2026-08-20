@@ -200,6 +200,11 @@ Stand danach (Median über je 150 Rätsel):
 - Kein Android SDK in der Entwicklungsumgebung: Der Gradle-/AAB-Build ist nur über den
   GitHub-Actions-Workflow verifizierbar, nicht lokal. Gerätetests (Touch-Gefühl, 60 fps,
   echte Ads) kann ich nicht durchführen.
+  **Teilweise erledigt am 20.08.2026:** Der Release-Workflow ist erstmals durchgelaufen
+  (Lauf 1, Version 1.0.0, versionCode 1). Gradle-Build erfolgreich in 3 min 15 s, AAB
+  6,5 MB, und `keytool -printcert` bestätigt die Signatur mit dem Release-Schlüssel statt
+  mit dem Debug-Schlüssel. Damit ist der Bauweg bewiesen; offen bleiben nur die Punkte,
+  die ein echtes Gerät brauchen.
 - **Schwierigkeitsstufe „Schwer" neu definiert.** Die geplante Klasse „braucht
   Zusammenhangsschlüsse, aber keinen Widerspruchsbeweis" ist in der Messung praktisch
   leer geblieben. „Mittel" und „Schwer" unterscheiden sich jetzt über die Anzahl der
