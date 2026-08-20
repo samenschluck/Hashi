@@ -44,6 +44,27 @@ Stand: 2026-08-19
 - `npm run ui:check` fährt die App im echten Chromium hoch, spielt beide Bedienarten
   durch und prüft die Browser-Konsole auf Fehler.
 
+### M3 — Spielfluss, Meta und Persistenz (`feat/m3-flow`)
+
+- Screens: Splash, Hauptmenü, Level-Auswahl (5 Seiten à 30 Level je Grad), Spiel,
+  Ergebnis, Tagesrätsel mit Kalender, Statistik, Einstellungen, Spielregeln.
+- **600 vorgenerierte Rätsel** (150 je Grad, 143 KB) als JSON, zur Build-Zeit über
+  `npm run puzzles:generate` erzeugt. Die vier Dateien werden einzeln nachgeladen,
+  nicht ins Startbundle gepackt.
+- `npm run puzzles:verify` prüft alle ausgelieferten Rätsel gegen den Solver — läuft
+  in der CI bei jedem Push und dauert 0,5 s.
+- Endlos-Modus mit Laufzeitgenerierung in einem **Web Worker**, mit synchronem
+  Rückfall, falls kein Worker verfügbar ist.
+- Tagesrätsel mit datumsbasiertem Seed, Kalenderansicht, Streak-Zähler.
+- Tipp-System angeschlossen: Start mit 5 Tipps, 2 Gratis-Tipps pro Tag, Begründung
+  im Klartext unter dem Brett.
+- Persistenz über `@capacitor/preferences` (Browser: localStorage) mit **Doppelpuffer
+  und Prüfsumme**, entprelltem Schreiben und sofortigem Flush beim Pausieren.
+- Schemaversion mit toleranter Migration: ein beschädigter Stand kostet Fortschritt,
+  aber startet die App nie ab.
+- Android-Zurück-Taste auf jedem Bildschirm, Pause/Resume hält die Uhr an.
+- Einstellungen: Ton, Vibration, Dark/Light/System, Linkshänder-Layout, DE/EN.
+
 ## Messwerte
 
 Generierungszeit über je 30 Läufe, lokal (Node 22):
@@ -66,7 +87,6 @@ Einschränkung im Standard-CI-Lauf.
 ## Offen
 
 - **M2** Canvas-Rendering und Touch-Eingabe
-- **M3** Spielfluss, Meta, Persistenz, vorgenerierte Rätsel, Daily
 - **M4** AdMob: Consent, Banner, Rewarded
 - **M5** Android-Build und Store-Readiness
 

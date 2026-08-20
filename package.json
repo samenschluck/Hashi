@@ -14,7 +14,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:perf": "vitest run --config vitest.perf.config.ts",
-    "ui:check": "node scripts/ui-check.mjs"
+    "ui:check": "node scripts/ui-check.mjs",
+    "puzzles:generate": "node scripts/generate-puzzles.ts",
+    "puzzles:verify": "node scripts/verify-puzzles.ts"
   },
   "repository": {
     "type": "git",
@@ -27,8 +29,10 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@capacitor/app": "^8.1.1",
     "@capacitor/core": "^8.5.0",
     "@capacitor/haptics": "^8.0.2",
+    "@capacitor/preferences": "^8.0.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "zustand": "^5.0.15"

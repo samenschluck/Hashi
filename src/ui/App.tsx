@@ -1,149 +1,100 @@
-import { useEffect, useState } from 'react';
-import { DIFFICULTIES, type Difficulty } from '../config/game.ts';
-import { generate } from '../core/generator.ts';
-import { findHint } from '../core/hint.ts';
-import { useGameStore } from '../state/gameStore.ts';
-import { BoardCanvas } from './components/BoardCanvas.tsx';
+import { useEffect } from 'react';
+import { onBackButton, onPause, onResume } from '../services/appLifecycle.ts';
+import { useAppStore, type Screen } from '../state/appStore.ts';
+import { Notice } from './components/Ui.tsx';
+import { DailyScreen } from './screens/DailyScreen.tsx';
+import { GameScreen } from './screens/GameScreen.tsx';
+import { LevelSelectScreen } from './screens/LevelSelectScreen.tsx';
+import { MenuScreen } from './screens/MenuScreen.tsx';
+import { ResultScreen } from './screens/ResultScreen.tsx';
+import { RulesScreen } from './screens/RulesScreen.tsx';
+import { SettingsScreen } from './screens/SettingsScreen.tsx';
+import { StatsScreen } from './screens/StatsScreen.tsx';
 
-/**
- * Vorlaeufiger Spielbildschirm fuer Meilenstein 2.
- *
- * Die richtige Navigation (Splash, Hauptmenue, Levelauswahl, Ergebnis) kommt in
- * Meilenstein 3. Hier geht es darum, dass Rendering und Eingabe auf einem echten
- * Brett funktionieren.
- */
+/** Wie lange eine kurze Rueckmeldung stehen bleibt. */
+const NOTICE_DURATION_MS = 2600;
+
 export function App(): React.JSX.Element {
-  const [difficulty, setDifficulty] = useState<Difficulty>('easy');
-  const [seed, setSeed] = useState(() => Date.now().toString(36));
-
-  const loadPuzzle = useGameStore((store) => store.loadPuzzle);
-  const puzzle = useGameStore((store) => store.puzzle);
-  const board = useGameStore((store) => store.board);
-  const counts = useGameStore((store) => store.counts);
-  const solved = useGameStore((store) => store.solved);
-  const canUndo = useGameStore((store) => store.canUndo);
-  const canRedo = useGameStore((store) => store.canRedo);
+  const ready = useAppStore((store) => store.ready);
+  const screen = useAppStore((store) => store.screen);
+  const notice = useAppStore((store) => store.notice);
 
   useEffect(() => {
-    loadPuzzle(generate(seed, difficulty));
-  }, [loadPuzzle, seed, difficulty]);
+    void useAppStore.getState().init();
+  }, []);
 
-  const showHint = (): void => {
-    const store = useGameStore.getState();
-    if (!store.board || !store.puzzle) {
+  // Android-Zurueck auf jedem Bildschirm: im Menue beendet es die App, sonst
+  // fuehrt es eine Ebene zurueck.
+  useEffect(() => onBackButton(() => useAppStore.getState().back()), []);
+
+  // Pause und Fortsetzen: die Uhr haelt an, der Zwischenstand wird sofort
+  // geschrieben. Ein von Android beendeter Prozess verliert damit nichts.
+  useEffect(
+    () =>
+      onPause(() => {
+        useAppStore.getState().pauseTimer();
+      }),
+    [],
+  );
+  useEffect(
+    () =>
+      onResume(() => {
+        useAppStore.getState().resumeTimer();
+      }),
+    [],
+  );
+
+  useEffect(() => {
+    if (notice === null) {
       return;
     }
-    const hint = findHint(store.board, store.counts, store.puzzle.solution);
-    store.setHintEdge(hint.edgeId);
-  };
+    const timer = setTimeout(() => {
+      useAppStore.getState().setNotice(null);
+    }, NOTICE_DURATION_MS);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [notice]);
 
   return (
     <div className="app-shell">
-      <header className="flex items-center justify-between gap-2 px-4 py-3">
-        <div>
-          <h1 className="text-lg leading-tight font-semibold tracking-tight">Bridgelet</h1>
-          <p className="text-xs text-slate-400">
-            {puzzle ? `${labelFor(difficulty)} · ${String(puzzle.islands.length)} Inseln` : '…'}
-          </p>
-        </div>
-        <select
-          className="rounded-lg bg-slate-800 px-3 py-2 text-sm"
-          value={difficulty}
-          onChange={(event) => {
-            setDifficulty(event.target.value as Difficulty);
-          }}
-          aria-label="Schwierigkeitsgrad"
-        >
-          {DIFFICULTIES.map((value) => (
-            <option key={value} value={value}>
-              {labelFor(value)}
-            </option>
-          ))}
-        </select>
-      </header>
-
-      <main className="app-content px-2">
-        {board ? <BoardCanvas /> : null}
-        {solved ? (
-          <div className="pointer-events-none absolute inset-x-0 top-2 flex justify-center">
-            <span className="rounded-full bg-emerald-600/90 px-4 py-1.5 text-sm font-medium text-white">
-              Gelöst
-            </span>
-          </div>
-        ) : null}
+      <main className="app-content">
+        {notice ? <Notice message={notice} /> : null}
+        {ready ? renderScreen(screen) : <SplashScreen />}
       </main>
-
-      <nav className="flex items-center justify-center gap-1.5 px-3 py-3">
-        <ToolbarButton
-          label="Zurück"
-          disabled={!canUndo}
-          onClick={() => {
-            useGameStore.getState().undo();
-          }}
-        />
-        <ToolbarButton
-          label="Vor"
-          disabled={!canRedo}
-          onClick={() => {
-            useGameStore.getState().redo();
-          }}
-        />
-        <ToolbarButton
-          label="Leeren"
-          disabled={counts.every((value) => value === 0)}
-          onClick={() => {
-            useGameStore.getState().reset();
-          }}
-        />
-        <ToolbarButton label="Tipp" onClick={showHint} />
-        <ToolbarButton
-          label="Neu"
-          onClick={() => {
-            setSeed(Date.now().toString(36));
-          }}
-        />
-      </nav>
-
       {/* Fest reservierte Flaeche fuer den Anchored Banner (Meilenstein 4). */}
       <div className="app-banner-slot" />
     </div>
   );
 }
 
-interface ToolbarButtonProps {
-  readonly label: string;
-  readonly onClick: () => void;
-  readonly disabled?: boolean;
-}
-
-function ToolbarButton({
-  label,
-  onClick,
-  disabled = false,
-}: ToolbarButtonProps): React.JSX.Element {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      // min-h-12 entspricht 48 dp; min-w-0 laesst die Knoepfe schrumpfen, statt die
-      // Leiste seitlich ueberlaufen zu lassen.
-      className="min-h-12 min-w-0 flex-1 truncate rounded-xl bg-slate-800 px-2 text-sm font-medium text-slate-100 disabled:opacity-40"
-    >
-      {label}
-    </button>
-  );
-}
-
-function labelFor(difficulty: Difficulty): string {
-  switch (difficulty) {
-    case 'easy':
-      return 'Einfach';
-    case 'medium':
-      return 'Mittel';
-    case 'hard':
-      return 'Schwer';
-    case 'expert':
-      return 'Experte';
+function renderScreen(screen: Screen): React.JSX.Element {
+  switch (screen) {
+    case 'levels':
+      return <LevelSelectScreen />;
+    case 'game':
+      return <GameScreen />;
+    case 'result':
+      return <ResultScreen />;
+    case 'daily':
+      return <DailyScreen />;
+    case 'stats':
+      return <StatsScreen />;
+    case 'settings':
+      return <SettingsScreen />;
+    case 'rules':
+      return <RulesScreen />;
+    case 'splash':
+    case 'menu':
+      return screen === 'menu' ? <MenuScreen /> : <SplashScreen />;
   }
+}
+
+function SplashScreen(): React.JSX.Element {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-2">
+      <h1 className="text-3xl font-semibold tracking-tight">Bridgelet</h1>
+      <p className="text-sm text-slate-400">Brücken-Logikrätsel</p>
+    </div>
+  );
 }
