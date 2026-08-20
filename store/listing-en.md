@@ -50,6 +50,13 @@ case you want to beat your own best — but it never runs out.
 Harder does not mean bigger here. The boards stay manageable; what grows is the
 number of places where plain counting no longer gets you through.
 
+From Medium on, two things join in: walls that no bridge can pass, and islands
+with a hidden number — a ?, whose value follows from the rest of the board.
+
+Every level awards up to three stars: three for solving without a hint and
+without undo. Stars are a reward, not a gate — solved is solved, and you always
+move on.
+
 Every single puzzle has exactly one solution. That is not a promise but a check: a
 solver works through every shipped puzzle before it reaches the app. You never
 have to guess.

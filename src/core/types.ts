@@ -14,6 +14,22 @@ export interface Island {
   readonly x: number;
   readonly y: number;
   readonly required: number;
+  /**
+   * Ist die Zahl vor dem Spieler verborgen? Solche Inseln zeigen ein `?`.
+   *
+   * `required` haelt trotzdem den echten Wert — er wird aber **nirgends als
+   * Bedingung benutzt**. Fuer alle Regeln, den Solver und die Eindeutigkeit
+   * zaehlt nur, was der Spieler sieht: eine verborgene Insel muss lediglich
+   * mindestens eine Bruecke haben. Anders waere das Raetsel aus Spielersicht
+   * mehrdeutig, waehrend der Generator es fuer eindeutig hielte.
+   */
+  readonly hidden: boolean;
+}
+
+/** Eine Gitterzelle. */
+export interface Cell {
+  readonly x: number;
+  readonly y: number;
 }
 
 /**
@@ -43,6 +59,16 @@ export interface Board {
   readonly crossings: readonly (readonly number[])[];
   /** Geforderte Brueckenenden je Insel, als Typed Array fuer die heissen Schleifen. */
   readonly required: Uint8Array;
+  /**
+   * Mauern: 1 bedeutet gesperrte Zelle, indiziert mit `y * width + x`.
+   *
+   * Eine Mauer traegt keine Insel und keine Bruecke laeuft ueber sie hinweg. Sie
+   * unterbricht damit die Sichtlinie: hinter einer Mauer liegt kein Nachbar mehr,
+   * auch wenn dort eine Insel in derselben Zeile steht.
+   */
+  readonly blocked: Uint8Array;
+  /** 1 fuer Inseln, deren Zahl verborgen ist (Index = Insel-Id). */
+  readonly hidden: Uint8Array;
 }
 
 /**
@@ -58,6 +84,8 @@ export interface PuzzleDefinition {
   readonly height: number;
   readonly islands: readonly Island[];
   readonly solution: readonly BridgeCount[];
+  /** Gesperrte Zellen. Leer bei Raetseln ohne Mauern. */
+  readonly blocked: readonly Cell[];
 }
 
 /** Ergebnis der Regelpruefung eines Spielstands. */

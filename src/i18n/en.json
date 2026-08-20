@@ -37,6 +37,13 @@
   "result.next": "Next puzzle",
   "result.replay": "Play again",
   "result.toLevels": "Back to levels",
+  "result.starsLabel": "{count} of {max} stars",
+  "result.stars3": "Solved without a hint and without undo.",
+  "result.stars2": "Solved — using undo. Without it, that would be three stars.",
+  "result.stars1": "Solved — using a hint. Without hints there are more stars.",
+  "result.newBestStars": "Best rating for this level",
+  "levels.stars": "{earned} of {total} stars",
+  "stats.stars": "Stars collected",
 
   "daily.title": "Daily puzzle",
   "daily.streak": "Streak: {count} days",
@@ -89,7 +96,7 @@
   "hint.rule.D9_TWIN_PAIR": "Both islands would be full — forming a finished network of their own while the rest of the board is still open. Two 1s can never be joined, and two 2s never doubled.",
 
   "rules.title": "How to play",
-  "rules.body": "Connect all islands into a single network.\n\n• Bridges run only horizontally or vertically.\n• At most two bridges between any two islands.\n• Bridges must not cross each other or pass over islands.\n• The number on an island says how many bridge ends meet there.\n• In the end every island must be connected.\n\nDrag from island to island to place a bridge, drag again to double it, a third time removes it. Tapping two islands works the same way.",
+  "rules.body": "Connect all islands into a single network.\n\n• Bridges run only horizontally or vertically.\n• At most two bridges between any two islands.\n• Bridges must not cross each other or pass over islands.\n• Grey blocks are walls — no bridge gets through there.\n• The number on an island says how many bridge ends meet there.\n• A ? means the number is hidden. That island needs at least one bridge — how many exactly follows from the rest of the board.\n• In the end every island must be connected.\n\nDrag from island to island to place a bridge, drag again to double it, a third time removes it. Tapping two islands works the same way.",
 
   "common.back": "Back",
   "common.close": "Close",

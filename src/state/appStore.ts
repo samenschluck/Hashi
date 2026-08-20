@@ -10,6 +10,7 @@ import {
   grantDailyHints,
   recordDailySolved,
   recordSolved,
+  starsFor,
   registerRewardedWatch,
   spendHint,
   storeInProgress,
@@ -47,6 +48,10 @@ export interface LevelResult {
   readonly timeMs: number;
   readonly isNewBest: boolean;
   readonly hintsUsed: number;
+  /** In diesem Durchgang erreichte Sterne. */
+  readonly stars: number;
+  /** War das die bisher beste Sternezahl fuer dieses Level? */
+  readonly isNewBestStars: boolean;
 }
 
 export interface AppStore {
@@ -369,7 +374,10 @@ export const useAppStore = create<AppStore>((set, get) => {
       accumulatedMs = timeMs;
 
       const previousBest = get().save.levels[active.levelId]?.bestTimeMs ?? null;
+      const previousStars = get().save.levels[active.levelId]?.stars ?? 0;
       const hintsUsed = get().hintsUsedInLevel;
+      const undosUsed = useGameStore.getState().undoCount;
+      const stars = starsFor({ hintsUsed, undosUsed });
 
       const next = mutate((save) => {
         let updated = recordSolved(save, {
@@ -377,6 +385,7 @@ export const useAppStore = create<AppStore>((set, get) => {
           difficulty: active.difficulty,
           timeMs,
           hintsUsed,
+          undosUsed,
         });
         if (active.mode === 'daily' && active.day) {
           updated = recordDailySolved(updated, active.day);
@@ -390,6 +399,8 @@ export const useAppStore = create<AppStore>((set, get) => {
           timeMs,
           isNewBest: previousBest === null || timeMs < previousBest,
           hintsUsed,
+          stars,
+          isNewBestStars: stars > previousStars,
         },
         elapsedMs: timeMs,
         screen: 'result',

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DIFFICULTIES } from '../config/game.ts';
-import { buildBoard } from './geometry.ts';
+import { boardFromPuzzle } from './geometry.ts';
 import { generate } from './generator.ts';
 import { findHint, isSubsetOfSolution } from './hint.ts';
 import { parseBoard } from './parse.ts';
@@ -59,7 +59,7 @@ describe('Tipp-System', () => {
       // Der schaerfste Test fuer das Tipp-System: es muss aus jeder erreichten
       // Zwischenstellung weiterkommen, sonst haengt der Spieler fest.
       const puzzle = generate(`tipps-${difficulty}`, difficulty);
-      const board = buildBoard(puzzle.width, puzzle.height, puzzle.islands);
+      const board = boardFromPuzzle(puzzle);
       const state = new PuzzleState(board);
 
       let steps = 0;
@@ -86,7 +86,7 @@ describe('Tipp-System', () => {
 
   it('begruendet die allermeisten Tipps mit einer benannten Regel', () => {
     const puzzle = generate('begruendung', 'medium');
-    const board = buildBoard(puzzle.width, puzzle.height, puzzle.islands);
+    const board = boardFromPuzzle(puzzle);
     const state = new PuzzleState(board);
 
     let withRule = 0;

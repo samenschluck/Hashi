@@ -14,7 +14,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DIFFICULTIES, type Difficulty } from '../src/config/game.ts';
 import { ConstraintStore, DEDUCTION_LEVELS } from '../src/core/deductions.ts';
-import { buildBoard } from '../src/core/geometry.ts';
+import { boardFromPuzzle } from '../src/core/geometry.ts';
 import { unpackPuzzle, type PuzzlePack } from '../src/core/serialization.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -29,7 +29,7 @@ async function check(difficulty: Difficulty): Promise<void> {
 
   for (const packed of pack.puzzles) {
     const puzzle = unpackPuzzle(packed, difficulty, pack.size);
-    const board = buildBoard(puzzle.width, puzzle.height, puzzle.islands);
+    const board = boardFromPuzzle(puzzle);
 
     for (const level of DEDUCTION_LEVELS) {
       const store = new ConstraintStore(board);

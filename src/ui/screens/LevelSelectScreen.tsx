@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { DIFFICULTIES, type Difficulty } from '../../config/game.ts';
+import { DIFFICULTIES, STARS, type Difficulty } from '../../config/game.ts';
 import { levelIds } from '../../data/puzzles.ts';
 import { useAppStore } from '../../state/appStore.ts';
 import { Button, ScreenFrame } from '../components/Ui.tsx';
@@ -36,6 +36,7 @@ export function LevelSelectScreen(): React.JSX.Element {
   const pageCount = Math.max(1, Math.ceil(ids.length / PAGE_SIZE));
   const visible = ids.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const solvedCount = ids.filter((id) => levels[id]?.solved === true).length;
+  const starCount = ids.reduce((sum, id) => sum + (levels[id]?.stars ?? 0), 0);
 
   return (
     <ScreenFrame title={t('levels.title')} onBack={back} backLabel={t('common.back')}>
@@ -56,8 +57,11 @@ export function LevelSelectScreen(): React.JSX.Element {
         ))}
       </div>
 
-      <p className="mb-3 text-xs text-slate-400">
-        {t('levels.solvedOf', { solved: solvedCount, total: ids.length })}
+      <p className="mb-3 flex flex-wrap gap-x-3 text-xs text-slate-400">
+        <span>{t('levels.solvedOf', { solved: solvedCount, total: ids.length })}</span>
+        <span className="text-amber-400">
+          ★ {t('levels.stars', { earned: starCount, total: ids.length * STARS.max })}
+        </span>
       </p>
 
       <div className="grid grid-cols-5 gap-2">
@@ -72,13 +76,19 @@ export function LevelSelectScreen(): React.JSX.Element {
               onClick={() => {
                 void startLevel(difficulty, index);
               }}
-              className={`flex min-h-12 items-center justify-center rounded-lg text-sm font-medium ${
+              className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-lg text-sm font-medium ${
                 progress?.solved === true
                   ? 'bg-emerald-700/70 text-emerald-50'
                   : 'bg-slate-800 text-slate-200'
               }`}
             >
-              {index + 1}
+              <span>{index + 1}</span>
+              {progress?.solved === true ? (
+                <span aria-hidden="true" className="text-[0.6rem] leading-none text-amber-300">
+                  {'★'.repeat(progress.stars)}
+                  {'☆'.repeat(STARS.max - progress.stars)}
+                </span>
+              ) : null}
             </button>
           );
         })}

@@ -167,14 +167,54 @@ export class BoardRenderer {
     }
 
     const dotRadius = Math.max(0.5, this.view.cell * 0.03);
-    context.fillStyle = this.theme.grid;
 
     for (let y = 0; y < board.height; y++) {
       for (let x = 0; x < board.width; x++) {
         const point = cellToScreen(this.view, x, y);
+        if (board.blocked[y * board.width + x] === 1) {
+          continue; // Mauern werden unten als Block gezeichnet, nicht als Punkt
+        }
+        context.fillStyle = this.theme.grid;
         context.beginPath();
         context.arc(point.x, point.y, dotRadius, 0, Math.PI * 2);
         context.fill();
+      }
+    }
+
+    this.drawWalls(board);
+  }
+
+  /**
+   * Mauern gehoeren in den zwischengespeicherten Untergrund: sie aendern sich
+   * waehrend einer Partie nie.
+   *
+   * Bewusst als kompakter Block mit deutlicher Kante gezeichnet und nicht nur
+   * eingefaerbt — die Mauer muss auch bei hellem Thema und in der Sonne als
+   * „hier geht nichts durch" lesbar sein, ohne dass man Farben unterscheiden
+   * muss.
+   */
+  private drawWalls(board: Board): void {
+    const context = this.backdropContext;
+    const size = this.view.cell * 0.62;
+    const radius = Math.max(1, size * 0.22);
+
+    for (let y = 0; y < board.height; y++) {
+      for (let x = 0; x < board.width; x++) {
+        if (board.blocked[y * board.width + x] !== 1) {
+          continue;
+        }
+        const point = cellToScreen(this.view, x, y);
+        const left = point.x - size / 2;
+        const top = point.y - size / 2;
+
+        context.fillStyle = this.theme.wall;
+        context.beginPath();
+        context.roundRect(left, top, size, size, radius);
+        context.fill();
+
+        context.strokeStyle = this.theme.wallBorder;
+        context.lineWidth = Math.max(1, this.view.cell * 0.035);
+        context.stroke();
       }
     }
   }
@@ -259,12 +299,16 @@ export class BoardRenderer {
 
       let fill = this.theme.island;
       let text = this.theme.islandText;
-      if (degree > island.required) {
-        fill = this.theme.islandError;
-        text = this.theme.islandErrorText;
-      } else if (degree === island.required) {
-        fill = this.theme.islandSatisfied;
-        text = this.theme.islandSatisfiedText;
+      // Eine verborgene Insel faerbt sich nie ein: „voll" oder „zu voll" waere
+      // bereits ein Hinweis auf ihre Zahl.
+      if (!island.hidden) {
+        if (degree > island.required) {
+          fill = this.theme.islandError;
+          text = this.theme.islandErrorText;
+        } else if (degree === island.required) {
+          fill = this.theme.islandSatisfied;
+          text = this.theme.islandSatisfiedText;
+        }
       }
 
       context.beginPath();
@@ -280,8 +324,8 @@ export class BoardRenderer {
       }
       context.stroke();
 
-      context.fillStyle = text;
-      context.fillText(String(island.required), center.x, center.y);
+      context.fillStyle = island.hidden ? this.theme.islandUnknownText : text;
+      context.fillText(island.hidden ? '?' : String(island.required), center.x, center.y);
     }
   }
 }

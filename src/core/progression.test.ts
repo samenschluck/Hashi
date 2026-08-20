@@ -15,7 +15,9 @@ import {
   registerRewardedWatch,
   remainingRewardedToday,
   spendHint,
+  starsFor,
   storeInProgress,
+  totalStars,
   touchClock,
 } from './progression.ts';
 
@@ -130,12 +132,14 @@ describe('Fortschritt', () => {
       difficulty: 'easy',
       timeMs: 90_000,
       hintsUsed: 1,
+      undosUsed: 0,
     });
 
     expect(save.levels['easy-0001']).toEqual({
       solved: true,
       bestTimeMs: 90_000,
       hintsUsed: 1,
+      stars: 1,
     });
     expect(save.stats.solvedTotal).toBe(1);
     expect(save.stats.solvedByDifficulty.easy).toBe(1);
@@ -148,12 +152,14 @@ describe('Fortschritt', () => {
       difficulty: 'easy',
       timeMs: 90_000,
       hintsUsed: 0,
+      undosUsed: 0,
     });
     save = recordSolved(save, {
       levelId: 'easy-0001',
       difficulty: 'easy',
       timeMs: 120_000,
       hintsUsed: 0,
+      undosUsed: 0,
     });
     expect(save.levels['easy-0001']?.bestTimeMs).toBe(90_000);
 
@@ -162,6 +168,7 @@ describe('Fortschritt', () => {
       difficulty: 'easy',
       timeMs: 60_000,
       hintsUsed: 0,
+      undosUsed: 0,
     });
     expect(save.levels['easy-0001']?.bestTimeMs).toBe(60_000);
 
@@ -178,6 +185,7 @@ describe('Fortschritt', () => {
       difficulty: 'easy',
       timeMs: 9000,
       hintsUsed: 0,
+      undosUsed: 0,
     });
     expect(save.inProgress['easy-0001']).toBeUndefined();
   });
@@ -225,5 +233,39 @@ describe('Tagesraetsel-Serie', () => {
     expect(currentStreak(save, NOON)).toBe(1);
     expect(currentStreak(save, NOON + DAY)).toBe(1);
     expect(currentStreak(save, NOON + 2 * DAY)).toBe(0);
+  });
+});
+
+describe('Sterne', () => {
+  const base = { levelId: 'easy-0001', difficulty: 'easy' as const, timeMs: 60_000 };
+
+  it('gibt drei Sterne ohne Tipp und ohne Rueckgaengig', () => {
+    expect(starsFor({ hintsUsed: 0, undosUsed: 0 })).toBe(3);
+  });
+
+  it('zieht einen Stern fuer Rueckgaengig ab', () => {
+    expect(starsFor({ hintsUsed: 0, undosUsed: 1 })).toBe(2);
+  });
+
+  it('gibt einen Stern, sobald ein Tipp benutzt wurde', () => {
+    expect(starsFor({ hintsUsed: 1, undosUsed: 0 })).toBe(1);
+    expect(starsFor({ hintsUsed: 1, undosUsed: 9 })).toBe(1);
+  });
+
+  it('behaelt die beste Bewertung, auch nach einem schlechteren Durchgang', () => {
+    const sauber = recordSolved(createDefaultSave(NOON), { ...base, hintsUsed: 0, undosUsed: 0 });
+    expect(sauber.levels[base.levelId]?.stars).toBe(3);
+
+    const mitTipp = recordSolved(sauber, { ...base, hintsUsed: 2, undosUsed: 4 });
+    expect(mitTipp.levels[base.levelId]?.stars).toBe(3);
+    // Der Durchgang selbst wird trotzdem verbucht.
+    expect(mitTipp.levels[base.levelId]?.hintsUsed).toBe(2);
+  });
+
+  it('blockiert nie den Fortschritt: geloest bleibt geloest, auch mit einem Stern', () => {
+    const save = recordSolved(createDefaultSave(NOON), { ...base, hintsUsed: 3, undosUsed: 7 });
+    expect(save.levels[base.levelId]?.solved).toBe(true);
+    expect(save.levels[base.levelId]?.stars).toBe(1);
+    expect(totalStars(save)).toBe(1);
   });
 });

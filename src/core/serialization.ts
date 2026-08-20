@@ -1,5 +1,5 @@
 import type { Difficulty } from '../config/game.ts';
-import type { BridgeCount, Island, PuzzleDefinition } from './types.ts';
+import type { BridgeCount, Cell, Island, PuzzleDefinition } from './types.ts';
 
 /**
  * Platzsparende Form eines Raetsels fuer die ausgelieferten JSON-Dateien.
@@ -15,6 +15,17 @@ export interface PackedPuzzle {
   readonly islands: readonly number[];
   /** Eine Ziffer je Kante, in der Kantenreihenfolge von `buildBoard`. */
   readonly solution: string;
+  /**
+   * Gesperrte Zellen als flache Paare (x, y). Fehlt bei Raetseln ohne Mauern —
+   * das spart in den Dateien der leichten Grade jedes Byte.
+   */
+  readonly blocked?: readonly number[];
+  /**
+   * Indizes der Inseln, deren Zahl verborgen ist. Fehlt, wenn keine verborgen
+   * ist. Die Zahl selbst steht trotzdem in `islands` — sie wird zum Zeichnen der
+   * geloesten Ansicht gebraucht, nie als Bedingung.
+   */
+  readonly hidden?: readonly number[];
 }
 
 /** Eine ausgelieferte Raetseldatei. */
@@ -29,11 +40,23 @@ export function packPuzzle(puzzle: PuzzleDefinition): PackedPuzzle {
   for (const island of puzzle.islands) {
     islands.push(island.x, island.y, island.required);
   }
-  return {
+  const packed: PackedPuzzle = {
     id: puzzle.id,
     seed: puzzle.seed,
     islands,
     solution: puzzle.solution.join(''),
+  };
+
+  const blocked: number[] = [];
+  for (const cell of puzzle.blocked) {
+    blocked.push(cell.x, cell.y);
+  }
+  const hidden = puzzle.islands.filter((island) => island.hidden).map((island) => island.id);
+
+  return {
+    ...packed,
+    ...(blocked.length > 0 ? { blocked } : {}),
+    ...(hidden.length > 0 ? { hidden } : {}),
   };
 }
 
@@ -46,14 +69,26 @@ export function unpackPuzzle(
     throw new SyntaxError(`Inseldaten von ${packed.id} sind unvollstaendig`);
   }
 
+  const hiddenIds = new Set(packed.hidden ?? []);
   const islands: Island[] = [];
   for (let index = 0; index < packed.islands.length; index += 3) {
+    const id = islands.length;
     islands.push({
-      id: islands.length,
+      id,
       x: packed.islands[index]!,
       y: packed.islands[index + 1]!,
       required: packed.islands[index + 2]!,
+      hidden: hiddenIds.has(id),
     });
+  }
+
+  const rawBlocked = packed.blocked ?? [];
+  if (rawBlocked.length % 2 !== 0) {
+    throw new SyntaxError(`Mauerdaten von ${packed.id} sind unvollstaendig`);
+  }
+  const blocked: Cell[] = [];
+  for (let index = 0; index < rawBlocked.length; index += 2) {
+    blocked.push({ x: rawBlocked[index]!, y: rawBlocked[index + 1]! });
   }
 
   const solution: BridgeCount[] = Array.from(packed.solution, (char) => {
@@ -72,5 +107,6 @@ export function unpackPuzzle(
     height: size,
     islands,
     solution,
+    blocked,
   };
 }

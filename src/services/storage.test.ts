@@ -19,6 +19,7 @@ function saveWith(levelId: string): SaveData {
     difficulty: 'easy',
     timeMs: 1000,
     hintsUsed: 0,
+    undosUsed: 0,
   });
 }
 

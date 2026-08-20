@@ -114,6 +114,66 @@ export const GENERATOR: Readonly<
  */
 export const GROWTH_RECENT_FRACTION = 0.25;
 
+/**
+ * Anteil der Gitterzellen, die als Mauer gesperrt werden.
+ *
+ * Mauern tragen keine Insel und keine Bruecke laeuft ueber sie. Sie sind der
+ * einzige Eingriff, der die *Geometrie* aendert statt der Zahlen: Sichtlinien
+ * werden unterbrochen, Nachbarschaften verschwinden, und es entstehen Bereiche,
+ * die nur ueber wenige Verbindungen erreichbar sind.
+ *
+ * „Einfach" bleibt bewusst ohne Mauern — dort soll das Brett auf einen Blick
+ * lesbar sein.
+ *
+ * **Was die Messung sagt.** Die Erwartung war, dass Mauern Engstellen erzeugen
+ * und damit die Schnittregeln D6 und D8 ins Spiel bringen. Das stimmt, aber nur
+ * schwach: bei „Experte" feuern sie mit Mauern sieben- statt einmal auf 60
+ * Brettern. Auf den Anteil fortgeschrittener Schluesse wirken Mauern dagegen
+ * leicht *negativ* (bei „Experte" 22,7 auf 20,8 Prozent), weil sie Nachbarschaften
+ * entfernen und damit Mehrdeutigkeit. Auch mehr Inseldichte gleicht das nicht aus.
+ *
+ * **Warum sie trotzdem drin sind.** Der Solver sieht das ganze Brett auf einmal;
+ * ein Mensch muss Sichtlinien mit dem Auge verfolgen. Genau diese Arbeit fuegen
+ * Mauern hinzu, und genau sie kann diese Messung nicht erfassen. Die Werte sind
+ * deshalb bewusst moderat: genug, um den Charakter des Bretts zu aendern, ohne
+ * die Nachbarzahl je Insel spuerbar zu druecken.
+ */
+export const WALL_DENSITY: Readonly<Record<Difficulty, number>> = {
+  easy: 0,
+  medium: 0.03,
+  hard: 0.05,
+  expert: 0.06,
+};
+
+/**
+ * Hoechstzahl an Inseln je Brett, deren Zahl verborgen wird („?").
+ *
+ * Eine verborgene Zahl ist keine Bedingung mehr — der Spieler muss sie erst aus
+ * der Umgebung erschliessen. Der Generator verdeckt nur, solange das Raetsel
+ * dabei eindeutig bleibt; wo eine verborgene Zahl zusaetzliche Loesungen
+ * eroeffnen wuerde, bleibt sie sichtbar. Die Zahl hier ist also eine Obergrenze,
+ * kein Sollwert.
+ *
+ * „Einfach" bleibt ohne: dort soll nichts erschlossen werden muessen.
+ *
+ * **Der wirksamste Hebel im ganzen Projekt.** Gemessen ueber je 40 Bretter hebt
+ * das Verdecken den Anteil fortgeschrittener Schluesse bei „Schwer" von 14,8 auf
+ * 22,4 Prozent und bei „Experte" von 21,1 auf 38,4 — und die Raetsel werden
+ * dabei sogar *kuerzer* (Schwer 51 auf 43 Schritte). Oberhalb dieser Werte
+ * saettigt der Effekt: der Generator findet dann keine weiteren Inseln mehr, die
+ * sich verdecken lassen, ohne die Eindeutigkeit zu verlieren.
+ *
+ * Bei „Mittel" bricht die Ausbeute ab 4 ein (18 von 40 Versuchen) — kleine
+ * Bretter haben zu wenig Umgebung, aus der sich eine verborgene Zahl
+ * erschliessen liesse.
+ */
+export const HIDDEN_ISLANDS: Readonly<Record<Difficulty, number>> = {
+  easy: 0,
+  medium: 2,
+  hard: 8,
+  expert: 10,
+};
+
 /** Hoechstzahl an Brueckenenden pro Insel (Hashiwokakero-Regel). */
 export const MAX_ISLAND_VALUE = 8;
 /** Hoechstzahl paralleler Bruecken zwischen zwei Inseln. */
@@ -124,6 +184,23 @@ export const PREGENERATED_PUZZLES_PER_DIFFICULTY = 150;
 
 /** Schwierigkeitsgrad des taeglichen Raetsels (Entscheidung E8: keine Rotation). */
 export const DAILY_DIFFICULTY: Difficulty = 'medium';
+
+/**
+ * Sternebewertung je Level.
+ *
+ * Belohnt sauberes Spiel, statt Fehler zu bestrafen: Es gibt keine Stufe, die
+ * den Fortschritt blockiert, und kein Stern laesst sich verlieren — gespeichert
+ * wird immer das beste Ergebnis. Ein Level ohne Sterne bleibt gespielt und
+ * geloest.
+ */
+export const STARS = {
+  /** Ohne Tipp und ohne Rueckgaengig geloest. */
+  max: 3,
+  /** Ohne Tipp, aber mit Rueckgaengig. */
+  withUndo: 2,
+  /** Mit mindestens einem Tipp. */
+  withHint: 1,
+} as const;
 
 /** Tipp-System (Meilenstein 3). */
 export const HINTS = {

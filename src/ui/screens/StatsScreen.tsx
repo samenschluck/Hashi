@@ -1,5 +1,5 @@
 import { DIFFICULTIES } from '../../config/game.ts';
-import { averageSolveTime } from '../../core/progression.ts';
+import { averageSolveTime, totalStars } from '../../core/progression.ts';
 import { useAppStore } from '../../state/appStore.ts';
 import { ScreenFrame } from '../components/Ui.tsx';
 import { formatDuration } from '../format.ts';
@@ -10,6 +10,7 @@ export function StatsScreen(): React.JSX.Element {
   const save = useAppStore((store) => store.save);
 
   const average = averageSolveTime(save);
+  const stars = totalStars(save);
 
   return (
     <ScreenFrame title={t('stats.title')} onBack={back} backLabel={t('common.back')}>
@@ -25,6 +26,7 @@ export function StatsScreen(): React.JSX.Element {
         />
         <Row label={t('stats.longestStreak')} value={String(save.daily.longestStreak)} />
         <Row label={t('stats.hintsSpent')} value={String(save.stats.hintsSpent)} />
+        <Row label={t('stats.stars')} value={`★ ${String(stars)}`} />
       </dl>
 
       <h3 className="mt-6 mb-2 text-sm font-medium text-slate-300">{t('levels.title')}</h3>

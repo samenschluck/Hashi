@@ -54,6 +54,37 @@ describe('buildBoard', () => {
     ).toThrow(/grenzen direkt aneinander/);
   });
 
+  it('unterbricht die Sichtlinie an einer Mauer', () => {
+    const ohneMauer = parseBoard('2...2');
+    expect(findEdge(ohneMauer, 0, 1)).not.toBeNull();
+
+    const mitMauer = parseBoard('2.#.2');
+    expect(mitMauer.edges).toHaveLength(0);
+    expect(findEdge(mitMauer, 0, 1)).toBeNull();
+  });
+
+  it('sieht hinter einer Mauer keinen Nachbarn, auch nicht den uebernaechsten', () => {
+    // Ohne Mauer haengt die mittlere Insel an beiden Nachbarn.
+    const offen = parseBoard('1.2.1');
+    expect(offen.edges).toHaveLength(2);
+
+    // Mit Mauer bleibt nur die rechte Verbindung — und die linke Insel ist
+    // voellig abgeschnitten, statt sich einen Nachbarn dahinter zu suchen.
+    const gesperrt = parseBoard(`
+      1.2.1
+      #....
+      1....
+    `);
+    expect(findEdge(gesperrt, 0, 3)).toBeNull();
+  });
+
+  it('laesst keine Insel auf einer Mauer zu', () => {
+    expect(() => buildBoard(3, 3, [{ x: 1, y: 1, required: 1 }], [{ x: 1, y: 1 }])).toThrow(
+      /gesperrter Zelle/,
+    );
+    expect(() => buildBoard(3, 3, [], [{ x: 5, y: 0 }])).toThrow(/Mauer ausserhalb/);
+  });
+
   it('weist Inselwerte ausserhalb von 1..8 zurueck', () => {
     expect(() => buildBoard(3, 3, [{ x: 0, y: 0, required: 9 }])).toThrow(/1\.\.8/);
     expect(() => buildBoard(3, 3, [{ x: 0, y: 0, required: 0 }])).toThrow(/1\.\.8/);

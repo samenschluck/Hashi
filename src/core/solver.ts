@@ -94,6 +94,11 @@ export function hasUniqueSolution(board: Board): boolean {
 /**
  * Prueft eine vollstaendige Belegung gegen alle Regeln:
  * Inselwerte exakt erfuellt, keine Kreuzungen, ein zusammenhaengendes Netz.
+ *
+ * Verborgene Inseln zaehlen dabei nur als „mindestens eine Bruecke". Ihre echte
+ * Zahl ist bewusst keine Bedingung: geprueft wird das Raetsel so, wie der
+ * Spieler es sieht. Sonst haette der Generator Boards fuer eindeutig gehalten,
+ * die es aus Spielersicht nicht sind.
  */
 export function isValidSolution(board: Board, counts: ArrayLike<number>): boolean {
   const degrees = new Int32Array(board.islands.length);
@@ -117,6 +122,12 @@ export function isValidSolution(board: Board, counts: ArrayLike<number>): boolea
   }
 
   for (let islandId = 0; islandId < degrees.length; islandId++) {
+    if (board.hidden[islandId] === 1) {
+      if (degrees[islandId]! < 1) {
+        return false;
+      }
+      continue;
+    }
     if (degrees[islandId] !== board.required[islandId]) {
       return false;
     }
