@@ -87,24 +87,6 @@ a {
   font-size: 0.95rem;
 }
 
-.todo {
-  background: #ffe8e8;
-  border: 1px solid #f5b5b5;
-  color: #7a1f1f;
-  border-radius: 0.4rem;
-  padding: 0.15rem 0.45rem;
-  font-weight: 600;
-  font-size: 0.9em;
-}
-
-@media (prefers-color-scheme: dark) {
-  .todo {
-    background: #3a1a1a;
-    border-color: #6b2b2b;
-    color: #ffb4b4;
-  }
-}
-
 table {
   border-collapse: collapse;
   width: 100%;

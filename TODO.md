@@ -7,22 +7,14 @@ muss und nicht im Code steckt. Der Code selbst ist fertig — Stand siehe `PROGR
 
 ## 🔴 Blockiert die Veröffentlichung
 
-### 1. Name und ladungsfähige Anschrift in die Datenschutzerklärung
+### 1. Name und ladungsfähige Anschrift in die Datenschutzerklärung — ✅ erledigt
 
-**Wo:** `docs/datenschutz.html` und `docs/privacy.html`, jeweils der rot markierte Absatz
-oben (`class="todo"`).
+Eingetragen am 20.08.2026 in `docs/datenschutz.html` und `docs/privacy.html`:
+Verantwortlicher mit Name, Anschrift und Kontakt-E-Mail. Der rote Platzhalter ist
+entfallen, die zugehörige CSS-Klasse `.todo` ebenfalls.
 
-**Warum das nicht optional ist:** Die Nennung des Verantwortlichen mit erreichbarer
-Anschrift ist datenschutzrechtlich vorgeschrieben. Eine Datenschutzerklärung ohne sie ist
-unvollständig — das gilt auch für eine Hobby-App.
-
-**Aktueller Zwischenstand:** Kontakt-E-Mail (`austricraft@gmail.com`) und Datum stehen
-drin, die Seite ist damit als Entwurf online und für AdMob nutzbar. Der rote Hinweis sagt
-offen, dass die Anschrift nachgereicht wird.
-
-**Offene Entscheidung:** Privatadresse oder Postfach / Ladungsfähige-Adresse-Dienst.
-
-**Nicht vergessen:** Beim Nachtragen auch das Datum unter „Stand" aktualisieren.
+**Bei jeder inhaltlichen Änderung** an einer der beiden Fassungen auch das Datum unter
+„Stand" bzw. „Last updated" mitziehen — und die jeweils andere Sprachfassung nachziehen.
 
 ### 2. Echte AdMob-IDs und veröffentlichte DSGVO-Nachricht — ✅ erledigt
 
@@ -47,7 +39,25 @@ gesperrt würde dann das eigene AdMob-Konto. Sie gehören ausschließlich in die
 **Weiter sicher aufbewahren.** Mit Play App Signing ist er nur der Upload-Schlüssel und
 liesse sich über den Play-Support zurücksetzen — angenehm ist das trotzdem nicht.
 
-### 4. Test auf einem echten Gerät
+### 4. Test auf einem echten Gerät — ✅ Debug-Build geprüft
+
+**Erledigt am 20.08.2026** über eine Debug-APK aus Android Studio. Geprüft und in
+Ordnung:
+
+- Bedienung, Darstellung und Ablauf auf echter Hardware
+- Einwilligungsdialog erscheint direkt beim ersten Start, **vor** der ersten
+  Anzeigenanfrage
+- Banner lädt und überlagert nichts
+- Belohntes Video läuft und schreibt die Tipps gut
+
+Damit ist die vollständige Kette Einwilligung → Anzeigenanfrage → Banner → belohntes
+Video → Gutschrift einmal nachgewiesen.
+
+**Eine Restposition bleibt: die eigene DSGVO-Nachricht.** Die UMP-Bibliothek lädt die
+Einwilligungskonfiguration anhand der App-ID aus dem Manifest, und im Debug-Build steht
+dort Googles Test-App-ID. Der gesehene Dialog belegt also den _Ablauf_, nicht die eigene
+veröffentlichte Nachricht. Das zeigt erst ein Build mit der echten App-ID, also der
+interne Test in der Play Console.
 
 **Ein AAB lässt sich nicht direkt auf ein Telefon installieren** — es ist ein Format für
 die Play Console, kein Installationspaket. Zwei Wege zum Gerät:

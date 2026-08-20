@@ -200,11 +200,18 @@ Stand danach (Median über je 150 Rätsel):
 - Kein Android SDK in der Entwicklungsumgebung: Der Gradle-/AAB-Build ist nur über den
   GitHub-Actions-Workflow verifizierbar, nicht lokal. Gerätetests (Touch-Gefühl, 60 fps,
   echte Ads) kann ich nicht durchführen.
-  **Teilweise erledigt am 20.08.2026:** Der Release-Workflow ist erstmals durchgelaufen
-  (Lauf 1, Version 1.0.0, versionCode 1). Gradle-Build erfolgreich in 3 min 15 s, AAB
-  6,5 MB, und `keytool -printcert` bestätigt die Signatur mit dem Release-Schlüssel statt
-  mit dem Debug-Schlüssel. Damit ist der Bauweg bewiesen; offen bleiben nur die Punkte,
-  die ein echtes Gerät brauchen.
+  **Erledigt am 20.08.2026:** Der Release-Workflow ist erstmals durchgelaufen (Lauf 1,
+  Version 1.0.0, versionCode 1). Gradle-Build erfolgreich in 3 min 15 s, AAB 6,5 MB, und
+  `keytool -printcert` bestätigt die Signatur mit dem Release-Schlüssel statt mit dem
+  Debug-Schlüssel. Am selben Tag lief eine Debug-APK auf einem echten Gerät: Bedienung,
+  Darstellung und Ablauf ohne Beanstandung, Einwilligungsdialog direkt beim ersten Start,
+  Banner geladen, belohntes Video angesehen und Tipps gutgeschrieben. Damit ist die Kette
+  Einwilligung → Anzeigenanfrage → Banner → belohntes Video → Gutschrift nachgewiesen.
+
+  Offen bleibt allein die **eigene** DSGVO-Nachricht: UMP lädt die Konfiguration anhand
+  der App-ID aus dem Manifest, und im Debug-Build steht dort Googles Test-App-ID. Der
+  gesehene Dialog belegt den Ablauf, nicht die eigene veröffentlichte Nachricht.
+
 - **Schwierigkeitsstufe „Schwer" neu definiert.** Die geplante Klasse „braucht
   Zusammenhangsschlüsse, aber keinen Widerspruchsbeweis" ist in der Messung praktisch
   leer geblieben. „Mittel" und „Schwer" unterscheiden sich jetzt über die Anzahl der
