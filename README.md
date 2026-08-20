@@ -9,7 +9,8 @@ React und Vite, als native App über Capacitor verpackt, finanziert über AdMob.
 - **Vollständig offline spielbar.** Kein Konto, kein Backend.
 
 Architektur, Entscheidungen und Messwerte stehen in [`PLAN.md`](PLAN.md), der
-Stand der Arbeit in [`PROGRESS.md`](PROGRESS.md).
+Stand der Arbeit in [`PROGRESS.md`](PROGRESS.md). Was bis zur Veröffentlichung noch
+offen ist, sammelt [`TODO.md`](TODO.md).
 
 ---
 
