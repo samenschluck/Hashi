@@ -1,5 +1,5 @@
 import { MAX_ISLAND_VALUE } from '../config/game.ts';
-import type { Board, EdgeDef, Island } from './types.ts';
+import type { Board, Cell, EdgeDef, Island, PuzzleDefinition } from './types.ts';
 
 /** Rohbeschreibung einer Insel, bevor Ids vergeben sind. */
 export interface IslandSpec {
@@ -21,9 +21,22 @@ export interface IslandSpec {
  * fuer die Bruecke bleibt. Direkt aneinandergrenzende Inseln sind in
  * Hashiwokakero nicht vorgesehen und werden als Fehler gemeldet.
  */
-export function buildBoard(width: number, height: number, specs: readonly IslandSpec[]): Board {
+export function buildBoard(
+  width: number,
+  height: number,
+  specs: readonly IslandSpec[],
+  walls: readonly Cell[] = [],
+): Board {
   if (width <= 0 || height <= 0) {
     throw new RangeError('Boardgroesse muss positiv sein');
+  }
+
+  const blocked = new Uint8Array(width * height);
+  for (const wall of walls) {
+    if (wall.x < 0 || wall.x >= width || wall.y < 0 || wall.y >= height) {
+      throw new RangeError(`Mauer ausserhalb des Gitters: (${String(wall.x)}, ${String(wall.y)})`);
+    }
+    blocked[wall.y * width + wall.x] = 1;
   }
 
   const sorted = [...specs].sort((left, right) => left.y - right.y || left.x - right.x);
@@ -42,6 +55,9 @@ export function buildBoard(width: number, height: number, specs: readonly Island
     if (grid[cell] !== -1) {
       throw new RangeError(`Doppelte Insel auf (${String(spec.x)}, ${String(spec.y)})`);
     }
+    if (blocked[cell] === 1) {
+      throw new RangeError(`Insel auf gesperrter Zelle: (${String(spec.x)}, ${String(spec.y)})`);
+    }
     const id = islands.length;
     grid[cell] = id;
     islands.push({ id, x: spec.x, y: spec.y, required: spec.required });
@@ -57,10 +73,16 @@ export function buildBoard(width: number, height: number, specs: readonly Island
     edgesByIsland[b]!.push(id);
   };
 
+  // Eine Mauer unterbricht die Sichtlinie: die Suche nach dem naechsten Nachbarn
+  // endet dort, auch wenn dahinter noch eine Insel in derselben Reihe steht.
   for (const island of islands) {
     // Rechter Nachbar in derselben Zeile
     for (let x = island.x + 1; x < width; x++) {
-      const other = grid[island.y * width + x]!;
+      const cell = island.y * width + x;
+      if (blocked[cell] === 1) {
+        break;
+      }
+      const other = grid[cell]!;
       if (other === -1) {
         continue;
       }
@@ -74,7 +96,11 @@ export function buildBoard(width: number, height: number, specs: readonly Island
     }
     // Unterer Nachbar in derselben Spalte
     for (let y = island.y + 1; y < height; y++) {
-      const other = grid[y * width + island.x]!;
+      const cell = y * width + island.x;
+      if (blocked[cell] === 1) {
+        break;
+      }
+      const other = grid[cell]!;
       if (other === -1) {
         continue;
       }
@@ -103,7 +129,19 @@ export function buildBoard(width: number, height: number, specs: readonly Island
     edgesByIsland: edgesByIsland.map((list) => Object.freeze([...list])),
     crossings,
     required,
+    blocked,
   };
+}
+
+/**
+ * Board aus einem fertigen Raetsel.
+ *
+ * Bewusst die einzige Stelle, an der ein Board aus einer `PuzzleDefinition`
+ * entsteht: wer `buildBoard` von Hand aufruft, vergisst irgendwann die Mauern,
+ * und dann fehlen still ein paar Kanten zu viel oder zu wenig.
+ */
+export function boardFromPuzzle(puzzle: PuzzleDefinition): Board {
+  return buildBoard(puzzle.width, puzzle.height, puzzle.islands, puzzle.blocked);
 }
 
 /**

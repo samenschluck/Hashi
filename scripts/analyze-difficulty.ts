@@ -22,7 +22,7 @@ import {
   type RuleId,
 } from '../src/core/deductions.ts';
 import { analyzeBoard } from '../src/core/difficulty.ts';
-import { buildBoard } from '../src/core/geometry.ts';
+import { boardFromPuzzle } from '../src/core/geometry.ts';
 import { unpackPuzzle, type PuzzlePack } from '../src/core/serialization.ts';
 import { isValidSolution } from '../src/core/solver.ts';
 
@@ -68,7 +68,7 @@ async function collect(difficulty: Difficulty): Promise<Sample[]> {
 
   for (const packed of pack.puzzles) {
     const puzzle = unpackPuzzle(packed, difficulty, pack.size);
-    const board = buildBoard(puzzle.width, puzzle.height, puzzle.islands);
+    const board = boardFromPuzzle(puzzle);
 
     // Auf der flachsten Stufe messen, die reicht — das ist die Stufe, auf der
     // ein Mensch das Raetsel tatsaechlich loesen wuerde.

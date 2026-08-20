@@ -5,13 +5,14 @@ import {
   ISLAND_DENSITY,
   MAX_BRIDGES_PER_EDGE,
   MAX_ISLAND_VALUE,
+  WALL_DENSITY,
   type Difficulty,
 } from '../config/game.ts';
 import { classifyDifficulty } from './difficulty.ts';
 import { buildBoard, findEdge, type IslandSpec } from './geometry.ts';
 import { createRng, type Rng } from './rng.ts';
 import { solve } from './solver.ts';
-import type { Board, BridgeCount, PuzzleDefinition } from './types.ts';
+import type { Board, BridgeCount, Cell, PuzzleDefinition } from './types.ts';
 
 export interface GenerateOptions {
   /** Hoechstzahl an Versuchen, bevor aufgegeben wird. */
@@ -23,6 +24,7 @@ const DEFAULT_MAX_ATTEMPTS = 400;
 /** Zellenzustaende im Arbeitsgitter. */
 const EMPTY = -1;
 const BRIDGE = -2;
+const WALL = -3;
 
 const DIRECTIONS = [
   { dx: 1, dy: 0 },
@@ -49,6 +51,7 @@ interface Layout {
   islands: WorkIsland[];
   edges: WorkEdge[];
   edgeIndex: Map<number, number>;
+  walls: Cell[];
   tuning: (typeof GENERATOR)[Difficulty];
 }
 
@@ -114,6 +117,7 @@ export function tryGenerate(
       height: board.height,
       islands: board.islands,
       solution,
+      blocked: candidate.walls,
     };
   }
 
@@ -123,6 +127,7 @@ export function tryGenerate(
 interface Candidate {
   board: Board;
   solution: BridgeCount[];
+  walls: Cell[];
 }
 
 /**
@@ -154,7 +159,10 @@ function buildCandidate(
   }
 
   const layout = createLayout(size, difficulty);
-  seedFirstIsland(layout, rng);
+  placeWalls(layout, rng, difficulty);
+  if (!seedFirstIsland(layout, rng)) {
+    return null;
+  }
 
   // Netz wachsen lassen, bis die Zielzahl erreicht ist.
   let stalled = 0;
@@ -202,14 +210,14 @@ function materialize(layout: Layout, size: number): Candidate | null {
 
   let board: Board;
   try {
-    board = buildBoard(size, size, specs);
+    board = buildBoard(size, size, specs, layout.walls);
   } catch {
     // Kann auftreten, wenn zwei Inseln direkt aneinandergrenzen — Kandidat verwerfen.
     return null;
   }
 
   const solution = mapSolutionToBoard(layout, board);
-  return solution === null ? null : { board, solution };
+  return solution === null ? null : { board, solution, walls: layout.walls };
 }
 
 function createLayout(size: number, difficulty: Difficulty): Layout {
@@ -219,8 +227,43 @@ function createLayout(size: number, difficulty: Difficulty): Layout {
     islands: [],
     edges: [],
     edgeIndex: new Map<number, number>(),
+    walls: [],
     tuning: GENERATOR[difficulty],
   };
+}
+
+/**
+ * Streut Mauern ueber das Brett, bevor Inseln wachsen.
+ *
+ * Mauern sind der einzige Eingriff, der die *Geometrie* veraendert statt der
+ * Zahlen. Sie unterbrechen Sichtlinien, und dadurch entstehen Bereiche, die nur
+ * ueber wenige Verbindungen erreichbar sind — genau die Struktur, an der die
+ * Schnittregeln D6 und D8 greifen und die man beim Loesen nicht mehr rein
+ * lokal durchschaut.
+ *
+ * Sie werden vor dem Wachstum gesetzt, damit das Netz von vornherein um sie
+ * herum waechst; nachtraeglich eingefuegte Mauern wuerden fertige Bruecken
+ * zerschneiden.
+ */
+function placeWalls(layout: Layout, rng: Rng, difficulty: Difficulty): void {
+  const density = WALL_DENSITY[difficulty];
+  if (density <= 0) {
+    return;
+  }
+
+  const target = Math.round(layout.size * layout.size * density);
+  // Feste Zahl an Versuchen statt einer Schleife bis zum Ziel: bei sehr kleinen
+  // Brettern soll der Generator hier nicht haengenbleiben.
+  for (let attempt = 0; attempt < target * 4 && layout.walls.length < target; attempt++) {
+    const x = rng.nextInt(layout.size);
+    const y = rng.nextInt(layout.size);
+    const index = cellIndex(layout, x, y);
+    if (layout.cells[index] !== EMPTY) {
+      continue;
+    }
+    layout.cells[index] = WALL;
+    layout.walls.push({ x, y });
+  }
 }
 
 function cellIndex(layout: Layout, x: number, y: number): number {
@@ -243,13 +286,21 @@ function touchesIsland(layout: Layout, x: number, y: number): boolean {
   return false;
 }
 
-function seedFirstIsland(layout: Layout, rng: Rng): void {
+function seedFirstIsland(layout: Layout, rng: Rng): boolean {
   // Der Start liegt bewusst nicht am Rand, damit das Netz in alle Richtungen wachsen kann.
   const margin = layout.size >= 9 ? 2 : 1;
-  const x = rng.nextRange(margin, layout.size - 1 - margin);
-  const y = rng.nextRange(margin, layout.size - 1 - margin);
-  layout.islands.push({ x, y, degree: 0 });
-  layout.cells[cellIndex(layout, x, y)] = 0;
+  for (let attempt = 0; attempt < 32; attempt++) {
+    const x = rng.nextRange(margin, layout.size - 1 - margin);
+    const y = rng.nextRange(margin, layout.size - 1 - margin);
+    const index = cellIndex(layout, x, y);
+    if (layout.cells[index] !== EMPTY) {
+      continue; // Mauer im Weg
+    }
+    layout.islands.push({ x, y, degree: 0 });
+    layout.cells[index] = 0;
+    return true;
+  }
+  return false;
 }
 
 /**

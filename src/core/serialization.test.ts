@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DIFFICULTIES } from '../config/game.ts';
-import { buildBoard } from './geometry.ts';
+import { boardFromPuzzle } from './geometry.ts';
 import { generate } from './generator.ts';
 import { packPuzzle, unpackPuzzle } from './serialization.ts';
 import { isValidSolution } from './solver.ts';
@@ -16,7 +16,7 @@ describe('Raetsel packen und entpacken', () => {
 
     // Entscheidend: die Kantenreihenfolge muss nach dem Entpacken dieselbe sein,
     // sonst zeigt die gespeicherte Loesung auf die falschen Kanten.
-    const board = buildBoard(restored.width, restored.height, restored.islands);
+    const board = boardFromPuzzle(restored);
     expect(isValidSolution(board, restored.solution)).toBe(true);
   });
 

@@ -13,7 +13,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BOARD_SIZE, DIFFICULTIES, type Difficulty } from '../src/config/game.ts';
 import { classifyDifficulty } from '../src/core/difficulty.ts';
-import { buildBoard } from '../src/core/geometry.ts';
+import { boardFromPuzzle } from '../src/core/geometry.ts';
 import { unpackPuzzle, type PuzzlePack } from '../src/core/serialization.ts';
 import { isValidSolution, solve } from '../src/core/solver.ts';
 
@@ -37,7 +37,7 @@ async function verify(difficulty: Difficulty): Promise<number> {
     seenIds.add(packed.id);
 
     const puzzle = unpackPuzzle(packed, difficulty, pack.size);
-    const board = buildBoard(puzzle.width, puzzle.height, puzzle.islands);
+    const board = boardFromPuzzle(puzzle);
 
     if (board.edges.length !== puzzle.solution.length) {
       throw new Error(`${packed.id}: Loesung passt nicht zur Kantenzahl`);

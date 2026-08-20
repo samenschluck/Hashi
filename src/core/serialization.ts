@@ -1,5 +1,5 @@
 import type { Difficulty } from '../config/game.ts';
-import type { BridgeCount, Island, PuzzleDefinition } from './types.ts';
+import type { BridgeCount, Cell, Island, PuzzleDefinition } from './types.ts';
 
 /**
  * Platzsparende Form eines Raetsels fuer die ausgelieferten JSON-Dateien.
@@ -15,6 +15,11 @@ export interface PackedPuzzle {
   readonly islands: readonly number[];
   /** Eine Ziffer je Kante, in der Kantenreihenfolge von `buildBoard`. */
   readonly solution: string;
+  /**
+   * Gesperrte Zellen als flache Paare (x, y). Fehlt bei Raetseln ohne Mauern —
+   * das spart in den Dateien der leichten Grade jedes Byte.
+   */
+  readonly blocked?: readonly number[];
 }
 
 /** Eine ausgelieferte Raetseldatei. */
@@ -29,12 +34,22 @@ export function packPuzzle(puzzle: PuzzleDefinition): PackedPuzzle {
   for (const island of puzzle.islands) {
     islands.push(island.x, island.y, island.required);
   }
-  return {
+  const packed: PackedPuzzle = {
     id: puzzle.id,
     seed: puzzle.seed,
     islands,
     solution: puzzle.solution.join(''),
   };
+
+  if (puzzle.blocked.length === 0) {
+    return packed;
+  }
+
+  const blocked: number[] = [];
+  for (const cell of puzzle.blocked) {
+    blocked.push(cell.x, cell.y);
+  }
+  return { ...packed, blocked };
 }
 
 export function unpackPuzzle(
@@ -56,6 +71,15 @@ export function unpackPuzzle(
     });
   }
 
+  const rawBlocked = packed.blocked ?? [];
+  if (rawBlocked.length % 2 !== 0) {
+    throw new SyntaxError(`Mauerdaten von ${packed.id} sind unvollstaendig`);
+  }
+  const blocked: Cell[] = [];
+  for (let index = 0; index < rawBlocked.length; index += 2) {
+    blocked.push({ x: rawBlocked[index]!, y: rawBlocked[index + 1]! });
+  }
+
   const solution: BridgeCount[] = Array.from(packed.solution, (char) => {
     const value = Number.parseInt(char, 10);
     if (value !== 0 && value !== 1 && value !== 2) {
@@ -72,5 +96,6 @@ export function unpackPuzzle(
     height: size,
     islands,
     solution,
+    blocked,
   };
 }

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { buildBoard } from '../core/geometry.ts';
+import { boardFromPuzzle } from '../core/geometry.ts';
 import { PuzzleState } from '../core/puzzleState.ts';
 import { clampZoom } from '../input/gestures.ts';
 import {
@@ -89,7 +89,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     panY: 0,
 
     loadPuzzle: (puzzle, savedCounts) => {
-      const board = buildBoard(puzzle.width, puzzle.height, puzzle.islands);
+      const board = boardFromPuzzle(puzzle);
       const state = new PuzzleState(board);
       if (savedCounts) {
         state.restore(savedCounts);

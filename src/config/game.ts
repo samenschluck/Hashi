@@ -114,6 +114,37 @@ export const GENERATOR: Readonly<
  */
 export const GROWTH_RECENT_FRACTION = 0.25;
 
+/**
+ * Anteil der Gitterzellen, die als Mauer gesperrt werden.
+ *
+ * Mauern tragen keine Insel und keine Bruecke laeuft ueber sie. Sie sind der
+ * einzige Eingriff, der die *Geometrie* aendert statt der Zahlen: Sichtlinien
+ * werden unterbrochen, Nachbarschaften verschwinden, und es entstehen Bereiche,
+ * die nur ueber wenige Verbindungen erreichbar sind.
+ *
+ * „Einfach" bleibt bewusst ohne Mauern — dort soll das Brett auf einen Blick
+ * lesbar sein.
+ *
+ * **Was die Messung sagt.** Die Erwartung war, dass Mauern Engstellen erzeugen
+ * und damit die Schnittregeln D6 und D8 ins Spiel bringen. Das stimmt, aber nur
+ * schwach: bei „Experte" feuern sie mit Mauern sieben- statt einmal auf 60
+ * Brettern. Auf den Anteil fortgeschrittener Schluesse wirken Mauern dagegen
+ * leicht *negativ* (bei „Experte" 22,7 auf 20,8 Prozent), weil sie Nachbarschaften
+ * entfernen und damit Mehrdeutigkeit. Auch mehr Inseldichte gleicht das nicht aus.
+ *
+ * **Warum sie trotzdem drin sind.** Der Solver sieht das ganze Brett auf einmal;
+ * ein Mensch muss Sichtlinien mit dem Auge verfolgen. Genau diese Arbeit fuegen
+ * Mauern hinzu, und genau sie kann diese Messung nicht erfassen. Die Werte sind
+ * deshalb bewusst moderat: genug, um den Charakter des Bretts zu aendern, ohne
+ * die Nachbarzahl je Insel spuerbar zu druecken.
+ */
+export const WALL_DENSITY: Readonly<Record<Difficulty, number>> = {
+  easy: 0,
+  medium: 0.03,
+  hard: 0.05,
+  expert: 0.06,
+};
+
 /** Hoechstzahl an Brueckenenden pro Insel (Hashiwokakero-Regel). */
 export const MAX_ISLAND_VALUE = 8;
 /** Hoechstzahl paralleler Bruecken zwischen zwei Inseln. */

@@ -16,6 +16,12 @@ export interface Island {
   readonly required: number;
 }
 
+/** Eine Gitterzelle. */
+export interface Cell {
+  readonly x: number;
+  readonly y: number;
+}
+
 /**
  * Eine moegliche Verbindung zwischen zwei benachbarten Inseln.
  * „Benachbart" heisst: gleiche Zeile oder Spalte, keine Insel dazwischen.
@@ -43,6 +49,14 @@ export interface Board {
   readonly crossings: readonly (readonly number[])[];
   /** Geforderte Brueckenenden je Insel, als Typed Array fuer die heissen Schleifen. */
   readonly required: Uint8Array;
+  /**
+   * Mauern: 1 bedeutet gesperrte Zelle, indiziert mit `y * width + x`.
+   *
+   * Eine Mauer traegt keine Insel und keine Bruecke laeuft ueber sie hinweg. Sie
+   * unterbricht damit die Sichtlinie: hinter einer Mauer liegt kein Nachbar mehr,
+   * auch wenn dort eine Insel in derselben Zeile steht.
+   */
+  readonly blocked: Uint8Array;
 }
 
 /**
@@ -58,6 +72,8 @@ export interface PuzzleDefinition {
   readonly height: number;
   readonly islands: readonly Island[];
   readonly solution: readonly BridgeCount[];
+  /** Gesperrte Zellen. Leer bei Raetseln ohne Mauern. */
+  readonly blocked: readonly Cell[];
 }
 
 /** Ergebnis der Regelpruefung eines Spielstands. */

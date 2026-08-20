@@ -1,12 +1,13 @@
 import { buildBoard, type IslandSpec } from './geometry.ts';
-import type { Board, BridgeCount } from './types.ts';
+import type { Board, BridgeCount, Cell } from './types.ts';
 
 /**
  * Liest ein Board aus einer Textdarstellung — gedacht fuer handgeschriebene
  * Testfaelle und fuer Fehlerberichte.
  *
- * Ziffern 1–8 sind Inseln, `.` ist eine leere Zelle. Leerzeichen dienen nur der
- * Lesbarkeit und werden entfernt, so dass beide Schreibweisen dasselbe Board ergeben:
+ * Ziffern 1–8 sind Inseln, `.` ist eine leere Zelle, `#` eine Mauer. Leerzeichen
+ * dienen nur der Lesbarkeit und werden entfernt, so dass beide Schreibweisen
+ * dasselbe Board ergeben:
  *
  * ```
  * 2 . 3      2.3
@@ -26,6 +27,7 @@ export function parseBoard(text: string): Board {
 
   const width = rows[0]!.length;
   const specs: IslandSpec[] = [];
+  const walls: Cell[] = [];
 
   rows.forEach((row, y) => {
     if (row.length !== width) {
@@ -38,6 +40,10 @@ export function parseBoard(text: string): Board {
       if (char === '.') {
         continue;
       }
+      if (char === '#') {
+        walls.push({ x, y });
+        continue;
+      }
       const value = Number.parseInt(char, 10);
       if (Number.isNaN(value) || value < 1 || value > 8) {
         throw new SyntaxError(`Unbekanntes Zeichen "${char}" bei (${String(x)}, ${String(y)})`);
@@ -46,7 +52,7 @@ export function parseBoard(text: string): Board {
     }
   });
 
-  return buildBoard(width, rows.length, specs);
+  return buildBoard(width, rows.length, specs, walls);
 }
 
 /**
@@ -57,6 +63,14 @@ export function renderBoardAscii(board: Board, counts: ArrayLike<number>): strin
   const grid: string[][] = Array.from({ length: board.height }, () =>
     Array.from({ length: board.width }, () => ' '),
   );
+
+  for (let y = 0; y < board.height; y++) {
+    for (let x = 0; x < board.width; x++) {
+      if (board.blocked[y * board.width + x] === 1) {
+        grid[y]![x] = '#';
+      }
+    }
+  }
 
   for (const island of board.islands) {
     grid[island.y]![island.x] = String(island.required);

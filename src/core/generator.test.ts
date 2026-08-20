@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BOARD_SIZE, DIFFICULTIES, MAX_ISLAND_VALUE } from '../config/game.ts';
 import { classifyDifficulty } from './difficulty.ts';
-import { buildBoard } from './geometry.ts';
+import { boardFromPuzzle } from './geometry.ts';
 import { generate, tryGenerate } from './generator.ts';
 import { isValidSolution, solve } from './solver.ts';
 
@@ -40,7 +40,7 @@ describe('Generator', () => {
         const puzzle = tryGenerate(`einzigartig-${difficulty}#${String(index)}`, difficulty);
         expect(puzzle, `Seed ${String(index)} lieferte kein Raetsel`).not.toBeNull();
 
-        const board = buildBoard(puzzle!.width, puzzle!.height, puzzle!.islands);
+        const board = boardFromPuzzle(puzzle!);
 
         // Die mitgelieferte Loesung muss gueltig sein …
         expect(
