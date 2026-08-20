@@ -203,9 +203,28 @@ Restkapazität `cap_i ∈ {0,1,2}`.
 | `D5_NO_ISOLATION`        | Ein Zug, der eine geschlossene Teilkomponente < alle Inseln erzeugt, ist verboten (klassisch: 1–1 und 2=2 zwischen zwei Inseln) | „Damit wäre dieser Teil vom Rest abgeschnitten — alle Inseln müssen zusammenhängen."                 |
 | `D6_CONNECTIVITY_BRIDGE` | Kante, ohne die eine Inselgruppe unerreichbar wird, ist erzwungen                                                               | „Ohne diese Brücke kommt der rechte Teil des Feldes nicht mehr ans Netz."                            |
 | `D7_HYPOTHESIS`          | Probeannahme auf einer Kante, führt in ≤ N Schritten zum Widerspruch → Gegenwert erzwungen                                      | „Wäre hier keine Brücke, ergäbe sich weiter unten ein Widerspruch."                                  |
+| `D8_PARITY_CUT`          | Hängt eine Inselgruppe nur über eine Kante am Rest, hat diese Kante die Parität der Inselzahl-Summe dieser Gruppe               | „Die Summe dort drüben ist gerade, also müssen es hier zwei Brücken sein."                           |
+| `D9_TWIN_PAIR`           | Zwei gleich große Inseln (1–1, 2=2) dürfen sich nicht gegenseitig sättigen, solange andere Inseln offen sind                    | „Zwei Einsen gehen nie zusammen — die beiden wären fertig und der Rest abgehängt."                   |
 
 Propagation läuft als Worklist bis zum Fixpunkt. `D7` ist der teure Fall und wird nur für
 `hard`/`expert` und im Tipp-System als letzte Stufe eingeschaltet.
+
+`D8` und `D9` sind nachträglich dazugekommen, aus zwei verschiedenen Gründen:
+
+- **D9** ist logisch ein Sonderfall von D5 und erweitert das Können des Solvers nicht.
+  Sie steht trotzdem vor D5, weil sie ein **wiedererkennbares Muster** ist. Ein Tipp, der
+  „zwei Einsen gehen nie zusammen" sagt, bringt einem Spieler etwas für das nächste
+  Rätsel bei; „das würde eine Gruppe abschneiden" bleibt abstrakt. Gemessen greift sie
+  häufig: durchschnittlich 1,1-mal bei „Mittel" bis 8,2-mal bei „Experte".
+- **D8** ist ein echter neuer Schluss und deckt Fälle ab, die keine andere Regel sieht —
+  sie greift aber nur an Engstellen und damit selten (siehe 4.4). Sie bleibt im Code,
+  weil sie korrekt und billig ist: die Tiefensuche, die sie braucht, läuft für D6 ohnehin.
+
+Eine falsche Deduktionsregel wäre der gefährlichste Fehler im Projekt — sie schließt still
+den richtigen Wert aus, und Solver wie Tipp-System begründen anschließend Unsinn. Deshalb
+prüft `npm run rules:check` in der CI bei jedem Push, dass nach der Propagation auf allen
+600 ausgelieferten Rätseln und allen vier Tiefen der Wertebereich jeder Kante die echte
+Lösung noch enthält.
 
 ### 4.2 Solver
 
@@ -228,24 +247,54 @@ Weg, Eindeutigkeit zu **beweisen** statt zu hoffen.
 
 Alles läuft über `rng(seed)` — `generate(seed, difficulty)` ist bitgenau reproduzierbar.
 
-### 4.4 Schwierigkeit = Boardgröße plus nötige Schlussweise
+### 4.4 Schwierigkeit = nötige Schlussweise, Dichte der Einsichten, wenig Leerlauf
 
-| Grad    | Größe | Verlangte Schlussweise                                |
-| ------- | ----- | ----------------------------------------------------- |
-| Einfach | 7×7   | nur D1–D4 (Inselgrade und Kreuzungsausschluss)        |
-| Mittel  | 10×10 | zusätzlich D5/D6, aber weniger als 4 solcher Schlüsse |
-| Schwer  | 13×13 | zusätzlich D5/D6, mindestens 4 solcher Schlüsse       |
-| Experte | 17×17 | ohne D7 (Widerspruchsbeweis) nicht lösbar             |
+| Grad    | Größe | Tiefe | mind. fortgeschr. Schlüsse | max. Leerlauf |
+| ------- | ----- | ----- | -------------------------- | ------------- |
+| Einfach | 7×7   | 1     | 0                          | —             |
+| Mittel  | 9×9   | 2     | 2                          | 12            |
+| Schwer  | 10×10 | 2–3   | 6                          | 10            |
+| Experte | 12×12 | 4     | 8                          | 10            |
 
-**Korrektur gegenüber der ersten Fassung dieses Plans:** ursprünglich war „Schwer" als
-„braucht D6, aber nicht D7" geplant. Die Messung über mehrere tausend Kandidaten hat
-gezeigt, dass diese Klasse praktisch leer ist — die Isolationsregel D5 deckt fast alles ab,
-was unterhalb des Widerspruchsbeweises liegt, und wo sie nicht reicht, reicht D6 meistens
-auch nicht. Statt eine leere Klasse zu behaupten, unterscheidet „Mittel" von „Schwer"
-jetzt die **Anzahl** der fortgeschrittenen Schlüsse (`HARD_ADVANCED_STEPS` in
-`src/config/game.ts`). Die Vorgabe „Schwierigkeitsgrade über Boardgröße und benötigte
-Deduktionstiefe" bleibt damit erfüllt, nur ist die Tiefe feiner gemessen als über die
-bloße Regelmenge.
+Die Werte stehen in `DIFFICULTY_CRITERIA` (`src/config/game.ts`), gemessen wird mit
+`npm run puzzles:analyze`.
+
+**Zweite Korrektur, nach dem ersten spielbaren Stand.** Die erste Fassung staffelte
+vor allem über die Boardgröße (7 / 10 / 13 / 17). Gemessen an den damals ausgelieferten
+Rätseln kamen die Grade so zwar auf mehr Deduktionsschritte, aber der Anteil echter
+Einsichten daran blieb klein: 5 % bei „Mittel", 12 % bei „Schwer", 20 % bei „Experte" —
+der Rest war mechanische Buchhaltung. Ein größeres Brett macht ein Rätsel eben länger,
+nicht schwerer.
+
+Drei Änderungen daraus:
+
+1. **Kleinere Bretter.** „Experte" von 17×17 auf 12×12. Nebenbei die Ergonomie: 17×17
+   ließ sich auf einem Telefon nur mit ständigem Zoomen bedienen.
+2. **Mindestzahl fortgeschrittener Schlüsse je Grad** statt einer einzigen Schwelle
+   zwischen „Mittel" und „Schwer".
+3. **Obergrenze für Leerlauf** — die längste Strecke reiner Routinezüge (D1–D4)
+   _zwischen_ zwei fortgeschrittenen Schlüssen. Die Strecke davor zählt nicht mit: das
+   ist der Einstieg, den jedes Rätsel dieser Art hat. Ein Brett, das seine vier
+   Einsichten über je dreißig mechanische Züge verteilt, wird verworfen statt
+   herabgestuft — herabgestuft trüge es seinen Leerlauf nur in den nächsten Grad.
+
+Ergebnis der Umstellung (Median über je 150 Rätsel):
+
+| Grad    | Schritte alt → neu | Anteil Einsichten alt → neu | mit D1–D4 allein lösbar alt → neu |
+| ------- | ------------------ | --------------------------- | --------------------------------- |
+| Mittel  | 34 → 34            | 5,2 % → 9,4 %               | 61 % → 32 %                       |
+| Schwer  | 61 → 55            | 12,0 % → 15,1 %             | 26 % → 15 %                       |
+| Experte | 107 → 86           | 20,2 % → 22,0 %             | 9,6 % → 7,0 %                     |
+
+**Stufe 3 bleibt eine fast leere Klasse.** Ursprünglich war „Schwer" als „braucht D6,
+aber nicht D7" geplant; das ließ sich nicht füllen. Auch die später ergänzte Paritätsregel
+D8 ändert daran nichts: beide setzen eine Engstelle im Möglichkeitsgraphen voraus, und die
+kommt in den erzeugten Layouts kaum vor — über 600 Bretter hinweg entschied D8 zwei Mal,
+D6 elf Mal. Ein Versuch, das über die Wachstumsstrategie des Generators zu erzwingen
+(`growthRecency`), hat die Häufigkeit nur unwesentlich erhöht. „Schwer" teilt sich deshalb
+die Tiefe mit „Mittel" und unterscheidet sich über die geforderte Menge an Einsichten.
+Die beiden Regeln bleiben im Solver: Wo sie greifen, sind sie korrekt und liefern einen
+guten Tipp.
 
 Ein Rätsel gilt nur dann als „Experte", wenn es mit den flacheren Mengen **nicht** lösbar
 ist. Rätsel, die selbst mit D7 nicht rein deduktiv lösbar sind (die also Raten

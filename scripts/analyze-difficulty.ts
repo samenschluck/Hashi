@@ -44,6 +44,8 @@ interface Sample {
   readonly meanSlack: number;
   /** Mittlere Zahl moeglicher Nachbarn je Insel. */
   readonly meanDegree: number;
+  /** Laengste Strecke reiner Routinezuege am Stueck. */
+  readonly routineRun: number;
 }
 
 function median(values: readonly number[]): number {
@@ -76,6 +78,7 @@ async function collect(difficulty: Difficulty): Promise<Sample[]> {
     }
 
     const store = new ConstraintStore(board);
+    store.enableTrace();
     const result = store.propagate(level);
     if (result.status !== 'ok' || !store.currentAssignment()) {
       continue;
@@ -127,6 +130,7 @@ async function collect(difficulty: Difficulty): Promise<Sample[]> {
       giftShare: gifts / board.islands.length,
       meanSlack: slackSum / board.islands.length,
       meanDegree: degreeSum / board.islands.length,
+      routineRun: store.longestRoutineRun,
     });
   }
 
@@ -136,7 +140,7 @@ async function collect(difficulty: Difficulty): Promise<Sample[]> {
 async function main(): Promise<void> {
   console.log('Deduktionsaufwand der ausgelieferten Raetsel (Median ueber je 150 Stueck)\n');
   console.log(
-    'Grad     Inseln  Kanten  Schritte  davon D5-D7   Anteil   Stufen (Verteilung)'.padEnd(90),
+    'Grad     Inseln  Kanten  Schritte   fortgeschr.   Anteil   Leerlauf   Stufen'.padEnd(92),
   );
   console.log('-'.repeat(90));
 
@@ -164,7 +168,7 @@ async function main(): Promise<void> {
         `${format(median(samples.map((s) => s.edges)), 0)}  ` +
         `${format(median(samples.map((s) => s.total)), 0)}    ` +
         `${format(median(samples.map((s) => s.advanced)), 0)}      ` +
-        `${format(median(share))} %   ${levelText}`,
+        `${format(median(share))} %  ${format(median(samples.map((s) => s.routineRun)), 0)}     ${levelText}`,
     );
 
     const sum = {} as Record<RuleId, number>;

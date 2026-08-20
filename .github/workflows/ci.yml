@@ -37,6 +37,15 @@ jobs:
       - name: Unit-Tests
         run: npm test
 
+      - name: Ausgelieferte Raetsel pruefen
+        run: npm run puzzles:verify
+
+      # Eine falsche Deduktionsregel schliesst still den richtigen Wert aus und
+      # macht Solver und Tipps unbrauchbar. Deshalb bei jedem Push gegen alle
+      # 600 bekannten Loesungen pruefen.
+      - name: Deduktionsregeln auf Korrektheit pruefen
+        run: npm run rules:check
+
       - name: Laufzeitmessung der Generierung
         run: npm run test:perf
 

@@ -107,10 +107,10 @@ Generierungszeit über je 30 Läufe, lokal (Node 22):
 
 | Grad    | Median  | p95     | Max     |
 | ------- | ------- | ------- | ------- |
-| Einfach | 1,6 ms  | 4,3 ms  | 6,7 ms  |
-| Mittel  | 3,1 ms  | 11,3 ms | 14,1 ms |
-| Schwer  | 10,5 ms | 36,5 ms | 48,4 ms |
-| Experte | 33,4 ms | 211 ms  | 247 ms  |
+| Einfach | 1,2 ms  | 6,8 ms  | 8,4 ms  |
+| Mittel  | 1,5 ms  | 12,6 ms | 16,9 ms |
+| Schwer  | 10,6 ms | 34,5 ms | 58,3 ms |
+| Experte | 15,9 ms | 49,8 ms | 70,6 ms |
 
 Die geforderte Grenze von 500 ms für Experte wird damit nicht nur im Median, sondern in
 jedem einzelnen gemessenen Lauf eingehalten. Das vereinbarte Median-Kriterium (E2) war am
@@ -125,6 +125,36 @@ Einschränkung im Standard-CI-Lauf.
 Alle geplanten Meilensteine sind umgesetzt. Was noch aussteht, steht unten unter
 „Entscheidungen, die beim Betreiber liegen" und unter „Bekannte Probleme".
 
+## Nachbesserung: Schwierigkeit statt Größe
+
+Nach dem ersten spielbaren Stand fiel im Test auf, dass die Grade vor allem über die
+Boardgröße gestaffelt waren — die Rätsel wurden dadurch länger, nicht schwerer. Die
+Messung bestätigte das: Der Anteil echter Einsichten an allen Deduktionsschritten lag
+bei 5 % („Mittel") bis 20 % („Experte"), der Rest war mechanische Buchhaltung.
+
+Geändert wurde:
+
+- **Kleinere Bretter** — 7 / 9 / 10 / 12 statt 7 / 10 / 13 / 17. „Experte" war auf einem
+  Telefon ohnehin nur mit ständigem Zoomen bedienbar.
+- **Neue Einstufung** (`DIFFICULTY_CRITERIA`) aus Deduktionstiefe, Mindestzahl
+  fortgeschrittener Schlüsse und Obergrenze für Leerlaufstrecken dazwischen.
+- **Zwei neue Deduktionsregeln**: D9 (zwei Einsen / zwei Zweien) als wiedererkennbares
+  Muster für bessere Tipps, D8 (Paritätsschluss über eine Schnittkante) als echter neuer
+  Schluss.
+- **Prüfskripte**: `npm run puzzles:analyze` misst die Zusammensetzung der Schwierigkeit,
+  `npm run rules:check` prüft alle Deduktionsregeln gegen die 600 bekannten Lösungen und
+  läuft in der CI mit.
+
+Ergebnis (Median über je 150 Rätsel):
+
+| Grad    | Schritte alt → neu | Anteil Einsichten | mit D1–D4 allein lösbar |
+| ------- | ------------------ | ----------------- | ----------------------- |
+| Mittel  | 34 → 34            | 5,2 % → 9,4 %     | 61 % → 32 %             |
+| Schwer  | 61 → 55            | 12,0 % → 15,1 %   | 26 % → 15 %             |
+| Experte | 107 → 86           | 20,2 % → 22,0 %   | 9,6 % → 7,0 %           |
+
+Alle 600 Rätsel wurden neu erzeugt und erneut auf Eindeutigkeit geprüft.
+
 ## Bekannte Probleme und Anmerkungen
 
 - Kein Android SDK in der Entwicklungsumgebung: Der Gradle-/AAB-Build ist nur über den
@@ -134,6 +164,12 @@ Alle geplanten Meilensteine sind umgesetzt. Was noch aussteht, steht unten unter
   Zusammenhangsschlüsse, aber keinen Widerspruchsbeweis" ist in der Messung praktisch
   leer geblieben. „Mittel" und „Schwer" unterscheiden sich jetzt über die Anzahl der
   fortgeschrittenen Schlüsse statt über deren Art. Begründung in `PLAN.md`, Abschnitt 4.4.
+- **Stufe 3 bleibt auch mit der neuen Paritätsregel D8 fast leer.** D6 und D8 setzen beide
+  eine Engstelle im Möglichkeitsgraphen voraus; über 600 Bretter hinweg entschied D8
+  zwei Mal, D6 elf Mal. Der Versuch, solche Engstellen über die Wachstumsstrategie des
+  Generators zu erzwingen (`growthRecency`), hat das nur unwesentlich verschoben. Beide
+  Regeln bleiben im Solver, weil sie korrekt sind und dort, wo sie greifen, einen guten
+  Tipp liefern — als eigene Schwierigkeitsstufe taugen sie nicht.
 - Ein Tipp nennt immer die bewiesene **Untergrenze** einer Kante. Steht in der Lösung eine
   Doppelbrücke, die Deduktion beweist aber zunächst nur eine, dann nennt der Tipp eine
   Brücke. Das ist beabsichtigt: ein Tipp deckt nie mehr auf, als an dieser Stelle

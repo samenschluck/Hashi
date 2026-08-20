@@ -17,6 +17,8 @@
     "ui:check": "node scripts/ui-check.mjs",
     "puzzles:generate": "node scripts/generate-puzzles.ts",
     "puzzles:verify": "node scripts/verify-puzzles.ts",
+    "puzzles:analyze": "node scripts/analyze-difficulty.ts",
+    "rules:check": "node scripts/check-soundness.ts",
     "ads:inject-appid": "node scripts/inject-admob-appid.ts",
     "store:screenshots": "node scripts/store-screenshots.mjs",
     "pages:play": "tsc --noEmit && vite build --base=/Hashi/play/ --outDir docs/play --emptyOutDir --sourcemap false",

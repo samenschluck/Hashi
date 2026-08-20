@@ -1,6 +1,7 @@
 import {
   BOARD_SIZE,
   GENERATOR,
+  GROWTH_RECENT_FRACTION,
   ISLAND_DENSITY,
   MAX_BRIDGES_PER_EDGE,
   MAX_ISLAND_VALUE,
@@ -251,9 +252,27 @@ function seedFirstIsland(layout: Layout, rng: Rng): void {
   layout.cells[cellIndex(layout, x, y)] = 0;
 }
 
+/**
+ * Waehlt aus, an welcher Insel weitergewachsen wird.
+ *
+ * Gleichverteilt gezogen entsteht ein gleichmaessiger Klumpen. Mit
+ * `growthRecency` wird stattdessen bevorzugt an einer der zuletzt gesetzten
+ * Inseln angebaut — das Netz waechst dann in Ranken, und zwischen ihnen bleiben
+ * Engstellen stehen, an denen die Schnittregeln ueberhaupt erst etwas zu tun
+ * bekommen.
+ */
+function pickGrowthSource(layout: Layout, rng: Rng): number {
+  const count = layout.islands.length;
+  if (count <= 2 || rng.nextFloat() >= layout.tuning.growthRecency) {
+    return rng.nextInt(count);
+  }
+  const window = Math.max(1, Math.round(count * GROWTH_RECENT_FRACTION));
+  return count - 1 - rng.nextInt(window);
+}
+
 /** Haengt eine neue Insel per Bruecke an eine vorhandene an. */
 function growByOneIsland(layout: Layout, rng: Rng): boolean {
-  const sourceId = rng.nextInt(layout.islands.length);
+  const sourceId = pickGrowthSource(layout, rng);
   const source = layout.islands[sourceId]!;
 
   const directions = [...DIRECTIONS];
