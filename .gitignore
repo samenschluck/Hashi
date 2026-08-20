@@ -13,6 +13,13 @@ ui-check.png
 *.jks
 android/keystore.properties
 
+# Die AdMob-App-ID wird von scripts/inject-admob-appid.ts erzeugt und darf nie
+# im Repository landen: das Repo ist oeffentlich, und veroeffentlichte Werbe-IDs
+# laden dazu ein, sie in fremden Apps fuer ungueltigen Traffic zu missbrauchen —
+# gesperrt wuerde dann das eigene AdMob-Konto.
+# Vor dem ersten Android-Build einmal `npm run ads:inject-appid` ausfuehren.
+android/app/src/main/res/values/admob.xml
+
 # Android-Buildartefakte (der Rest von android/ ist committet)
 android/.gradle/
 android/build/

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  Erzeugt von scripts/inject-admob-appid.ts — nicht von Hand aendern.
-  Der Wert stammt aus ADMOB_APP_ID (Umgebung oder .env).
--->
-<resources>
-    <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
-</resources>
