@@ -6,6 +6,8 @@ export interface IslandSpec {
   readonly x: number;
   readonly y: number;
   readonly required: number;
+  /** Zahl verbergen? Siehe `Island.hidden`. */
+  readonly hidden?: boolean;
 }
 
 /**
@@ -60,7 +62,13 @@ export function buildBoard(
     }
     const id = islands.length;
     grid[cell] = id;
-    islands.push({ id, x: spec.x, y: spec.y, required: spec.required });
+    islands.push({
+      id,
+      x: spec.x,
+      y: spec.y,
+      required: spec.required,
+      hidden: spec.hidden === true,
+    });
   }
 
   const edges: EdgeDef[] = [];
@@ -117,8 +125,10 @@ export function buildBoard(
   const crossings = computeCrossings(islands, edges);
 
   const required = new Uint8Array(islands.length);
+  const hidden = new Uint8Array(islands.length);
   for (const island of islands) {
     required[island.id] = island.required;
+    hidden[island.id] = island.hidden ? 1 : 0;
   }
 
   return {
@@ -130,6 +140,7 @@ export function buildBoard(
     crossings,
     required,
     blocked,
+    hidden,
   };
 }
 

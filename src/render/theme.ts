@@ -17,6 +17,8 @@ export interface BoardTheme {
   /** Gesperrte Zelle, ueber die keine Bruecke laeuft. */
   readonly wall: string;
   readonly wallBorder: string;
+  /** Fragezeichen einer Insel mit verborgener Zahl. */
+  readonly islandUnknownText: string;
 }
 
 export const DARK_THEME: BoardTheme = {
@@ -35,6 +37,7 @@ export const DARK_THEME: BoardTheme = {
   hint: '#fbbf24',
   wall: '#475569',
   wallBorder: '#94a3b8',
+  islandUnknownText: '#fbbf24',
 };
 
 export const LIGHT_THEME: BoardTheme = {
@@ -53,6 +56,7 @@ export const LIGHT_THEME: BoardTheme = {
   hint: '#b45309',
   wall: '#94a3b8',
   wallBorder: '#475569',
+  islandUnknownText: '#b45309',
 };
 
 export type ThemeName = 'dark' | 'light';

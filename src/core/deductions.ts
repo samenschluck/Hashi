@@ -463,6 +463,12 @@ export class ConstraintStore {
    * begrenzen jede einzelne anliegende Kante von beiden Seiten.
    */
   private applyDegreeRules(islandId: number): void {
+    if (this.board.hidden[islandId] === 1) {
+      // Ohne sichtbare Zahl gibt es hier nichts abzuleiten. Genau das macht
+      // verborgene Inseln schwierig: der Spieler muss ihren Wert erst aus der
+      // Umgebung erschliessen.
+      return;
+    }
     const required = this.board.required[islandId]!;
     const low = this.sumLow[islandId]!;
     const high = this.sumHigh[islandId]!;
@@ -568,6 +574,9 @@ export class ConstraintStore {
         if ((mask & (1 << value)) === 0) {
           continue;
         }
+        if (this.board.hidden[edge.a] === 1 || this.board.hidden[edge.b] === 1) {
+          continue; // ohne bekannte Zahl ist kein Abschluss beweisbar
+        }
         const degreeA = this.sumLow[edge.a]! - edgeLow + value;
         const degreeB = this.sumLow[edge.b]! - edgeLow + value;
         if (degreeA !== this.board.required[edge.a] || degreeB !== this.board.required[edge.b]) {
@@ -612,7 +621,13 @@ export class ConstraintStore {
     }
     this.openPerRoot.fill(0);
     for (let islandId = 0; islandId < this.board.islands.length; islandId++) {
-      if (this.sumLow[islandId] !== this.board.required[islandId]) {
+      // Von einer verborgenen Insel laesst sich nie beweisen, dass sie fertig
+      // ist — sie zaehlt deshalb immer als offen. Das schwaecht D5, macht aber
+      // nie einen falschen Schluss.
+      if (
+        this.board.hidden[islandId] === 1 ||
+        this.sumLow[islandId] !== this.board.required[islandId]
+      ) {
         const root = this.unionFind.find(islandId);
         this.openPerRoot[root] = this.openPerRoot[root]! + 1;
       }
@@ -645,6 +660,9 @@ export class ConstraintStore {
         continue; // bereits entschieden
       }
 
+      if (this.board.hidden[edge.a] === 1 || this.board.hidden[edge.b] === 1) {
+        continue;
+      }
       const required = this.board.required[edge.a]!;
       if (required > 2 || required !== this.board.required[edge.b]) {
         continue;
@@ -724,23 +742,29 @@ export class ConstraintStore {
     }
 
     // Summe der Inselzahlen je zusammengezogenem Knoten — Grundlage fuer D8.
+    // Verborgene Inseln werden mitgezaehlt, ihre Zahl kennt der Spieler aber
+    // nicht: enthaelt eine abgetrennte Seite auch nur eine davon, ist das
+    // Paritaetsargument fuer ihn nicht nachvollziehbar und faellt weg.
     const requiredPerNode = new Map<number, number>();
+    const hiddenPerNode = new Map<number, number>();
     for (let islandId = 0; islandId < islandCount; islandId++) {
       const root = this.unionFind.find(islandId);
       requiredPerNode.set(root, (requiredPerNode.get(root) ?? 0) + this.board.required[islandId]!);
+      hiddenPerNode.set(root, (hiddenPerNode.get(root) ?? 0) + this.board.hidden[islandId]!);
     }
 
     const discovery = new Map<number, number>();
     const lowLink = new Map<number, number>();
     /** Schnittkanten samt der Inselzahl-Summe auf der abgetrennten Seite. */
-    const cuts: { edgeId: number; requiredSum: number }[] = [];
+    const cuts: { edgeId: number; requiredSum: number; hiddenCount: number }[] = [];
     let timer = 0;
 
-    const dfs = (node: number, incomingEdge: number): number => {
+    const dfs = (node: number, incomingEdge: number): { required: number; hidden: number } => {
       timer++;
       discovery.set(node, timer);
       lowLink.set(node, timer);
       let subtree = requiredPerNode.get(node) ?? 0;
+      let subtreeHidden = hiddenPerNode.get(node) ?? 0;
 
       for (const link of adjacency.get(node) ?? []) {
         if (link.edgeId === incomingEdge) {
@@ -748,19 +772,24 @@ export class ConstraintStore {
         }
         const seen = discovery.get(link.to);
         if (seen === undefined) {
-          const childSum = dfs(link.to, link.edgeId);
-          subtree += childSum;
+          const child = dfs(link.to, link.edgeId);
+          subtree += child.required;
+          subtreeHidden += child.hidden;
           const childLow = lowLink.get(link.to)!;
           lowLink.set(node, Math.min(lowLink.get(node)!, childLow));
           if (childLow > discovery.get(node)!) {
-            cuts.push({ edgeId: link.edgeId, requiredSum: childSum });
+            cuts.push({
+              edgeId: link.edgeId,
+              requiredSum: child.required,
+              hiddenCount: child.hidden,
+            });
           }
         } else {
           lowLink.set(node, Math.min(lowLink.get(node)!, seen));
         }
       }
 
-      return subtree;
+      return { required: subtree, hidden: subtreeHidden };
     };
 
     dfs(nodes[0]!, -1);
@@ -792,6 +821,9 @@ export class ConstraintStore {
       // Enden dort — das sind immer zwei — oder sie laufen ueber diese eine
       // Schnittkante hinaus. Die Summe der Inselzahlen dort hat deshalb dieselbe
       // Parität wie die Zahl der Bruecken auf dieser Kante.
+      if (cut.hiddenCount > 0) {
+        continue;
+      }
       const parityMask = cut.requiredSum % 2 === 1 ? 0b010 : 0b101;
       if ((this.domains[cut.edgeId]! & ~parityMask) !== 0) {
         this.currentRule = 'D8_PARITY_CUT';

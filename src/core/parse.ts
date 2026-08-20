@@ -5,9 +5,10 @@ import type { Board, BridgeCount, Cell } from './types.ts';
  * Liest ein Board aus einer Textdarstellung — gedacht fuer handgeschriebene
  * Testfaelle und fuer Fehlerberichte.
  *
- * Ziffern 1–8 sind Inseln, `.` ist eine leere Zelle, `#` eine Mauer. Leerzeichen
- * dienen nur der Lesbarkeit und werden entfernt, so dass beide Schreibweisen
- * dasselbe Board ergeben:
+ * Ziffern 1–8 sind Inseln, `.` ist eine leere Zelle, `#` eine Mauer. Die
+ * Buchstaben `a`–`h` stehen fuer Inseln mit verborgener Zahl 1–8: `c` ist also
+ * eine Drei, die als `?` erscheint. Leerzeichen dienen nur der Lesbarkeit und
+ * werden entfernt, so dass beide Schreibweisen dasselbe Board ergeben:
  *
  * ```
  * 2 . 3      2.3
@@ -44,6 +45,10 @@ export function parseBoard(text: string): Board {
         walls.push({ x, y });
         continue;
       }
+      if (char >= 'a' && char <= 'h') {
+        specs.push({ x, y, required: char.charCodeAt(0) - 'a'.charCodeAt(0) + 1, hidden: true });
+        continue;
+      }
       const value = Number.parseInt(char, 10);
       if (Number.isNaN(value) || value < 1 || value > 8) {
         throw new SyntaxError(`Unbekanntes Zeichen "${char}" bei (${String(x)}, ${String(y)})`);
@@ -73,7 +78,9 @@ export function renderBoardAscii(board: Board, counts: ArrayLike<number>): strin
   }
 
   for (const island of board.islands) {
-    grid[island.y]![island.x] = String(island.required);
+    grid[island.y]![island.x] = island.hidden
+      ? String.fromCharCode('a'.charCodeAt(0) + island.required - 1)
+      : String(island.required);
   }
 
   for (const edge of board.edges) {

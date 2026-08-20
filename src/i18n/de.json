@@ -89,7 +89,7 @@
   "hint.rule.D9_TWIN_PAIR": "Diese beiden Inseln wären damit beide voll — und hätten ein fertiges Netz nur für sich, während der Rest des Feldes noch offen ist. Zwei Einsen gehen deshalb nie zusammen, zwei Zweien nie doppelt.",
 
   "rules.title": "Spielregeln",
-  "rules.body": "Verbinde alle Inseln zu einem einzigen Netz.\n\n• Brücken verlaufen nur waagerecht oder senkrecht.\n• Zwischen zwei Inseln höchstens zwei Brücken.\n• Brücken dürfen sich nicht kreuzen und nicht über Inseln laufen.\n• Graue Blöcke sind Mauern — dort kommt keine Brücke durch.\n• Die Zahl auf einer Insel sagt, wie viele Brücken dort enden.\n• Am Ende müssen alle Inseln zusammenhängen.\n\nZiehen von Insel zu Insel legt eine Brücke, nochmal ziehen macht sie doppelt, ein drittes Mal entfernt sie. Antippen zweier Inseln geht genauso.",
+  "rules.body": "Verbinde alle Inseln zu einem einzigen Netz.\n\n• Brücken verlaufen nur waagerecht oder senkrecht.\n• Zwischen zwei Inseln höchstens zwei Brücken.\n• Brücken dürfen sich nicht kreuzen und nicht über Inseln laufen.\n• Graue Blöcke sind Mauern — dort kommt keine Brücke durch.\n• Die Zahl auf einer Insel sagt, wie viele Brücken dort enden.\n• Ein ? bedeutet: die Zahl ist verborgen. Diese Insel braucht mindestens eine Brücke — wie viele es genau sind, ergibt sich aus dem Rest des Feldes.\n• Am Ende müssen alle Inseln zusammenhängen.\n\nZiehen von Insel zu Insel legt eine Brücke, nochmal ziehen macht sie doppelt, ein drittes Mal entfernt sie. Antippen zweier Inseln geht genauso.",
 
   "common.back": "Zurück",
   "common.close": "Schließen",

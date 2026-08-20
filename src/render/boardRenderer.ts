@@ -299,12 +299,16 @@ export class BoardRenderer {
 
       let fill = this.theme.island;
       let text = this.theme.islandText;
-      if (degree > island.required) {
-        fill = this.theme.islandError;
-        text = this.theme.islandErrorText;
-      } else if (degree === island.required) {
-        fill = this.theme.islandSatisfied;
-        text = this.theme.islandSatisfiedText;
+      // Eine verborgene Insel faerbt sich nie ein: „voll" oder „zu voll" waere
+      // bereits ein Hinweis auf ihre Zahl.
+      if (!island.hidden) {
+        if (degree > island.required) {
+          fill = this.theme.islandError;
+          text = this.theme.islandErrorText;
+        } else if (degree === island.required) {
+          fill = this.theme.islandSatisfied;
+          text = this.theme.islandSatisfiedText;
+        }
       }
 
       context.beginPath();
@@ -320,8 +324,8 @@ export class BoardRenderer {
       }
       context.stroke();
 
-      context.fillStyle = text;
-      context.fillText(String(island.required), center.x, center.y);
+      context.fillStyle = island.hidden ? this.theme.islandUnknownText : text;
+      context.fillText(island.hidden ? '?' : String(island.required), center.x, center.y);
     }
   }
 }

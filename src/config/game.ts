@@ -145,6 +145,35 @@ export const WALL_DENSITY: Readonly<Record<Difficulty, number>> = {
   expert: 0.06,
 };
 
+/**
+ * Hoechstzahl an Inseln je Brett, deren Zahl verborgen wird („?").
+ *
+ * Eine verborgene Zahl ist keine Bedingung mehr — der Spieler muss sie erst aus
+ * der Umgebung erschliessen. Der Generator verdeckt nur, solange das Raetsel
+ * dabei eindeutig bleibt; wo eine verborgene Zahl zusaetzliche Loesungen
+ * eroeffnen wuerde, bleibt sie sichtbar. Die Zahl hier ist also eine Obergrenze,
+ * kein Sollwert.
+ *
+ * „Einfach" bleibt ohne: dort soll nichts erschlossen werden muessen.
+ *
+ * **Der wirksamste Hebel im ganzen Projekt.** Gemessen ueber je 40 Bretter hebt
+ * das Verdecken den Anteil fortgeschrittener Schluesse bei „Schwer" von 14,8 auf
+ * 22,4 Prozent und bei „Experte" von 21,1 auf 38,4 — und die Raetsel werden
+ * dabei sogar *kuerzer* (Schwer 51 auf 43 Schritte). Oberhalb dieser Werte
+ * saettigt der Effekt: der Generator findet dann keine weiteren Inseln mehr, die
+ * sich verdecken lassen, ohne die Eindeutigkeit zu verlieren.
+ *
+ * Bei „Mittel" bricht die Ausbeute ab 4 ein (18 von 40 Versuchen) — kleine
+ * Bretter haben zu wenig Umgebung, aus der sich eine verborgene Zahl
+ * erschliessen liesse.
+ */
+export const HIDDEN_ISLANDS: Readonly<Record<Difficulty, number>> = {
+  easy: 0,
+  medium: 2,
+  hard: 8,
+  expert: 10,
+};
+
 /** Hoechstzahl an Brueckenenden pro Insel (Hashiwokakero-Regel). */
 export const MAX_ISLAND_VALUE = 8;
 /** Hoechstzahl paralleler Bruecken zwischen zwei Inseln. */

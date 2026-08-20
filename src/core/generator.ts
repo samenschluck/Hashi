@@ -4,6 +4,7 @@ import {
   GROWTH_RECENT_FRACTION,
   ISLAND_DENSITY,
   MAX_BRIDGES_PER_EDGE,
+  HIDDEN_ISLANDS,
   MAX_ISLAND_VALUE,
   WALL_DENSITY,
   type Difficulty,
@@ -109,13 +110,15 @@ export function tryGenerate(
       continue;
     }
 
+    const withHidden = hideIslands(board, candidate.walls, rng, difficulty);
+
     return {
       id: `${difficulty}-${seed}`,
       seed,
       difficulty,
-      width: board.width,
-      height: board.height,
-      islands: board.islands,
+      width: withHidden.width,
+      height: withHidden.height,
+      islands: withHidden.islands,
       solution,
       blocked: candidate.walls,
     };
@@ -128,6 +131,66 @@ interface Candidate {
   board: Board;
   solution: BridgeCount[];
   walls: Cell[];
+}
+
+/**
+ * Verdeckt so viele Inselzahlen wie moeglich, ohne die Eindeutigkeit zu verlieren.
+ *
+ * Der Punkt, an dem das kippen kann: Eine verborgene Zahl ist **keine Bedingung
+ * mehr**. Aus Spielersicht muss die Insel nur irgendeine Bruecke haben. Das kann
+ * zusaetzliche Loesungen eroeffnen — dann ist das Raetsel fuer den Spieler
+ * mehrdeutig, obwohl es das mit sichtbaren Zahlen nicht waere. Deshalb wird nach
+ * jedem Verdecken erneut gezaehlt und im Zweifel zurueckgenommen.
+ *
+ * Jeder einzelne Schritt muss ausserdem den Schwierigkeitsgrad erhalten.
+ * Andernfalls waere die Reihenfolge falsch herum: erst alles verdecken, dann
+ * einstufen und den ganzen Kandidaten verwerfen, wenn er aus dem Grad
+ * gerutscht ist — das hat in der Messung ganze Seeds am Versuchsbudget
+ * scheitern lassen. So bleibt stattdessen immer der beste noch passende Stand
+ * stehen.
+ *
+ * Die Inseln werden in zufaelliger Reihenfolge probiert, damit nicht immer
+ * dieselben Positionen verdeckt sind.
+ */
+function hideIslands(board: Board, walls: Cell[], rng: Rng, difficulty: Difficulty): Board {
+  const budget = HIDDEN_ISLANDS[difficulty];
+  if (budget <= 0) {
+    return board;
+  }
+
+  const order = board.islands.map((island) => island.id);
+  rng.shuffle(order);
+
+  const specs: IslandSpec[] = board.islands.map((island) => ({
+    x: island.x,
+    y: island.y,
+    required: island.required,
+    hidden: false,
+  }));
+
+  let current = board;
+  let hiddenCount = 0;
+
+  for (const islandId of order) {
+    if (hiddenCount >= budget) {
+      break;
+    }
+    const spec = specs[islandId]!;
+    specs[islandId] = { ...spec, hidden: true };
+
+    const candidate = buildBoard(board.width, board.height, specs, walls);
+    if (
+      solve(candidate, { maxSolutions: 2 }).count === 1 &&
+      classifyDifficulty(candidate) === difficulty
+    ) {
+      current = candidate;
+      hiddenCount++;
+    } else {
+      specs[islandId] = spec;
+    }
+  }
+
+  return current;
 }
 
 /**

@@ -51,6 +51,12 @@ export class PuzzleState {
 
   islandStatus(islandId: number): IslandStatus {
     const degree = this.degrees[islandId]!;
+    // Eine verborgene Insel hat aus Spielersicht keinen Sollwert: sie kann
+    // weder zu voll noch nachweislich fertig sein. Sie faerbt sich deshalb
+    // nicht ein — sonst waere ihre Zahl indirekt verraten.
+    if (this.board.hidden[islandId] === 1) {
+      return 'open';
+    }
     const required = this.board.required[islandId]!;
     if (degree > required) {
       return 'overfilled';
@@ -167,7 +173,7 @@ export class PuzzleState {
     const issues: ValidationIssue[] = [];
 
     for (const island of this.board.islands) {
-      if (this.degrees[island.id]! > island.required) {
+      if (!island.hidden && this.degrees[island.id]! > island.required) {
         issues.push({ kind: 'overfilled', ref: island.id });
       }
     }
@@ -186,9 +192,21 @@ export class PuzzleState {
     return issues;
   }
 
-  /** Sind alle Inselwerte exakt erfuellt? */
+  /**
+   * Sind alle Inselwerte erfuellt?
+   *
+   * Verborgene Inseln brauchen nur mindestens eine Bruecke — genau wie in
+   * `isValidSolution`. Beide Stellen muessen dieselbe Regel benutzen, sonst
+   * gilt ein Raetsel als geloest, das der Solver ablehnt, oder umgekehrt.
+   */
   allIslandsSatisfied(): boolean {
     for (let id = 0; id < this.degrees.length; id++) {
+      if (this.board.hidden[id] === 1) {
+        if (this.degrees[id]! < 1) {
+          return false;
+        }
+        continue;
+      }
       if (this.degrees[id] !== this.board.required[id]) {
         return false;
       }
