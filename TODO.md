@@ -47,7 +47,15 @@ gesperrt würde dann das eigene AdMob-Konto. Sie gehören ausschließlich in die
 **Weiter sicher aufbewahren.** Mit Play App Signing ist er nur der Upload-Schlüssel und
 liesse sich über den Play-Support zurücksetzen — angenehm ist das trotzdem nicht.
 
-### 4. Test auf einem echten Gerät
+### 4. Test auf einem echten Gerät — ✅ Debug-Build geprüft
+
+**Erledigt am 20.08.2026** über eine Debug-APK aus Android Studio: Bedienung,
+Darstellung und Ablauf laufen auf echter Hardware. Damit ist die Annahme bestätigt,
+dass sich die Web-Fassung und die App gleich verhalten.
+
+**Offen bleibt der Test mit echten Anzeigen** — Einwilligungsdialog, geladene Anzeigen
+und belohntes Video lassen sich nur über einen internen Test in der Play Console prüfen,
+weil der Debug-Build bewusst Googles Test-IDs benutzt.
 
 **Ein AAB lässt sich nicht direkt auf ein Telefon installieren** — es ist ein Format für
 die Play Console, kein Installationspaket. Zwei Wege zum Gerät:
