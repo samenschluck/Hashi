@@ -19,6 +19,7 @@
     "puzzles:verify": "node scripts/verify-puzzles.ts",
     "ads:inject-appid": "node scripts/inject-admob-appid.ts",
     "store:screenshots": "node scripts/store-screenshots.mjs",
+    "pages:play": "tsc --noEmit && vite build --base=/Hashi/play/ --outDir docs/play --emptyOutDir --sourcemap false",
     "android:prepare": "npm run ads:inject-appid && npm run build && npx cap sync android"
   },
   "repository": {

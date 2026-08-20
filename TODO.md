@@ -66,6 +66,9 @@ Was in der Entwicklungsumgebung nicht prüfbar war:
   keine Treffer. Der Halbleiter-Hersteller CrossFire benutzt den Begriff für ein
   patentiertes Bauteil; andere Warenklasse, andere Abnehmer. Keine Rechtsberatung.
 - **Bundle-ID `com.bridgelet.game`** — nach dem ersten Upload unveränderlich.
+- **Browser-Fassung unter `docs/play/`** — eingecheckter Web-Build zum Testen ohne Gerät.
+  Nach Änderungen am Spiel mit `npm run pages:play` neu erzeugen, sonst zeigt die
+  öffentliche Seite einen veralteten Stand. Darf vor dem Release gelöscht werden.
 
 ---
 
