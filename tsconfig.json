@@ -27,7 +27,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node"]
+    "types": ["node", "vite/client"]
   },
-  "include": ["src", "scripts", "vite.config.ts", "vitest.perf.config.ts"]
+  "include": ["src", "scripts", "vite.config.ts", "vitest.perf.config.ts", "capacitor.config.ts"]
 }

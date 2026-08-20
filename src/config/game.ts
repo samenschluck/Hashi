@@ -103,7 +103,9 @@ export const RENDER = {
   dragAngleToleranceDeg: 30,
   /** Dauer der Snap-Animation einer Bruecke in ms. */
   bridgeAnimationMs: 120,
-  zoom: { min: 1, max: 3, doubleTapStep: 1.6 },
+  /** Ab dieser Zugstrecke (in Zellen) gilt eine Bewegung als Ziehen, nicht als Tippen. */
+  dragActivationCells: 0.35,
+  zoom: { min: 1, max: 3 },
 } as const;
 
 /** Persistenz (Meilenstein 3). */

@@ -1,6 +1,6 @@
 # PLAN.md — Bridgelet (Hashiwokakero) für Android
 
-Stand: 2026-08-19 · Status: **freigegeben, Umsetzung läuft**
+Stand: 2026-08-20 · Status: **umgesetzt, alle Meilensteine abgeschlossen**
 
 Dieses Dokument beschreibt Architektur, Datenmodell, Algorithmen, Build-Pipeline und
 Meilensteine. Abschnitt 10 hält die getroffenen Entscheidungen fest, Abschnitt 11 die

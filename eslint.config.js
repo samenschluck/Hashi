@@ -17,7 +17,7 @@ export default defineConfig(
       ecmaVersion: 2022,
       globals: { ...globals.browser, ...globals.node },
       parserOptions: {
-        projectService: { allowDefaultProject: ['eslint.config.js'] },
+        projectService: { allowDefaultProject: ['eslint.config.js', 'scripts/*.mjs'] },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -116,6 +116,19 @@ export default defineConfig(
     rules: {
       'no-console': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
+    },
+  },
+
+  // Hilfsskripte in reinem JavaScript: sie steuern einen Browser fern und
+  // arbeiten dabei zwangslaeufig mit untypisierten Werten aus der Seite.
+  // Typgestuetzte Regeln haetten hier nichts zu pruefen.
+  {
+    files: ['scripts/**/*.mjs'],
+    extends: [tseslint.configs.disableTypeChecked],
+    languageOptions: { globals: globals.node },
+    rules: {
+      'no-console': 'off',
+      'no-undef': 'off',
     },
   },
 );
