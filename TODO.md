@@ -80,6 +80,9 @@ Was in der Entwicklungsumgebung nicht prüfbar war:
 - Datenschutz-URL eintragen: `https://samenschluck.github.io/Hashi/privacy.html`
   (die englische Fassung, passend zur Standardsprache des Store-Eintrags; sie verlinkt
   oben auf die deutsche)
+- URL zur Datenlöschung eintragen: `https://samenschluck.github.io/Hashi/data-deletion.html`
+  (verlangt die Datensicherheit, sobald dort „Nutzer können Löschung anfordern" auf Ja
+  steht — zweisprachig auf einer Seite, damit eine URL für alle Regionen reicht)
 - Datensicherheit nach `store/data-safety.md`
 - Content-Rating nach `store/content-rating.md`
 - „Diese App enthält Werbung" anhaken
