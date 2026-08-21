@@ -75,7 +75,28 @@ Was in der Entwicklungsumgebung nicht prüfbar war:
 - Banner überlagert nichts, belohntes Video schreibt Tipps gut
 - Fortschritt überlebt ein Force-Close
 
-### 5. Play-Console-Formulare
+### 5. Play-Console-Formulare — ✅ erledigt, App geprüft
+
+**Stand 21.08.2026:** Alle Formulare ausgefüllt, Store-Eintrag angelegt, Release
+1.0.0 (versionCode 2) eingereicht und von Google **geprüft**. Der geschlossene Test
+läuft.
+
+Was dabei nachträglich dazukam und in der ursprünglichen Liste fehlte:
+
+- **Werbe-ID-Erklärung** (App-Inhalte → Werbe-ID): Ja, Zwecke „Werbung oder Marketing"
+  und „Betrugsprävention, Sicherheit und Compliance" — dieselben zwei wie bei
+  „Geräte- oder andere IDs" in der Datensicherheit. Google gleicht beide Formulare ab.
+- **Erklärungen zu Gesundheits-, Behörden- und Finanz-Apps**: jeweils „trifft nicht zu".
+- **Formfaktor „Google Play Games auf dem PC"**: bewusst **nicht** aktiviert. Die App
+  wurde nie mit Maus und Tastatur geprüft, und der PC-Client bringt eine eigene
+  Prüfung mit. Nachträglich jederzeit einschaltbar.
+
+**Der Engpass ist jetzt die Testerzahl**, nicht mehr die Technik: Der Produktionszugang
+verlangt einen durchgehend laufenden geschlossenen Test mit genügend angemeldeten
+Testern. Die Tage zählen erst, wenn die geforderte Zahl erreicht ist — wer später
+Tester nachträgt, verschiebt damit den Starttermin.
+
+### Ursprüngliche Liste
 
 - Datenschutz-URL eintragen: `https://samenschluck.github.io/Hashi/privacy.html`
   (die englische Fassung, passend zur Standardsprache des Store-Eintrags; sie verlinkt

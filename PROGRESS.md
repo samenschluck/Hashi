@@ -195,6 +195,26 @@ Stand danach (Median über je 150 Rätsel):
 | Schwer  | 21     | 52       | 18,0 %            | 29 %                    |
 | Experte | 31     | 82       | 39,1 %            | 3 %                     |
 
+## Veröffentlichung
+
+**21.08.2026 — die App ist bei Google eingereicht und geprüft.** Der geschlossene Test
+läuft mit Version 1.0.0 (versionCode 2).
+
+Damit ist die vollständige Kette einmal durchlaufen: Quelltext → Web-Build →
+Capacitor-Sync → Gradle → signiertes AAB → Play Console → geprüfte App. Der Bauweg ist
+reproduzierbar, ein Release kostet einen Klick auf „Run workflow" und viereinhalb
+Minuten.
+
+Offen bleibt nur noch, was Zeit oder eine öffentliche App braucht:
+
+- Der geschlossene Test muss die geforderte Laufzeit mit genügend Testern erreichen,
+  bevor sich der Produktionszugang beantragen lässt.
+- Die eigene DSGVO-Nachricht und echte Anzeigen zeigen sich erst mit einer über die
+  Play Console installierten Version — im Debug-Build steht Googles Test-App-ID im
+  Manifest.
+- AdMob kann die App erst nach der Veröffentlichung mit dem Store verknüpfen; bis dahin
+  bleibt sie unverifiziert, und echte Anzeigen liefern wenig bis gar nicht.
+
 ## Bekannte Probleme und Anmerkungen
 
 - Kein Android SDK in der Entwicklungsumgebung: Der Gradle-/AAB-Build ist nur über den
