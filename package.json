@@ -21,6 +21,7 @@
     "rules:check": "node scripts/check-soundness.ts",
     "ads:inject-appid": "node scripts/inject-admob-appid.ts",
     "store:screenshots": "node scripts/store-screenshots.mjs",
+    "store:screenshots:all": "node scripts/store-screenshots.mjs --locale=de && node scripts/store-screenshots.mjs --locale=en && node scripts/store-screenshots.mjs --locale=de --device=tablet7 && node scripts/store-screenshots.mjs --locale=en --device=tablet7 && node scripts/store-screenshots.mjs --locale=de --device=tablet10 && node scripts/store-screenshots.mjs --locale=en --device=tablet10",
     "pages:play": "tsc --noEmit && vite build --base=/Hashi/play/ --outDir docs/play --emptyOutDir --sourcemap false",
     "android:prepare": "npm run ads:inject-appid && npm run build && npx cap sync android"
   },

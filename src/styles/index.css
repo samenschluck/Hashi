@@ -65,6 +65,22 @@ body {
   padding-right: var(--safe-right);
 }
 
+/**
+ * Lesespalte fuer alles ausser dem Spielfeld.
+ *
+ * Die Bildschirme sind fuer ein Telefon entworfen, wo die volle Breite genau
+ * richtig ist. Auf einem Tablet zoegen sich Knoepfe und Listen sonst ueber
+ * 1200 Pixel — bedienbar, aber es sieht nach auseinandergezogenem
+ * Telefon-Layout aus. Das Spielfeld selbst bekommt diese Grenze bewusst nicht:
+ * Ein grosses Brett auf einem grossen Bildschirm ist ein Gewinn, keine
+ * Verlegenheit.
+ */
+.screen-column {
+  width: 100%;
+  max-width: 32rem;
+  margin-inline: auto;
+}
+
 .app-content {
   flex: 1 1 auto;
   min-height: 0;
