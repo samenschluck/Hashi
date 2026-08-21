@@ -13,7 +13,25 @@ import { chromium } from 'playwright';
 
 const url = process.env.APP_URL ?? 'http://127.0.0.1:5173/';
 const locale = process.argv.find((value) => value.startsWith('--locale='))?.slice(9) ?? 'de';
-const outputDirectory = `store/screenshots/${locale}`;
+const device = process.argv.find((value) => value.startsWith('--device='))?.slice(9) ?? 'phone';
+
+/**
+ * Grundflaeche in CSS-Pixeln, dazu die Pixeldichte. Das Produkt ergibt die
+ * Bilddatei; Play verlangt mindestens 1080 Pixel an der kurzen Seite.
+ */
+const devices = {
+  phone: { width: 360, height: 640, scale: 3 },
+  tablet7: { width: 600, height: 960, scale: 2 },
+  tablet10: { width: 800, height: 1280, scale: 2 },
+};
+
+const layout = devices[device];
+if (!layout) {
+  throw new Error(`Unbekanntes Geraet: ${device}. Erlaubt: ${Object.keys(devices).join(', ')}`);
+}
+
+const outputDirectory =
+  device === 'phone' ? `store/screenshots/${locale}` : `store/screenshots/${locale}-${device}`;
 
 await mkdir(outputDirectory, { recursive: true });
 
@@ -21,8 +39,8 @@ const browser = await chromium.launch(
   process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {},
 );
 const page = await browser.newPage({
-  viewport: { width: 360, height: 640 },
-  deviceScaleFactor: 3,
+  viewport: { width: layout.width, height: layout.height },
+  deviceScaleFactor: layout.scale,
 });
 
 const errors = [];

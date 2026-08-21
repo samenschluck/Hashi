@@ -93,7 +93,7 @@ export function GameScreen(): React.JSX.Element {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center justify-between gap-3 px-4 py-3">
+      <header className="screen-column flex items-center justify-between gap-3 px-4 py-3">
         <button
           type="button"
           onClick={() => {
@@ -121,7 +121,7 @@ export function GameScreen(): React.JSX.Element {
       </main>
 
       {hint ? (
-        <div className="px-4 pb-2">
+        <div className="screen-column px-4 pb-2">
           <p className="rounded-xl bg-amber-500/15 px-3 py-2 text-xs text-amber-200">
             {t(hint.messageKey as 'hint.generic')}
           </p>
@@ -129,7 +129,7 @@ export function GameScreen(): React.JSX.Element {
       ) : null}
 
       <nav
-        className={`flex items-center gap-1.5 px-3 py-3 ${leftHanded ? 'flex-row-reverse' : ''}`}
+        className={`screen-column flex items-center gap-1.5 px-3 py-3 ${leftHanded ? 'flex-row-reverse' : ''}`}
       >
         {toolbar}
       </nav>

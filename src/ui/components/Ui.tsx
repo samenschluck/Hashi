@@ -57,7 +57,7 @@ export function ScreenFrame({
   footer,
 }: ScreenFrameProps): React.JSX.Element {
   return (
-    <div className="flex h-full flex-col">
+    <div className="screen-column flex h-full flex-col">
       <header className="flex items-center gap-2 px-4 py-3">
         {onBack ? (
           <button

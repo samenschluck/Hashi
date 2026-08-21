@@ -11,7 +11,7 @@ export function MenuScreen(): React.JSX.Element {
   const [showRefill, setShowRefill] = useState(false);
 
   return (
-    <div className="flex h-full flex-col justify-between px-6 py-8">
+    <div className="screen-column flex h-full flex-col justify-between px-6 py-8">
       <div className="mt-8 text-center">
         <h1 className="text-4xl font-semibold tracking-tight">{t('app.name')}</h1>
         <p className="mt-1 text-sm text-slate-400">{t('app.tagline')}</p>
