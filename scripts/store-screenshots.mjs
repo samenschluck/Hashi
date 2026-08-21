@@ -41,6 +41,10 @@ await page.evaluate((chosenLocale) => {
       solved: true,
       bestTimeMs: 60000 + index * 4200,
       hintsUsed: index % 3,
+      undosUsed: index % 2,
+      // Gemischte Sterne: die Levelauswahl soll zeigen, dass es etwas zu holen
+      // gibt, und nicht wie eine lueckenlose Reihe voller Bestleistungen wirken.
+      stars: [3, 2, 3, 1, 2, 3][index % 6],
     };
   }
   app.setState({
@@ -116,20 +120,40 @@ await page.evaluate(() => {
 });
 await shot('06-geloest');
 
-// 7 Tagesraetsel
+// 7 Schweres Brett mit Mauern und verborgener Inselzahl — die beiden
+// Besonderheiten, die das Spiel von einem gewoehnlichen Hashi unterscheiden.
+await page.evaluate(() => {
+  window.__bridgeletApp.setState({ screen: 'menu', stack: [] });
+});
+await page.getByRole('button', { name: label('Spielen', 'Play'), exact: true }).click();
+await page.getByRole('button', { name: label('Schwer', 'Hard'), exact: true }).click();
+await page.waitForTimeout(300);
+await page.getByRole('button', { name: '7', exact: true }).click();
+await page.evaluate(() => {
+  const app = window.__bridgeletApp;
+  const game = window.__bridgelet;
+  const { puzzle } = app.getState().active;
+  const part = Math.ceil(puzzle.solution.length * 0.4);
+  for (let index = 0; index < part; index++) {
+    if (puzzle.solution[index] > 0) game.getState().setEdge(index, puzzle.solution[index]);
+  }
+});
+await shot('07-schwer');
+
+// 8 Tagesraetsel
 await page.evaluate(() => {
   const app = window.__bridgeletApp;
   app.setState({ screen: 'menu', stack: [] });
 });
 await page.getByRole('button', { name: label('Tagesrätsel', 'Daily puzzle'), exact: true }).click();
-await shot('07-tagesraetsel');
+await shot('08-tagesraetsel');
 
-// 8 Statistik
+// 9 Statistik
 await page.evaluate(() => {
   window.__bridgeletApp.setState({ screen: 'menu', stack: [] });
 });
 await page.getByRole('button', { name: label('Statistik', 'Statistics'), exact: true }).click();
-await shot('08-statistik');
+await shot('09-statistik');
 
 if (errors.length > 0) {
   console.error('Fehler auf der Seite:', errors);
