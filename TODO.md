@@ -155,8 +155,30 @@ vorher unmöglich:
   die Suche zwangsläufig ergebnislos — dann **keinen** anderen App-Shop ankreuzen, nur
   weil ein Häkchen verlangt scheint. Eine Falschangabe gegenüber dem Werbenetzwerk
   gefährdet das Konto.
-- **`app-ads.txt`** in der Play-Console-Website hinterlegen. Weist die Anzeigenplätze als
-  echt aus und verbessert die Erlöse.
+- **`app-ads.txt` — Pflicht für die AdMob-Verifizierung, nicht nur eine Optimierung.**
+
+  Ohne die Datei bricht die App-Überprüfung in AdMob mit „konnte nicht bestätigt werden"
+  ab. Der Stolperstein steckt im Ablageort: Der Crawler leitet aus der im Play Store
+  eingetragenen Entwickler-Website die **Stammdomain** ab und ignoriert jeden
+  Unterordner. Bei `https://samenschluck.github.io/Hashi/` sucht er also unter
+
+  ```
+  https://samenschluck.github.io/app-ads.txt
+  ```
+
+  Diese Adresse gehört **nicht** zu diesem Repository — eine Datei unter `docs/`
+  landet bei `.../Hashi/app-ads.txt` und hilft nicht.
+
+  Nötig ist ein zweites, öffentliches Repository mit dem exakten Namen
+  `samenschluck.github.io`, darin `app-ads.txt` im Wurzelverzeichnis mit der Zeile aus
+  der AdMob-Konsole (`google.com, pub-…, DIRECT, …`), und GitHub Pages auf `main` /
+  `/ (root)`.
+
+  Zwei Voraussetzungen, an denen es sonst scheitert: Im Play-Store-Eintrag muss unter
+  _Store-Einstellungen_ eine Website auf derselben Domain hinterlegt sein — ist das Feld
+  leer, findet AdMob keine Domain. Und der Crawler braucht Zeit: AdMob nennt „ein paar
+  Minuten", in der Praxis sind Stunden bis Tage normal. Nicht mehrfach neu einrichten,
+  sondern warten.
 
 ---
 
