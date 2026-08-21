@@ -77,7 +77,9 @@ Was in der Entwicklungsumgebung nicht prüfbar war:
 
 ### 5. Play-Console-Formulare
 
-- Datenschutz-URL eintragen (`https://samenschluck.github.io/Hashi/datenschutz.html`)
+- Datenschutz-URL eintragen: `https://samenschluck.github.io/Hashi/privacy.html`
+  (die englische Fassung, passend zur Standardsprache des Store-Eintrags; sie verlinkt
+  oben auf die deutsche)
 - Datensicherheit nach `store/data-safety.md`
 - Content-Rating nach `store/content-rating.md`
 - „Diese App enthält Werbung" anhaken
