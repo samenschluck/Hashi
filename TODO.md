@@ -113,9 +113,24 @@ Was in der Entwicklungsumgebung nicht prüfbar war:
 
 ---
 
+## 🟠 Direkt nach der Veröffentlichung
+
+Beides setzt eine **öffentlich auffindbare** App im Play Store voraus und ist deshalb
+vorher unmöglich:
+
+- **AdMob: App-Shop verknüpfen.** In der AdMob-Konsole unter „App-Shops angeben" nach
+  `com.bridgelet.game` suchen und verknüpfen. Bis dahin bleibt die App unverifiziert,
+  und echte Anzeigen liefern wenig bis gar nicht. Während eines geschlossenen Tests ist
+  die Suche zwangsläufig ergebnislos — dann **keinen** anderen App-Shop ankreuzen, nur
+  weil ein Häkchen verlangt scheint. Eine Falschangabe gegenüber dem Werbenetzwerk
+  gefährdet das Konto.
+- **`app-ads.txt`** in der Play-Console-Website hinterlegen. Weist die Anzeigenplätze als
+  echt aus und verbessert die Erlöse.
+
+---
+
 ## ⚪ Optional, später
 
-- `app-ads.txt` in der Play-Console-Website hinterlegen (verbessert die AdMob-Erlöse)
 - Kauf „Werbung entfernen" — das Kennzeichen `adsRemoved` ist im Code bereits vorgesehen
   und wird vom Banner respektiert, der Kauf selbst ist nicht implementiert
 - iOS — die Architektur ist darauf vorbereitet, alle nativen Zugriffe laufen über
