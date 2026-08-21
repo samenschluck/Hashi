@@ -77,7 +77,12 @@ Was in der Entwicklungsumgebung nicht prüfbar war:
 
 ### 5. Play-Console-Formulare
 
-- Datenschutz-URL eintragen (`https://samenschluck.github.io/Hashi/datenschutz.html`)
+- Datenschutz-URL eintragen: `https://samenschluck.github.io/Hashi/privacy.html`
+  (die englische Fassung, passend zur Standardsprache des Store-Eintrags; sie verlinkt
+  oben auf die deutsche)
+- URL zur Datenlöschung eintragen: `https://samenschluck.github.io/Hashi/data-deletion.html`
+  (verlangt die Datensicherheit, sobald dort „Nutzer können Löschung anfordern" auf Ja
+  steht — zweisprachig auf einer Seite, damit eine URL für alle Regionen reicht)
 - Datensicherheit nach `store/data-safety.md`
 - Content-Rating nach `store/content-rating.md`
 - „Diese App enthält Werbung" anhaken
@@ -94,6 +99,17 @@ Was in der Entwicklungsumgebung nicht prüfbar war:
 - **Browser-Fassung unter `docs/play/`** — eingecheckter Web-Build zum Testen ohne Gerät.
   Nach Änderungen am Spiel mit `npm run pages:play` neu erzeugen, sonst zeigt die
   öffentliche Seite einen veralteten Stand. Darf vor dem Release gelöscht werden.
+
+---
+
+## 🔵 Laufender Betrieb
+
+- **Anfragen zu Datenschutzrechten** — Vorlagen und Fristen in
+  `store/datenanfragen.md`. Kern: innerhalb eines Monats antworten, auch wenn keine
+  Daten vorliegen. Gelöscht werden kann nichts, weil nichts gespeichert wird.
+- **Vorlagen prüfen, wenn sich die App ändert** — kommt später ein Konto, eine
+  Bestenliste oder ein Analysewerkzeug dazu, stimmen Datenschutzerklärung,
+  Data-Safety-Formular und die Antwortvorlagen nicht mehr.
 
 ---
 
