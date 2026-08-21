@@ -50,6 +50,9 @@ export function App(): React.JSX.Element {
     () =>
       onResume(() => {
         useAppStore.getState().resumeTimer();
+        // Steht gerade kein Banner, ist die Rueckkehr in die App ein guter
+        // Moment fuer einen neuen Versuch — oft hat sich das Netz geaendert.
+        useAdStore.getState().retryBanner();
       }),
     [],
   );

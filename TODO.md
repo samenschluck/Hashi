@@ -53,11 +53,21 @@ Ordnung:
 Damit ist die vollständige Kette Einwilligung → Anzeigenanfrage → Banner → belohntes
 Video → Gutschrift einmal nachgewiesen.
 
-**Eine Restposition bleibt: die eigene DSGVO-Nachricht.** Die UMP-Bibliothek lädt die
-Einwilligungskonfiguration anhand der App-ID aus dem Manifest, und im Debug-Build steht
-dort Googles Test-App-ID. Der gesehene Dialog belegt also den _Ablauf_, nicht die eigene
-veröffentlichte Nachricht. Das zeigt erst ein Build mit der echten App-ID, also der
-interne Test in der Play Console.
+**Restposition am 21.08.2026 geschlossen.** Über den geschlossenen Test installiert und
+auf echter Hardware geprüft:
+
+- Der Einwilligungsdialog erscheint beim ersten Start. Da UMP ein Formular nur ausliefert,
+  wenn für die App-ID eine Nachricht **veröffentlicht** ist, belegt das zugleich, dass es
+  die eigene Nachricht ist und dass die echte App-ID aus dem GitHub-Secret korrekt im
+  Manifest gelandet ist — Letzteres war im Protokoll nie sichtbar, weil Secrets maskiert
+  werden.
+- „Einstellungen → Datenschutzeinstellungen" ist vorhanden und öffnet das Formular
+  erneut. Das erfüllt die AdMob-Anforderung an den Widerruf.
+- Der Banner lädt echte Anzeigen.
+
+Damit war die Erwartung widerlegt, eine noch nicht mit dem Store verknüpfte AdMob-App
+bekomme kaum Füllung — sie liefert. Die Verknüpfung nach der Veröffentlichung bleibt
+sinnvoll, blockiert aber nichts.
 
 **Ein AAB lässt sich nicht direkt auf ein Telefon installieren** — es ist ein Format für
 die Play Console, kein Installationspaket. Zwei Wege zum Gerät:
@@ -75,7 +85,28 @@ Was in der Entwicklungsumgebung nicht prüfbar war:
 - Banner überlagert nichts, belohntes Video schreibt Tipps gut
 - Fortschritt überlebt ein Force-Close
 
-### 5. Play-Console-Formulare
+### 5. Play-Console-Formulare — ✅ erledigt, App geprüft
+
+**Stand 21.08.2026:** Alle Formulare ausgefüllt, Store-Eintrag angelegt, Release
+1.0.0 (versionCode 2) eingereicht und von Google **geprüft**. Der geschlossene Test
+läuft.
+
+Was dabei nachträglich dazukam und in der ursprünglichen Liste fehlte:
+
+- **Werbe-ID-Erklärung** (App-Inhalte → Werbe-ID): Ja, Zwecke „Werbung oder Marketing"
+  und „Betrugsprävention, Sicherheit und Compliance" — dieselben zwei wie bei
+  „Geräte- oder andere IDs" in der Datensicherheit. Google gleicht beide Formulare ab.
+- **Erklärungen zu Gesundheits-, Behörden- und Finanz-Apps**: jeweils „trifft nicht zu".
+- **Formfaktor „Google Play Games auf dem PC"**: bewusst **nicht** aktiviert. Die App
+  wurde nie mit Maus und Tastatur geprüft, und der PC-Client bringt eine eigene
+  Prüfung mit. Nachträglich jederzeit einschaltbar.
+
+**Der Engpass ist jetzt die Testerzahl**, nicht mehr die Technik: Der Produktionszugang
+verlangt einen durchgehend laufenden geschlossenen Test mit genügend angemeldeten
+Testern. Die Tage zählen erst, wenn die geforderte Zahl erreicht ist — wer später
+Tester nachträgt, verschiebt damit den Starttermin.
+
+### Ursprüngliche Liste
 
 - Datenschutz-URL eintragen: `https://samenschluck.github.io/Hashi/privacy.html`
   (die englische Fassung, passend zur Standardsprache des Store-Eintrags; sie verlinkt
@@ -113,9 +144,24 @@ Was in der Entwicklungsumgebung nicht prüfbar war:
 
 ---
 
+## 🟠 Direkt nach der Veröffentlichung
+
+Beides setzt eine **öffentlich auffindbare** App im Play Store voraus und ist deshalb
+vorher unmöglich:
+
+- **AdMob: App-Shop verknüpfen.** In der AdMob-Konsole unter „App-Shops angeben" nach
+  `com.bridgelet.game` suchen und verknüpfen. Bis dahin bleibt die App unverifiziert,
+  und echte Anzeigen liefern wenig bis gar nicht. Während eines geschlossenen Tests ist
+  die Suche zwangsläufig ergebnislos — dann **keinen** anderen App-Shop ankreuzen, nur
+  weil ein Häkchen verlangt scheint. Eine Falschangabe gegenüber dem Werbenetzwerk
+  gefährdet das Konto.
+- **`app-ads.txt`** in der Play-Console-Website hinterlegen. Weist die Anzeigenplätze als
+  echt aus und verbessert die Erlöse.
+
+---
+
 ## ⚪ Optional, später
 
-- `app-ads.txt` in der Play-Console-Website hinterlegen (verbessert die AdMob-Erlöse)
 - Kauf „Werbung entfernen" — das Kennzeichen `adsRemoved` ist im Code bereits vorgesehen
   und wird vom Banner respektiert, der Kauf selbst ist nicht implementiert
 - iOS — die Architektur ist darauf vorbereitet, alle nativen Zugriffe laufen über

@@ -195,6 +195,33 @@ Stand danach (Median über je 150 Rätsel):
 | Schwer  | 21     | 52       | 18,0 %            | 29 %                    |
 | Experte | 31     | 82       | 39,1 %            | 3 %                     |
 
+## Veröffentlichung
+
+**21.08.2026 — die App ist bei Google eingereicht und geprüft.** Der geschlossene Test
+läuft mit Version 1.0.0 (versionCode 2).
+
+Damit ist die vollständige Kette einmal durchlaufen: Quelltext → Web-Build →
+Capacitor-Sync → Gradle → signiertes AAB → Play Console → geprüfte App. Der Bauweg ist
+reproduzierbar, ein Release kostet einen Klick auf „Run workflow" und viereinhalb
+Minuten.
+
+Offen bleibt nur noch, was Zeit oder eine öffentliche App braucht:
+
+- Der geschlossene Test muss die geforderte Laufzeit mit genügend Testern erreichen,
+  bevor sich der Produktionszugang beantragen lässt.
+- AdMob kann die App erst nach der Veröffentlichung mit dem Store verknüpfen. Auf die
+  Auslieferung von Anzeigen wirkt sich das entgegen der Erwartung nicht aus — geprüft am
+  21.08.2026, der Banner lädt.
+
+**Am 21.08.2026 geprüft und in Ordnung**, über den geschlossenen Test auf echter
+Hardware: Der Einwilligungsdialog erscheint beim ersten Start, „Datenschutzeinstellungen"
+öffnet ihn erneut, und der Banner lädt echte Anzeigen. Da UMP ein Formular nur
+ausliefert, wenn für die App-ID eine Nachricht veröffentlicht ist, ist damit auch belegt,
+dass die echte App-ID aus dem GitHub-Secret im Manifest gelandet ist — im Build-Protokoll
+war das nie sichtbar, weil Secrets maskiert werden.
+
+Damit ist keine Annahme des Projekts mehr ungeprüft.
+
 ## Bekannte Probleme und Anmerkungen
 
 - Kein Android SDK in der Entwicklungsumgebung: Der Gradle-/AAB-Build ist nur über den

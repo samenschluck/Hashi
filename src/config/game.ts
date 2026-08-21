@@ -224,6 +224,19 @@ export const ADS = {
   estimatedBannerHeightDp: 60,
   /** Mindestabstand zwischen Banner und interaktiven Elementen in dp. */
   minDistanceToInteractiveDp: 16,
+  /**
+   * Wartezeiten vor erneuten Banner-Versuchen, in Millisekunden.
+   *
+   * Eine fehlgeschlagene Anfrage ist kein dauerhafter Zustand: kein Inventar,
+   * eine kurze Netzstoerung oder ein Serverfehler geben beim naechsten Versuch
+   * oft ein Ergebnis. Ohne Wiederholung kostet ein einziger Fehlschlag den
+   * Banner fuer die gesamte Sitzung — und damit die Einnahmen.
+   *
+   * Wachsende Abstaende, weil eine App ohne Inventar sonst im Minutentakt
+   * erfolglos anfragt. Nach dem letzten Eintrag wird nicht mehr von selbst
+   * wiederholt; die Rueckkehr in die App startet die Reihe neu.
+   */
+  bannerRetryDelaysMs: [20_000, 60_000, 180_000],
 } as const;
 
 /** Rendering und Eingabe (Meilenstein 2). */

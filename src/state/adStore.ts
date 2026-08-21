@@ -5,6 +5,7 @@ import {
   openPrivacyOptions,
   preloadRewarded,
   removeBanner,
+  retryBannerIfMissing,
   showRewardedVideo,
   subscribeAdState,
   type AdServiceState,
@@ -17,6 +18,8 @@ export interface AdStore extends AdServiceState {
   start: (adsRemoved: boolean) => void;
   watchRewarded: () => Promise<RewardOutcome>;
   preload: () => void;
+  /** Neuer Banner-Versuch bei Rueckkehr in die App. */
+  retryBanner: () => void;
   openPrivacySettings: () => Promise<boolean>;
   disableAds: () => Promise<void>;
 }
@@ -55,6 +58,10 @@ export const useAdStore = create<AdStore>((set, get) => ({
 
   preload: () => {
     void preloadRewarded();
+  },
+
+  retryBanner: () => {
+    retryBannerIfMissing();
   },
 
   openPrivacySettings: () => openPrivacyOptions(),
