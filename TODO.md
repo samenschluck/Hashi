@@ -53,11 +53,21 @@ Ordnung:
 Damit ist die vollständige Kette Einwilligung → Anzeigenanfrage → Banner → belohntes
 Video → Gutschrift einmal nachgewiesen.
 
-**Eine Restposition bleibt: die eigene DSGVO-Nachricht.** Die UMP-Bibliothek lädt die
-Einwilligungskonfiguration anhand der App-ID aus dem Manifest, und im Debug-Build steht
-dort Googles Test-App-ID. Der gesehene Dialog belegt also den _Ablauf_, nicht die eigene
-veröffentlichte Nachricht. Das zeigt erst ein Build mit der echten App-ID, also der
-interne Test in der Play Console.
+**Restposition am 21.08.2026 geschlossen.** Über den geschlossenen Test installiert und
+auf echter Hardware geprüft:
+
+- Der Einwilligungsdialog erscheint beim ersten Start. Da UMP ein Formular nur ausliefert,
+  wenn für die App-ID eine Nachricht **veröffentlicht** ist, belegt das zugleich, dass es
+  die eigene Nachricht ist und dass die echte App-ID aus dem GitHub-Secret korrekt im
+  Manifest gelandet ist — Letzteres war im Protokoll nie sichtbar, weil Secrets maskiert
+  werden.
+- „Einstellungen → Datenschutzeinstellungen" ist vorhanden und öffnet das Formular
+  erneut. Das erfüllt die AdMob-Anforderung an den Widerruf.
+- Der Banner lädt echte Anzeigen.
+
+Damit war die Erwartung widerlegt, eine noch nicht mit dem Store verknüpfte AdMob-App
+bekomme kaum Füllung — sie liefert. Die Verknüpfung nach der Veröffentlichung bleibt
+sinnvoll, blockiert aber nichts.
 
 **Ein AAB lässt sich nicht direkt auf ein Telefon installieren** — es ist ein Format für
 die Play Console, kein Installationspaket. Zwei Wege zum Gerät:

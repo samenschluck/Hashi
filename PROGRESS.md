@@ -209,11 +209,18 @@ Offen bleibt nur noch, was Zeit oder eine öffentliche App braucht:
 
 - Der geschlossene Test muss die geforderte Laufzeit mit genügend Testern erreichen,
   bevor sich der Produktionszugang beantragen lässt.
-- Die eigene DSGVO-Nachricht und echte Anzeigen zeigen sich erst mit einer über die
-  Play Console installierten Version — im Debug-Build steht Googles Test-App-ID im
-  Manifest.
-- AdMob kann die App erst nach der Veröffentlichung mit dem Store verknüpfen; bis dahin
-  bleibt sie unverifiziert, und echte Anzeigen liefern wenig bis gar nicht.
+- AdMob kann die App erst nach der Veröffentlichung mit dem Store verknüpfen. Auf die
+  Auslieferung von Anzeigen wirkt sich das entgegen der Erwartung nicht aus — geprüft am
+  21.08.2026, der Banner lädt.
+
+**Am 21.08.2026 geprüft und in Ordnung**, über den geschlossenen Test auf echter
+Hardware: Der Einwilligungsdialog erscheint beim ersten Start, „Datenschutzeinstellungen"
+öffnet ihn erneut, und der Banner lädt echte Anzeigen. Da UMP ein Formular nur
+ausliefert, wenn für die App-ID eine Nachricht veröffentlicht ist, ist damit auch belegt,
+dass die echte App-ID aus dem GitHub-Secret im Manifest gelandet ist — im Build-Protokoll
+war das nie sichtbar, weil Secrets maskiert werden.
+
+Damit ist keine Annahme des Projekts mehr ungeprüft.
 
 ## Bekannte Probleme und Anmerkungen
 
