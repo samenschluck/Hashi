@@ -50,7 +50,22 @@ const INITIAL_STATE: AdServiceState = {
 
 let state: AdServiceState = INITIAL_STATE;
 let listener: ((next: AdServiceState) => void) | null = null;
+/**
+ * Zustand des Banners.
+ *
+ * `bannerVisible` bedeutet **geladen und sichtbar**, nicht „angefragt". Der
+ * Unterschied ist wesentlich: `AdMob.showBanner` kehrt zurueck, sobald die
+ * Anfrage abgeschickt ist — ob eine Anzeige kommt, entscheidet sich erst danach
+ * ueber die Ereignisse `Loaded` oder `FailedToLoad`.
+ */
 let bannerVisible = false;
+/** Eine Anfrage laeuft, das Ergebnis steht noch aus. Verhindert Doppelanfragen. */
+let bannerRequested = false;
+/** Kein Banner erwuenscht — „Werbung entfernen" oder Browser ohne Anzeigen. */
+let bannerSuppressed = false;
+/** Wievielte Wiederholung als naechstes ansteht (Index in ADS.bannerRetryDelaysMs). */
+let bannerAttempt = 0;
+let bannerRetryTimer: ReturnType<typeof setTimeout> | null = null;
 /** Wird auf true gesetzt, sobald die Einwilligung erteilt wurde. */
 let personalizedAllowed = false;
 
@@ -89,6 +104,7 @@ export async function initializeAds(adsRemoved: boolean): Promise<void> {
     return;
   }
 
+  bannerSuppressed = adsRemoved;
   const config = readAdConfig();
 
   try {
@@ -161,6 +177,7 @@ function initializeWebMock(adsRemoved: boolean): void {
     rewardedReady: true,
   });
   bannerVisible = !adsRemoved;
+  bannerSuppressed = adsRemoved;
 }
 
 function registerBannerEvents(): void {
@@ -168,10 +185,60 @@ function registerBannerEvents(): void {
   void AdMob.addListener(BannerAdPluginEvents.SizeChanged, (size: AdMobBannerSize) => {
     update({ bannerHeightDp: size.height });
   });
-  void AdMob.addListener(BannerAdPluginEvents.FailedToLoad, (_error: AdMobError) => {
-    // Ohne Banner bekommt das Brett den Platz zurueck.
-    update({ bannerHeightDp: 0 });
+  // Erst hier steht fest, dass wirklich eine Anzeige da ist.
+  void AdMob.addListener(BannerAdPluginEvents.Loaded, () => {
+    bannerRequested = false;
+    bannerVisible = true;
+    bannerAttempt = 0;
+    clearBannerRetry();
   });
+  void AdMob.addListener(BannerAdPluginEvents.FailedToLoad, (_error: AdMobError) => {
+    // Ohne Banner bekommt das Brett den Platz zurueck — und wir versuchen es
+    // spaeter noch einmal. Ein Fehlschlag ist kein dauerhafter Zustand.
+    bannerRequested = false;
+    bannerVisible = false;
+    update({ bannerHeightDp: 0 });
+    scheduleBannerRetry();
+  });
+}
+
+function clearBannerRetry(): void {
+  if (bannerRetryTimer !== null) {
+    clearTimeout(bannerRetryTimer);
+    bannerRetryTimer = null;
+  }
+}
+
+/** Plant den naechsten Versuch, sofern die Reihe noch nicht aufgebraucht ist. */
+function scheduleBannerRetry(): void {
+  if (bannerSuppressed || bannerRetryTimer !== null) {
+    return;
+  }
+  const delay = ADS.bannerRetryDelaysMs[bannerAttempt];
+  if (delay === undefined) {
+    return; // Versuche aufgebraucht; die Rueckkehr in die App startet neu.
+  }
+  bannerAttempt++;
+  bannerRetryTimer = setTimeout(() => {
+    bannerRetryTimer = null;
+    void showBanner();
+  }, delay);
+}
+
+/**
+ * Neuer Anlauf, wenn gerade kein Banner steht.
+ *
+ * Wird beim Zurueckkehren in die App gerufen. Genau dann haben sich die
+ * Voraussetzungen oft geaendert — anderes Netz, neues Inventar —, und die Reihe
+ * der Wartezeiten darf von vorn beginnen.
+ */
+export function retryBannerIfMissing(): void {
+  if (bannerSuppressed || bannerVisible || bannerRequested || !state.canRequestAds) {
+    return;
+  }
+  clearBannerRetry();
+  bannerAttempt = 0;
+  void showBanner();
 }
 
 function registerRewardedEvents(): void {
@@ -190,10 +257,11 @@ function registerRewardedEvents(): void {
 
 /** Zeigt den adaptiven Banner am unteren Rand. */
 export async function showBanner(): Promise<void> {
-  if (!isNativePlatform() || bannerVisible) {
+  if (!isNativePlatform() || bannerSuppressed || bannerVisible || bannerRequested) {
     return;
   }
   const config = readAdConfig();
+  bannerRequested = true;
   try {
     await AdMob.showBanner({
       adId: config.bannerId,
@@ -203,17 +271,23 @@ export async function showBanner(): Promise<void> {
       isTesting: config.isTesting,
       npa: !personalizedAllowed,
     });
-    bannerVisible = true;
+    // Bewusst kein `bannerVisible = true` hier: der Aufruf ist nur die Anfrage.
+    // Ob eine Anzeige kommt, meldet `Loaded` beziehungsweise `FailedToLoad`.
   } catch {
+    bannerRequested = false;
     update({ bannerHeightDp: 0 });
+    scheduleBannerRetry();
   }
 }
 
 /** Entfernt den Banner, etwa wenn „Werbung entfernen" gekauft wurde. */
 export async function removeBanner(): Promise<void> {
+  bannerSuppressed = true;
+  clearBannerRetry();
   update({ bannerHeightDp: 0 });
   if (!isNativePlatform()) {
     bannerVisible = false;
+    bannerRequested = false;
     return;
   }
   try {
@@ -222,6 +296,7 @@ export async function removeBanner(): Promise<void> {
     // Nichts zu tun — der reservierte Platz ist bereits freigegeben.
   }
   bannerVisible = false;
+  bannerRequested = false;
 }
 
 /** Laedt ein belohntes Video vor. Wird beim Levelstart und nach jedem Video gerufen. */
