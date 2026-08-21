@@ -97,6 +97,17 @@ Was in der Entwicklungsumgebung nicht prüfbar war:
 
 ---
 
+## 🔵 Laufender Betrieb
+
+- **Anfragen zu Datenschutzrechten** — Vorlagen und Fristen in
+  `store/datenanfragen.md`. Kern: innerhalb eines Monats antworten, auch wenn keine
+  Daten vorliegen. Gelöscht werden kann nichts, weil nichts gespeichert wird.
+- **Vorlagen prüfen, wenn sich die App ändert** — kommt später ein Konto, eine
+  Bestenliste oder ein Analysewerkzeug dazu, stimmen Datenschutzerklärung,
+  Data-Safety-Formular und die Antwortvorlagen nicht mehr.
+
+---
+
 ## ⚪ Optional, später
 
 - `app-ads.txt` in der Play-Console-Website hinterlegen (verbessert die AdMob-Erlöse)
