@@ -90,10 +90,18 @@ await page.evaluate((chosenLocale) => {
 
 await page.waitForTimeout(400);
 
+/**
+ * Der Geraetename steht im Dateinamen, nicht nur im Ordner.
+ *
+ * Beim Hochladen in die Play Console landen alle Saetze im selben
+ * Datei-Auswahldialog; ohne Praefix hiessen dort sechs Dateien `01-menue.png`
+ * und man laedt zwangslaeufig irgendwann die falsche hoch.
+ */
 async function shot(name) {
+  const file = `${outputDirectory}/${device}-${name}.png`;
   await page.waitForTimeout(500);
-  await page.screenshot({ path: `${outputDirectory}/${name}.png` });
-  console.log(`${outputDirectory}/${name}.png`);
+  await page.screenshot({ path: file });
+  console.log(file);
 }
 
 const label = (de, en) => (locale === 'de' ? de : en);
