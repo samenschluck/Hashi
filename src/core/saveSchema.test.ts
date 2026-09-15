@@ -64,6 +64,10 @@ describe('migrateSave', () => {
 
     expect(save.settings.locale).toBe('en');
     expect(save.settings.vibration).toBe(false);
+    // Ein alter Spielstand kennt das Feld nicht. Es muss auf `false` fallen,
+    // sonst bliebe eine nie getroffene Sprachwahl fuer immer eingefroren — und
+    // genau daran lag es, dass die App bei manchen Testern auf Deutsch startete.
+    expect(save.settings.localeChosen).toBe(false);
     // Unbekannter Wert faellt auf den Standard zurueck.
     expect(save.settings.theme).toBe('system');
     expect(save.settings.sound).toBe(true);

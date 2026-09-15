@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import type { Locale, ThemePreference } from '../../core/progression.ts';
+import type { ThemePreference } from '../../core/progression.ts';
 import { useAdStore } from '../../state/adStore.ts';
 import { useAppStore } from '../../state/appStore.ts';
+import { LanguageSwitch } from '../components/LanguageSwitch.tsx';
 import { Button, Dialog, ScreenFrame, Select, Toggle } from '../components/Ui.tsx';
 
 export function SettingsScreen(): React.JSX.Element {
@@ -49,17 +50,12 @@ export function SettingsScreen(): React.JSX.Element {
             { value: 'light', label: t('settings.theme.light') },
           ]}
         />
-        <Select<Locale>
-          label={t('settings.language')}
-          value={settings.locale}
-          onChange={(value) => {
-            update({ locale: value });
-          }}
-          options={[
-            { value: 'de', label: 'Deutsch' },
-            { value: 'en', label: 'English' },
-          ]}
-        />
+        {/* Dieselbe Umschaltung wie im Hauptmenue — wer hier landet, soll nicht
+            ein zweites, anders aussehendes Bedienelement vorfinden. */}
+        <div className="flex min-h-12 items-center justify-between gap-4 py-2">
+          <span className="text-sm text-slate-100">{t('settings.language')}</span>
+          <LanguageSwitch compact />
+        </div>
       </div>
 
       {/* Der Punkt erscheint nur, wenn die UMP-SDK ihn verlangt — dort, wo er

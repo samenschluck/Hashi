@@ -142,6 +142,9 @@ function readSettings(value: unknown, fallback: Settings): Settings {
     theme: isThemePreference(theme) ? theme : DEFAULT_SETTINGS.theme,
     leftHanded: readBoolean(value['leftHanded'], DEFAULT_SETTINGS.leftHanded),
     locale: isLocale(locale) ? locale : DEFAULT_SETTINGS.locale,
+    // Fehlt das Feld, stammt der Spielstand aus einer Fassung ohne
+    // Sprachwahl — dort war die Sprache nie eine Entscheidung des Spielers.
+    localeChosen: readBoolean(value['localeChosen'], DEFAULT_SETTINGS.localeChosen),
   };
 }
 

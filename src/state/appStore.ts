@@ -20,7 +20,7 @@ import {
 } from '../core/progression.ts';
 import { deserializeCounts } from '../core/parse.ts';
 import { loadLevel, loadPack } from '../data/puzzles.ts';
-import { translate, type TranslationKey } from '../i18n/index.ts';
+import { detectLocale, translate, type TranslationKey } from '../i18n/index.ts';
 import { setSoundEnabled } from '../services/audio.ts';
 import { generatePuzzle } from '../services/puzzleFactory.ts';
 import { setHapticsEnabled } from '../services/haptics.ts';
@@ -100,6 +100,24 @@ export interface AppStore {
   setNotice: (message: string | null) => void;
 }
 
+/**
+ * Sprache an die Systemsprache angleichen, solange der Spieler keine gewaehlt hat.
+ *
+ * Laeuft bei jedem Start. Wer sein Telefon auf eine andere Sprache umstellt,
+ * findet die App danach ebenfalls umgestellt — bis er in der App selbst eine
+ * Sprache waehlt, ab dann bleibt sie.
+ */
+function withDetectedLocale(save: SaveData): SaveData {
+  if (save.settings.localeChosen) {
+    return save;
+  }
+  const detected = detectLocale();
+  if (detected === save.settings.locale) {
+    return save;
+  }
+  return { ...save, settings: { ...save.settings, locale: detected } };
+}
+
 /** Zeitmessung: Startzeitpunkt und bereits aufgelaufene Zeit. */
 let timerStartedAt: number | null = null;
 let accumulatedMs = 0;
@@ -166,20 +184,21 @@ export const useAppStore = create<AppStore>((set, get) => {
     init: async () => {
       const loaded = await loadSave();
       const { save: withHints, granted } = grantDailyHints(loaded, Date.now());
+      const start = withDetectedLocale(withHints);
 
-      applySettings(withHints.settings);
+      applySettings(start.settings);
       set({
-        save: withHints,
+        save: start,
         ready: true,
         screen: 'menu',
         stack: [],
         notice:
           granted > 0
-            ? translate(withHints.settings.locale, 'hints.dailyGrant', { count: granted })
+            ? translate(start.settings.locale, 'hints.dailyGrant', { count: granted })
             : null,
       });
-      if (granted > 0) {
-        scheduleSave(withHints);
+      if (granted > 0 || start !== withHints) {
+        scheduleSave(start);
       }
 
       // Levelzahlen einmal ermitteln, damit die Uebersicht sofort etwas anzeigt.
@@ -410,8 +429,17 @@ export const useAppStore = create<AppStore>((set, get) => {
     },
 
     updateSettings: (partial) => {
-      const next = mutate((save) => ({ ...save, settings: { ...save.settings, ...partial } }));
+      // Waehlt der Spieler eine Sprache, wird sie damit zur Entscheidung und
+      // die Systemsprache ueberschreibt sie beim naechsten Start nicht mehr.
+      const changesLocale = 'locale' in partial;
+      const change = changesLocale ? { ...partial, localeChosen: true } : partial;
+      const next = mutate((save) => ({ ...save, settings: { ...save.settings, ...change } }));
       applySettings(next.settings);
+      if (changesLocale) {
+        // Sofort schreiben: Wer die Sprache umstellt, weil er die App nicht
+        // lesen kann, schliesst sie danach womoeglich gleich wieder.
+        void flushSave();
+      }
     },
 
     setConsentCompleted: (value) => {
@@ -420,7 +448,7 @@ export const useAppStore = create<AppStore>((set, get) => {
 
     clearProgress: async () => {
       await clearSave();
-      const fresh = createDefaultSave();
+      const fresh = withDetectedLocale(createDefaultSave());
       applySettings(fresh.settings);
       set({ save: fresh, screen: 'menu', stack: [], active: null, result: null });
     },
