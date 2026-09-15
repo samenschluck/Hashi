@@ -34,6 +34,15 @@ jobs:
 
       - name: Android SDK einrichten
         uses: android-actions/setup-android@v3
+        with:
+          # Ohne diese Zeile installiert die Action ihre Vorgabe
+          # `tools platform-tools`. Google hat das Paket `tools` inzwischen aus
+          # dem SDK-Repository entfernt, seitdem bricht sie mit "Failed to find
+          # package 'tools'" ab — am 21.08.2026 lief derselbe Workflow noch.
+          # Gebraucht wurde `tools` nie: Alles Weitere (Plattform, Build-Tools)
+          # laedt das Android-Gradle-Plugin selbst, sobald die Lizenzen
+          # angenommen sind.
+          packages: 'platform-tools'
 
       - name: Abhaengigkeiten installieren
         run: npm ci

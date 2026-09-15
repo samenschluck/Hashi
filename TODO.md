@@ -121,12 +121,38 @@ Tester nachträgt, verschiebt damit den Starttermin.
 
 ---
 
+## 🟢 Bereit zum Hochladen
+
+**Version 1.0.1 (versionCode 3)** — gebaut am 15.09.2026, enthält zwei Korrekturen aus
+dem geschlossenen Test:
+
+- **Banner erscheint nach dem zweiten Start nicht mehr** — `showBanner()` meldet nur die
+  Anfrage, nicht das geladene Banner. Der Zustand richtet sich jetzt nach den Ereignissen
+  `Loaded` und `FailedToLoad`, mit gestaffelten Wiederholungen und einem erneuten Versuch
+  beim Zurückkehren in die App.
+- **App startete immer auf Deutsch** — die Spracherkennung war vorhanden, wurde aber nie
+  aufgerufen. Jetzt richtet sich die Startsprache nach dem Gerät (nur deutschsprachige
+  Geräte bekommen Deutsch), und im Hauptmenü stehen zwei Flaggen zur Umschaltung.
+
+Hochladen über **Geschlossener Test → Neue Version erstellen**. Das AAB liegt als
+Artefakt am Workflow-Lauf „Android Release (AAB)" Nr. 4 und wird nach **14 Tagen
+gelöscht** — danach muss neu gebaut werden.
+
+Vor dem nächsten **Store-Update** (nicht vor diesem Upload nötig):
+`npm run store:screenshots:all` — die vorhandenen Screenshots zeigen das Hauptmenü noch
+ohne die Sprachzeile.
+
 ## 🟡 Erledigt, aber im Blick behalten
 
 - **Markenprüfung „Bridgelet"** — WIPO, TMview, DPMAregister und Play Store durchsucht,
   keine Treffer. Der Halbleiter-Hersteller CrossFire benutzt den Begriff für ein
   patentiertes Bauteil; andere Warenklasse, andere Abnehmer. Keine Rechtsberatung.
 - **Bundle-ID `com.bridgelet.game`** — nach dem ersten Upload unveränderlich.
+- **GitHub Actions warnt vor Node 20.** `actions/checkout@v4`, `setup-node@v4`,
+  `setup-java@v4` und `setup-android@v3` laufen inzwischen zwangsweise auf Node 24. Es
+  funktioniert, aber irgendwann fällt die Krücke weg — dann auf die jeweils nächste
+  Hauptversion heben. Nicht vorab erledigt, weil ein Release-Workflow nur durch einen
+  echten Lauf prüfbar ist und ein Fehlschlag genau dann kommt, wenn man ihn braucht.
 - **Browser-Fassung unter `docs/play/`** — eingecheckter Web-Build zum Testen ohne Gerät.
   Nach Änderungen am Spiel mit `npm run pages:play` neu erzeugen, sonst zeigt die
   öffentliche Seite einen veralteten Stand. Darf vor dem Release gelöscht werden.
