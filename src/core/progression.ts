@@ -10,6 +10,19 @@ export interface Settings {
   /** Bedienleiste gespiegelt fuer Linkshaender. */
   readonly leftHanded: boolean;
   readonly locale: Locale;
+  /**
+   * Hat der Spieler die Sprache selbst gewaehlt?
+   *
+   * Solange nicht, richtet sich die App bei **jedem** Start nach der
+   * Systemsprache. Erst eine bewusste Wahl in der App friert sie ein — sonst
+   * wuerde die Systemsprache sie beim naechsten Start wieder ueberschreiben.
+   *
+   * Ohne dieses Feld liesse sich beides nicht auseinanderhalten: Ein
+   * gespeichertes `locale: 'de'` kann genauso gut die Voreinstellung wie eine
+   * Entscheidung sein. Alte Spielstaende kennen das Feld nicht, es faellt
+   * dort auf `false` — genau richtig, denn dort war es nie eine Entscheidung.
+   */
+  readonly localeChosen: boolean;
 }
 
 export interface LevelProgress {
@@ -69,7 +82,11 @@ export const DEFAULT_SETTINGS: Settings = {
   vibration: true,
   theme: 'system',
   leftHanded: false,
-  locale: 'de',
+  // Englisch, nicht Deutsch: `src/core/` kennt keine Systemsprache, deshalb ist
+  // das hier der Wert fuer den Fall, dass sich keine ermitteln laesst. Beim
+  // Start ersetzt ihn `detectLocale()`, siehe `appStore.init`.
+  locale: 'en',
+  localeChosen: false,
 };
 
 export function createDefaultSave(nowMs = Date.now()): SaveData {

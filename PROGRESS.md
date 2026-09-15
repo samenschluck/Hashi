@@ -222,6 +222,49 @@ war das nie sichtbar, weil Secrets maskiert werden.
 
 Damit ist keine Annahme des Projekts mehr ungeprüft.
 
+## Nachbesserung 3: Startsprache und Sprachwahl
+
+**Aus dem geschlossenen Test gemeldet:** Die App startete bei einem Tester auf Deutsch,
+obwohl er kein Deutsch versteht.
+
+**Ursache.** `detectLocale()` gab es seit M3 — aufgerufen wurde es nie. Kein einziger
+Aufruf im ganzen Quelltext. Stattdessen stand in `DEFAULT_SETTINGS` fest `locale: 'de'`,
+und dabei blieb es: Jede Neuinstallation startete auf Deutsch, unabhängig von der
+Systemsprache. Dass es in der Entwicklung nie auffiel, liegt daran, dass hier alle Geräte
+deutsch eingestellt sind — der Fehler sah wie das erwartete Verhalten aus.
+
+**Behoben in drei Teilen:**
+
+1. `detectLocale()` wird beim Start tatsächlich ausgewertet (`appStore.init`). Die Regel
+   ist jetzt ausdrücklich: **nur** ein deutschsprachiges Gerät bekommt Deutsch, jede
+   andere Systemsprache Englisch. Maßgeblich ist der erste Eintrag aus
+   `navigator.languages` — steht Deutsch erst an zweiter Stelle, ist es eine
+   Zweitsprache und nicht die Sprache des Geräts.
+2. Neues Feld `settings.localeChosen`. Ohne dieses Feld ließe sich „auf Deutsch
+   voreingestellt" nicht von „Deutsch gewählt" unterscheiden. Solange es `false` ist,
+   folgt die App bei jedem Start der Systemsprache; eine Wahl in der App setzt es auf
+   `true` und friert die Sprache ein. Alte Spielstände kennen das Feld nicht und fallen
+   auf `false` — **damit korrigiert sich der Fehler auch auf bereits installierten
+   Geräten**, ohne dass dort Fortschritt verloren geht.
+3. Sprachumschaltung mit Flaggen im Hauptmenü, direkt unter dem Titel. Wer die App in
+   einer Sprache vorfindet, die er nicht liest, findet den Menüpunkt „Einstellungen"
+   nicht — eine Flagge erkennt er trotzdem. In den Einstellungen steht dieselbe
+   Umschaltung schmaler; das alte Auswahlfeld ist entfallen.
+
+Die Flaggen sind gezeichnete SVG, keine Emoji: 🇩🇪 und 🇬🇧 sind Paare aus
+Regionalindikatoren, und fehlt der Schriftart die Zusammenziehung — auf älteren
+Android-Fassungen und manchen Hersteller-Systemen der Fall —, stünden dort statt der
+Flagge zwei Buchstaben in Kästchen.
+
+**Geprüft** im Browser über sieben Systemsprachen (de-DE, de-AT, en-US, fr-FR, pt-BR,
+tr-TR, zh-CN): jeweils die erwartete Startsprache, beide Flaggen sichtbar, keine
+Konsolenfehler. Zusätzlich: Umschalten auf Deutsch bei französischem System überlebt
+einen Neustart. Dazu Unit-Tests für die Zuordnung Systemsprache → App-Sprache und für
+das Verhalten alter Spielstände.
+
+**Nebenwirkung:** Die Store-Screenshots zeigen das Hauptmenü noch ohne die Sprachzeile.
+Vor dem nächsten Store-Update `npm run store:screenshots:all` neu laufen lassen.
+
 ## Bekannte Probleme und Anmerkungen
 
 - Kein Android SDK in der Entwicklungsumgebung: Der Gradle-/AAB-Build ist nur über den
