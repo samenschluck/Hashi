@@ -1,7 +1,6 @@
 {
   "app.name": "Bridgelet",
   "app.tagline": "Bridges logic puzzle",
-
   "menu.play": "Play",
   "menu.daily": "Daily puzzle",
   "menu.endless": "Endless",
@@ -9,17 +8,14 @@
   "menu.settings": "Settings",
   "menu.rules": "How to play",
   "menu.refillHints": "Refill hints",
-
   "difficulty.easy": "Easy",
   "difficulty.medium": "Medium",
   "difficulty.hard": "Hard",
   "difficulty.expert": "Expert",
-
   "levels.title": "Levels",
   "levels.page": "Page {page} of {total}",
   "levels.solvedOf": "{solved} of {total} solved",
   "levels.locked": "Not available yet",
-
   "game.hint": "Hint",
   "game.undo": "Undo",
   "game.redo": "Redo",
@@ -28,7 +24,6 @@
   "game.back": "Back to menu",
   "game.hintsLeft": "{count} hints",
   "game.time": "Time",
-
   "result.title": "Solved!",
   "result.time": "Time",
   "result.bestTime": "Best time",
@@ -44,20 +39,17 @@
   "result.newBestStars": "Best rating for this level",
   "levels.stars": "{earned} of {total} stars",
   "stats.stars": "Stars collected",
-
   "daily.title": "Daily puzzle",
   "daily.streak": "Streak: {count} days",
   "daily.longestStreak": "Longest streak: {count} days",
   "daily.solvedToday": "Solved today",
   "daily.play": "Play today's puzzle",
-
   "stats.title": "Statistics",
   "stats.solved": "Puzzles solved",
   "stats.averageTime": "Average time",
   "stats.longestStreak": "Longest streak",
   "stats.hintsSpent": "Hints used",
   "stats.none": "No data yet",
-
   "settings.title": "Settings",
   "settings.sound": "Sound",
   "settings.vibration": "Vibration",
@@ -69,9 +61,10 @@
   "settings.language": "Language",
   "settings.privacy": "Privacy settings",
   "settings.privacyHint": "Reopen the advertising consent form",
+  "settings.rate": "Rate Bridgelet",
+  "settings.privacyPolicy": "Privacy policy",
   "settings.clearData": "Delete progress",
   "settings.clearDataConfirm": "Really delete all progress?",
-
   "hints.title": "No hints left",
   "hints.offer": "Watch a video for {count} hints?",
   "hints.watch": "Watch video",
@@ -80,7 +73,6 @@
   "hints.dailyLimit": "You have watched all videos available today.",
   "hints.granted": "{count} hints added",
   "hints.dailyGrant": "{count} free hints for today",
-
   "hint.removeWrong": "This bridge does not belong to the solution — take it back.",
   "hint.solved": "This puzzle is already solved.",
   "hint.generic": "A bridge belongs here.",
@@ -94,10 +86,8 @@
   "hint.rule.D7_HYPOTHESIS": "Assume the opposite for a moment — a few steps later it leads to a contradiction.",
   "hint.rule.D8_PARITY_CUT": "This group of islands hangs on this single connection to the rest of the board. Every bridge inside it uses two ends, so the sum of the island numbers over there decides whether this link carries one bridge or two.",
   "hint.rule.D9_TWIN_PAIR": "Both islands would be full — forming a finished network of their own while the rest of the board is still open. Two 1s can never be joined, and two 2s never doubled.",
-
   "rules.title": "How to play",
   "rules.body": "Connect all islands into a single network.\n\n• Bridges run only horizontally or vertically.\n• At most two bridges between any two islands.\n• Bridges must not cross each other or pass over islands.\n• Grey blocks are walls — no bridge gets through there.\n• The number on an island says how many bridge ends meet there.\n• A ? means the number is hidden. That island needs at least one bridge — how many exactly follows from the rest of the board.\n• In the end every island must be connected.\n\nDrag from island to island to place a bridge, drag again to double it, a third time removes it. Tapping two islands works the same way.",
-
   "common.back": "Back",
   "common.close": "Close",
   "common.cancel": "Cancel",

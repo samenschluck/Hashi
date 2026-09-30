@@ -301,14 +301,14 @@ export class BoardRenderer {
       let text = this.theme.islandText;
       // Eine verborgene Insel faerbt sich nie ein: „voll" oder „zu voll" waere
       // bereits ein Hinweis auf ihre Zahl.
-      if (!island.hidden) {
-        if (degree > island.required) {
-          fill = this.theme.islandError;
-          text = this.theme.islandErrorText;
-        } else if (degree === island.required) {
-          fill = this.theme.islandSatisfied;
-          text = this.theme.islandSatisfiedText;
-        }
+      const overfull = !island.hidden && degree > island.required;
+      const satisfied = !island.hidden && degree === island.required;
+      if (overfull) {
+        fill = this.theme.islandError;
+        text = this.theme.islandErrorText;
+      } else if (satisfied) {
+        fill = this.theme.islandSatisfied;
+        text = this.theme.islandSatisfiedText;
       }
 
       context.beginPath();
@@ -316,16 +316,62 @@ export class BoardRenderer {
       context.fillStyle = fill;
       context.fill();
 
-      context.lineWidth = Math.max(1, radius * 0.09);
-      context.strokeStyle =
-        state.selectedIsland === island.id ? this.theme.selection : this.theme.islandBorder;
-      if (state.selectedIsland === island.id) {
+      const selected = state.selectedIsland === island.id;
+      context.lineWidth = selected ? Math.max(2, radius * 0.18) : Math.max(1, radius * 0.09);
+      context.strokeStyle = selected ? this.theme.selection : this.theme.islandBorder;
+      // Rot und Gruen allein trennen die Zustaende nicht: Bei Rot-Gruen-Schwaeche
+      // sehen „fertig" und „zu viele Bruecken" gleich aus. Deshalb traegt jeder
+      // Zustand zusaetzlich eine Form — ein gestrichelter, kraeftiger Rand fuer
+      // „zu viel", ein Haekchen fuer „fertig".
+      if (overfull) {
         context.lineWidth = Math.max(2, radius * 0.18);
+        if (!selected) {
+          context.strokeStyle = this.theme.islandErrorText;
+        }
+        context.setLineDash([radius * 0.35, radius * 0.25]);
       }
       context.stroke();
+      context.setLineDash([]);
 
       context.fillStyle = island.hidden ? this.theme.islandUnknownText : text;
       context.fillText(island.hidden ? '?' : String(island.required), center.x, center.y);
+
+      if (satisfied) {
+        this.drawCheckBadge(center.x, center.y, radius);
+      }
     }
+  }
+
+  /** Kleines Haekchen unten rechts am Inselrand — das Formsignal fuer „fertig". */
+  private drawCheckBadge(cx: number, cy: number, radius: number): void {
+    // Unterhalb dieser Groesse waere das Haekchen nur noch ein Fleck.
+    if (radius < 9) {
+      return;
+    }
+    const { context, theme } = this;
+    const offset = radius * 0.72;
+    const x = cx + offset;
+    const y = cy + offset;
+    const r = radius * 0.38;
+
+    context.beginPath();
+    context.arc(x, y, r, 0, Math.PI * 2);
+    context.fillStyle = theme.islandSatisfiedText;
+    context.fill();
+    context.lineWidth = Math.max(1, radius * 0.07);
+    context.strokeStyle = theme.background;
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(x - r * 0.5, y + r * 0.02);
+    context.lineTo(x - r * 0.12, y + r * 0.42);
+    context.lineTo(x + r * 0.52, y - r * 0.38);
+    context.lineWidth = Math.max(1.5, r * 0.3);
+    context.lineCap = 'round';
+    context.lineJoin = 'round';
+    context.strokeStyle = theme.islandSatisfied;
+    context.stroke();
+    context.lineCap = 'butt';
+    context.lineJoin = 'miter';
   }
 }

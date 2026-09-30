@@ -267,3 +267,18 @@ export const STORAGE = {
     slotB: 'save.b',
   },
 } as const;
+
+/**
+ * Adressen ausserhalb der App.
+ *
+ * Die Datenschutzerklaerung muss laut Googles Richtlinie zu Nutzerdaten nicht
+ * nur in der Play Console hinterlegt, sondern auch **in der App** erreichbar
+ * sein. Es sind dieselben Seiten wie in der Console.
+ */
+export const LINKS = {
+  privacy: {
+    de: 'https://samenschluck.github.io/Hashi/datenschutz.html',
+    en: 'https://samenschluck.github.io/Hashi/privacy.html',
+  },
+  store: 'https://play.google.com/store/apps/details?id=com.bridgelet.game',
+} as const;

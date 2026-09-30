@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { LINKS } from '../../config/game.ts';
 import type { ThemePreference } from '../../core/progression.ts';
 import { useAdStore } from '../../state/adStore.ts';
 import { useAppStore } from '../../state/appStore.ts';
 import { LanguageSwitch } from '../components/LanguageSwitch.tsx';
-import { Button, Dialog, ScreenFrame, Select, Toggle } from '../components/Ui.tsx';
+import { Button, Dialog, LinkButton, ScreenFrame, Select, Toggle } from '../components/Ui.tsx';
 
 export function SettingsScreen(): React.JSX.Element {
   const t = useAppStore((store) => store.t);
@@ -73,6 +74,13 @@ export function SettingsScreen(): React.JSX.Element {
           <p className="mt-1 text-center text-xs text-slate-500">{t('settings.privacyHint')}</p>
         </div>
       ) : null}
+
+      <div className="mt-6 flex flex-col gap-3">
+        <LinkButton href={LINKS.store}>{t('settings.rate')}</LinkButton>
+        {/* Pflicht nach Googles Richtlinie zu Nutzerdaten: die Erklaerung muss
+            auch in der App erreichbar sein, nicht nur im Store-Eintrag. */}
+        <LinkButton href={LINKS.privacy[settings.locale]}>{t('settings.privacyPolicy')}</LinkButton>
+      </div>
 
       <div className="mt-8">
         <Button

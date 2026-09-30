@@ -40,6 +40,33 @@ export function Button({
   );
 }
 
+/**
+ * Knopf, der eine Seite ausserhalb der App oeffnet.
+ *
+ * Bewusst ein echter Link statt `window.open`: Die Capacitor-WebView faengt
+ * jede Navigation auf eine fremde Adresse ab und reicht sie an Android weiter —
+ * eine Webseite landet im Browser, ein Play-Store-Link in der Play-Store-App.
+ * Das braucht kein zusaetzliches Plugin.
+ */
+export function LinkButton({
+  href,
+  children,
+}: {
+  readonly href: string;
+  readonly children: ReactNode;
+}): React.JSX.Element {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`flex min-h-12 w-full items-center justify-center rounded-xl px-4 text-sm font-medium transition-colors ${VARIANTS.secondary}`}
+    >
+      {children}
+    </a>
+  );
+}
+
 export interface ScreenFrameProps {
   readonly title: string;
   readonly onBack?: () => void;
