@@ -124,7 +124,7 @@ export function Toggle({ label, checked, onChange, description }: ToggleProps): 
         onChange={(event) => {
           onChange(event.target.checked);
         }}
-        className="h-6 w-11 appearance-none rounded-full bg-slate-700 transition-colors before:block before:h-5 before:w-5 before:translate-x-0.5 before:translate-y-0.5 before:rounded-full before:bg-slate-300 before:transition-transform checked:bg-sky-500 checked:before:translate-x-5.5"
+        className="h-6 w-11 shrink-0 appearance-none rounded-full bg-slate-700 transition-colors before:block before:h-5 before:w-5 before:translate-x-0.5 before:translate-y-0.5 before:rounded-full before:bg-slate-300 before:transition-transform checked:bg-sky-500 checked:before:translate-x-5.5"
       />
     </label>
   );

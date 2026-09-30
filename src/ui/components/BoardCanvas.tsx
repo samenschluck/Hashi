@@ -8,6 +8,8 @@ import { useElementSize } from '../hooks/useElementSize.ts';
 
 export interface BoardCanvasProps {
   readonly theme?: ThemeName;
+  /** Farbenblind-Modus aus den Einstellungen. */
+  readonly colorblind?: boolean;
 }
 
 /**
@@ -17,7 +19,10 @@ export interface BoardCanvasProps {
  * ausgeloest durch Zustandsaenderungen — es gibt bewusst keinen React-Rerender pro
  * Bild und keine dauerhaft laufende Animationsschleife.
  */
-export function BoardCanvas({ theme = 'dark' }: BoardCanvasProps): React.JSX.Element {
+export function BoardCanvas({
+  theme = 'dark',
+  colorblind = false,
+}: BoardCanvasProps): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<BoardRenderer | null>(null);
@@ -62,6 +67,7 @@ export function BoardCanvas({ theme = 'dark' }: BoardCanvasProps): React.JSX.Ele
         selectedIsland: store.selectedIsland,
         previewEdge: store.previewEdge,
         hintEdge: store.hintEdge,
+        colorblind,
       });
 
       // Die Schleife laeuft ausschliesslich, solange eine Bruecke einschnappt.
@@ -96,7 +102,7 @@ export function BoardCanvas({ theme = 'dark' }: BoardCanvasProps): React.JSX.Ele
         frameRef.current = null;
       }
     };
-  }, [size, theme]);
+  }, [size, theme, colorblind]);
 
   // Gestenerkennung mit dem jeweils aktuellen Blickfeld versorgen.
   useEffect(() => {

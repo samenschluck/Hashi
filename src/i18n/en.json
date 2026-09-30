@@ -58,6 +58,8 @@
   "settings.theme.dark": "Dark",
   "settings.theme.light": "Light",
   "settings.leftHanded": "Left-handed layout",
+  "settings.colorblind": "Colorblind mode",
+  "settings.colorblindHint": "Check mark on finished islands, dashed border when there are too many bridges",
   "settings.language": "Language",
   "settings.privacy": "Privacy settings",
   "settings.privacyHint": "Reopen the advertising consent form",

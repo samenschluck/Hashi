@@ -68,6 +68,9 @@ describe('migrateSave', () => {
     // sonst bliebe eine nie getroffene Sprachwahl fuer immer eingefroren — und
     // genau daran lag es, dass die App bei manchen Testern auf Deutsch startete.
     expect(save.settings.localeChosen).toBe(false);
+    // Der Farbenblind-Modus ist eine bewusste Wahl — ein alter Spielstand
+    // bekommt ihn nicht ungefragt eingeschaltet.
+    expect(save.settings.colorblind).toBe(false);
     // Unbekannter Wert faellt auf den Standard zurueck.
     expect(save.settings.theme).toBe('system');
     expect(save.settings.sound).toBe(true);

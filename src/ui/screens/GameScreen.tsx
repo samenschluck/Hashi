@@ -21,6 +21,7 @@ export function GameScreen(): React.JSX.Element {
   const hint = useAppStore((store) => store.hint);
   const leftHanded = useAppStore((store) => store.save.settings.leftHanded);
   const theme = useAppStore((store) => store.save.settings.theme);
+  const colorblind = useAppStore((store) => store.save.settings.colorblind);
 
   const counts = useGameStore((store) => store.counts);
   const solved = useGameStore((store) => store.solved);
@@ -117,7 +118,7 @@ export function GameScreen(): React.JSX.Element {
       </header>
 
       <main className="relative min-h-0 flex-1 px-2">
-        <BoardCanvas theme={theme === 'light' ? 'light' : 'dark'} />
+        <BoardCanvas theme={theme === 'light' ? 'light' : 'dark'} colorblind={colorblind} />
       </main>
 
       {hint ? (

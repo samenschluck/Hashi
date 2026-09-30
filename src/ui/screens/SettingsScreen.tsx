@@ -39,6 +39,14 @@ export function SettingsScreen(): React.JSX.Element {
             update({ leftHanded: value });
           }}
         />
+        <Toggle
+          label={t('settings.colorblind')}
+          description={t('settings.colorblindHint')}
+          checked={settings.colorblind}
+          onChange={(value) => {
+            update({ colorblind: value });
+          }}
+        />
         <Select<ThemePreference>
           label={t('settings.theme')}
           value={settings.theme}

@@ -9,6 +9,12 @@ export interface Settings {
   readonly theme: ThemePreference;
   /** Bedienleiste gespiegelt fuer Linkshaender. */
   readonly leftHanded: boolean;
+  /**
+   * Farbenblind-Modus: Inselzustaende zusaetzlich ueber Formen statt nur ueber
+   * Gruen und Rot. Standardmaessig aus — im normalen Spiel sollen Haekchen und
+   * gestrichelte Raender nicht auftauchen.
+   */
+  readonly colorblind: boolean;
   readonly locale: Locale;
   /**
    * Hat der Spieler die Sprache selbst gewaehlt?
@@ -82,6 +88,7 @@ export const DEFAULT_SETTINGS: Settings = {
   vibration: true,
   theme: 'system',
   leftHanded: false,
+  colorblind: false,
   // Englisch, nicht Deutsch: `src/core/` kennt keine Systemsprache, deshalb ist
   // das hier der Wert fuer den Fall, dass sich keine ermitteln laesst. Beim
   // Start ersetzt ihn `detectLocale()`, siehe `appStore.init`.

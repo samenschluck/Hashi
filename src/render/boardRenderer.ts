@@ -13,6 +13,8 @@ export interface RenderState {
   readonly previewEdge: number | null;
   /** Vom Tipp-System hervorgehobene Kante. */
   readonly hintEdge: number | null;
+  /** Farbenblind-Modus: Zustaende zusaetzlich ueber Formen kennzeichnen. */
+  readonly colorblind?: boolean;
 }
 
 /**
@@ -320,10 +322,11 @@ export class BoardRenderer {
       context.lineWidth = selected ? Math.max(2, radius * 0.18) : Math.max(1, radius * 0.09);
       context.strokeStyle = selected ? this.theme.selection : this.theme.islandBorder;
       // Rot und Gruen allein trennen die Zustaende nicht: Bei Rot-Gruen-Schwaeche
-      // sehen „fertig" und „zu viele Bruecken" gleich aus. Deshalb traegt jeder
-      // Zustand zusaetzlich eine Form — ein gestrichelter, kraeftiger Rand fuer
-      // „zu viel", ein Haekchen fuer „fertig".
-      if (overfull) {
+      // sehen „fertig" und „zu viele Bruecken" gleich aus. Im Farbenblind-Modus
+      // traegt deshalb jeder Zustand zusaetzlich eine Form — ein gestrichelter,
+      // kraeftiger Rand fuer „zu viel", ein Haekchen fuer „fertig". Im normalen
+      // Modus bleibt das Spielfeld bewusst ohne diese Zeichen.
+      if (overfull && state.colorblind === true) {
         context.lineWidth = Math.max(2, radius * 0.18);
         if (!selected) {
           context.strokeStyle = this.theme.islandErrorText;
@@ -336,7 +339,7 @@ export class BoardRenderer {
       context.fillStyle = island.hidden ? this.theme.islandUnknownText : text;
       context.fillText(island.hidden ? '?' : String(island.required), center.x, center.y);
 
-      if (satisfied) {
+      if (satisfied && state.colorblind === true) {
         this.drawCheckBadge(center.x, center.y, radius);
       }
     }

@@ -133,9 +133,10 @@ Feedback-Bericht der Tester-Community:
 - **Datenschutzerklärung in der App verlinkt** (Einstellungen). Googles Richtlinie zu
   Nutzerdaten verlangt sie an beiden Stellen — in der Play Console **und** in der App.
   Bisher gab es nur den Eintrag in der Console.
-- **Inselzustände nicht mehr nur an der Farbe erkennbar.** „Fertig" (grün) und „zu viele
-  Brücken" (rot) waren bei Rot-Grün-Schwäche nicht zu unterscheiden. Jetzt trägt
-  „fertig" ein Häkchen und „zu viel" einen gestrichelten Rand.
+- **Farbenblind-Modus als Einstellung.** „Fertig" (grün) und „zu viele Brücken" (rot)
+  sind bei Rot-Grün-Schwäche nicht zu unterscheiden. Eingeschaltet trägt „fertig" ein
+  Häkchen und „zu viel" einen gestrichelten Rand. Standardmäßig aus — im normalen Spiel
+  bleibt das Feld ohne diese Zeichen.
 - **„Bridgelet bewerten"** in den Einstellungen, öffnet die Store-Seite.
 
 Schritte in der Play Console:
