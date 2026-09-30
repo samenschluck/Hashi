@@ -121,26 +121,33 @@ Tester nachträgt, verschiebt damit den Starttermin.
 
 ---
 
-## 🟢 Bereit zum Hochladen
+## 🟢 Produktion
 
-**Version 1.0.1 (versionCode 3)** — gebaut am 15.09.2026, enthält zwei Korrekturen aus
-dem geschlossenen Test:
+**Stand 30.09.2026:** Produktionszugang von Google erteilt. Version 1.0.1
+(versionCode 3) wurde im geschlossenen Test geprüft und freigegeben — mit den beiden
+Korrekturen aus dem Test (Banner nach Neustart, Startsprache nach Systemsprache).
 
-- **Banner erscheint nach dem zweiten Start nicht mehr** — `showBanner()` meldet nur die
-  Anfrage, nicht das geladene Banner. Der Zustand richtet sich jetzt nach den Ereignissen
-  `Loaded` und `FailedToLoad`, mit gestaffelten Wiederholungen und einem erneuten Versuch
-  beim Zurückkehren in die App.
-- **App startete immer auf Deutsch** — die Spracherkennung war vorhanden, wurde aber nie
-  aufgerufen. Jetzt richtet sich die Startsprache nach dem Gerät (nur deutschsprachige
-  Geräte bekommen Deutsch), und im Hauptmenü stehen zwei Flaggen zur Umschaltung.
+**Für die Produktion gebaut: Version 1.0.2 (versionCode 4).** Drei Änderungen aus dem
+Feedback-Bericht der Tester-Community:
 
-Hochladen über **Geschlossener Test → Neue Version erstellen**. Das AAB liegt als
-Artefakt am Workflow-Lauf „Android Release (AAB)" Nr. 4 und wird nach **14 Tagen
-gelöscht** — danach muss neu gebaut werden.
+- **Datenschutzerklärung in der App verlinkt** (Einstellungen). Googles Richtlinie zu
+  Nutzerdaten verlangt sie an beiden Stellen — in der Play Console **und** in der App.
+  Bisher gab es nur den Eintrag in der Console.
+- **Inselzustände nicht mehr nur an der Farbe erkennbar.** „Fertig" (grün) und „zu viele
+  Brücken" (rot) waren bei Rot-Grün-Schwäche nicht zu unterscheiden. Jetzt trägt
+  „fertig" ein Häkchen und „zu viel" einen gestrichelten Rand.
+- **„Bridgelet bewerten"** in den Einstellungen, öffnet die Store-Seite.
 
-Vor dem nächsten **Store-Update** (nicht vor diesem Upload nötig):
-`npm run store:screenshots:all` — die vorhandenen Screenshots zeigen das Hauptmenü noch
-ohne die Sprachzeile.
+Schritte in der Play Console:
+
+1. _Produktion → Länder/Regionen_ — Länder auswählen. Die Auswahl des geschlossenen Tests
+   gilt hier nicht.
+2. _Produktion → Neuen Release erstellen_ → AAB von Lauf „Android Release (AAB)" hochladen
+   (Artefakt wird nach **14 Tagen gelöscht**).
+3. Über _Veröffentlichungen – Übersicht_ zur Prüfung senden.
+
+Vor dem öffentlichen Store-Eintrag optional: `npm run store:screenshots:all` — die
+vorhandenen Screenshots zeigen das Hauptmenü noch ohne die Sprachzeile.
 
 ## 🟡 Erledigt, aber im Blick behalten
 

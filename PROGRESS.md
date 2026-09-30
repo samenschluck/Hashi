@@ -265,6 +265,37 @@ das Verhalten alter Spielstände.
 **Nebenwirkung:** Die Store-Screenshots zeigen das Hauptmenü noch ohne die Sprachzeile.
 Vor dem nächsten Store-Update `npm run store:screenshots:all` neu laufen lassen.
 
+## Produktionszugang und Version 1.0.2
+
+**30.09.2026 — Google hat den Produktionszugang erteilt.** Der geschlossene Test lief
+mit Version 1.0.1 (versionCode 3) durch.
+
+Für die Produktion entstand noch Version 1.0.2 (versionCode 4). Anlass war ein
+Feedback-Bericht der Tester-Community. Der Bericht ist zum großen Teil eine allgemeine
+Vorlage, zwei Punkte waren aber berechtigt, ein dritter fiel beim Abgleich mit dem Code
+auf:
+
+- **Datenschutzerklärung in der App.** Die Begründung im Bericht („es gibt keine")
+  stimmte nicht — es gibt sie zweisprachig, in der Play Console hinterlegt. In der App
+  selbst führte aber kein Link dorthin, und Googles Richtlinie zu Nutzerdaten verlangt
+  beides. Jetzt in den Einstellungen, je nach Sprache die deutsche oder englische Seite.
+- **Farbenblindheit.** „Fertig" und „zu viele Brücken" unterschieden sich nur durch
+  Grün und Rot. Eine Simulation der Deuteranopie im Browser zeigte beide als ähnliche
+  Braun-Oliv-Töne. Jetzt trägt „fertig" ein Häkchen am Inselrand und „zu viel" einen
+  gestrichelten, kräftigen Rand. In derselben Simulation sind beide Zustände eindeutig.
+  Verborgene Inseln („?") bekommen weiterhin keines von beiden — das würde ihre Zahl
+  verraten.
+- **„Bridgelet bewerten"** in den Einstellungen.
+
+Externe Seiten öffnen als gewöhnliche Links: Die Capacitor-WebView reicht jede Navigation
+auf eine fremde Adresse an Android weiter, eine Webseite landet im Browser, der
+Play-Store-Link in der Play-Store-App. Dafür braucht es kein weiteres Plugin.
+
+Bewusst **nicht** umgesetzt aus dem Bericht: Nutzungsbedingungen (kein Konto, keine
+Käufe, nichts zu regeln), Community-Forum (bräuchte einen Server), Bildschirmleser für
+das Spielfeld (eigenes Projekt). Für später vorgemerkt: geführte erste Runde,
+beschriftete Store-Screenshots, Googles In-App-Bewertungsdialog.
+
 ## Bekannte Probleme und Anmerkungen
 
 - Kein Android SDK in der Entwicklungsumgebung: Der Gradle-/AAB-Build ist nur über den
