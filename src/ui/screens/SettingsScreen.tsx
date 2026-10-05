@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { LINKS } from '../../config/game.ts';
-import type { ThemePreference } from '../../core/progression.ts';
 import { useAdStore } from '../../state/adStore.ts';
 import { useAppStore } from '../../state/appStore.ts';
 import { LanguageSwitch } from '../components/LanguageSwitch.tsx';
-import { Button, Dialog, LinkButton, ScreenFrame, Select, Toggle } from '../components/Ui.tsx';
+import { Button, Dialog, LinkButton, ScreenFrame, Toggle } from '../components/Ui.tsx';
 
 export function SettingsScreen(): React.JSX.Element {
   const t = useAppStore((store) => store.t);
@@ -47,20 +46,8 @@ export function SettingsScreen(): React.JSX.Element {
             update({ colorblind: value });
           }}
         />
-        <Select<ThemePreference>
-          label={t('settings.theme')}
-          value={settings.theme}
-          onChange={(value) => {
-            update({ theme: value });
-          }}
-          options={[
-            { value: 'system', label: t('settings.theme.system') },
-            { value: 'dark', label: t('settings.theme.dark') },
-            { value: 'light', label: t('settings.theme.light') },
-          ]}
-        />
-        {/* Dieselbe Umschaltung wie im Hauptmenue — wer hier landet, soll nicht
-            ein zweites, anders aussehendes Bedienelement vorfinden. */}
+        {/* Die einzige Stelle, an der sich die Sprache aendern laesst. Den Weg
+            hierher zeigt im Hauptmenue die geteilte Flagge am Menuepunkt. */}
         <div className="flex min-h-12 items-center justify-between gap-4 py-2">
           <span className="text-sm text-slate-100">{t('settings.language')}</span>
           <LanguageSwitch compact />

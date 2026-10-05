@@ -7,7 +7,6 @@ import {
   type Locale,
   type SaveData,
   type Settings,
-  type ThemePreference,
 } from './progression.ts';
 
 /**
@@ -134,12 +133,10 @@ function readSettings(value: unknown, fallback: Settings): Settings {
   if (!isRecord(value)) {
     return fallback;
   }
-  const theme = value['theme'];
   const locale = value['locale'];
   return {
     sound: readBoolean(value['sound'], DEFAULT_SETTINGS.sound),
     vibration: readBoolean(value['vibration'], DEFAULT_SETTINGS.vibration),
-    theme: isThemePreference(theme) ? theme : DEFAULT_SETTINGS.theme,
     leftHanded: readBoolean(value['leftHanded'], DEFAULT_SETTINGS.leftHanded),
     colorblind: readBoolean(value['colorblind'], DEFAULT_SETTINGS.colorblind),
     locale: isLocale(locale) ? locale : DEFAULT_SETTINGS.locale,
@@ -147,10 +144,6 @@ function readSettings(value: unknown, fallback: Settings): Settings {
     // Sprachwahl — dort war die Sprache nie eine Entscheidung des Spielers.
     localeChosen: readBoolean(value['localeChosen'], DEFAULT_SETTINGS.localeChosen),
   };
-}
-
-function isThemePreference(value: unknown): value is ThemePreference {
-  return value === 'dark' || value === 'light' || value === 'system';
 }
 
 function isLocale(value: unknown): value is Locale {
