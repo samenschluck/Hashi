@@ -281,8 +281,11 @@ auf:
   beides. Jetzt in den Einstellungen, je nach Sprache die deutsche oder englische Seite.
 - **Farbenblindheit.** „Fertig" und „zu viele Brücken" unterschieden sich nur durch
   Grün und Rot. Eine Simulation der Deuteranopie im Browser zeigte beide als ähnliche
-  Braun-Oliv-Töne. Jetzt trägt „fertig" ein Häkchen am Inselrand und „zu viel" einen
-  gestrichelten, kräftigen Rand. In derselben Simulation sind beide Zustände eindeutig.
+  Braun-Oliv-Töne. Im **Farbenblind-Modus** (Einstellungen, standardmäßig aus) trägt
+  „fertig" ein Häkchen am Inselrand und „zu viel" einen gestrichelten, kräftigen Rand.
+  In derselben Simulation sind beide Zustände damit eindeutig. Zunächst war das Signal
+  immer an; auf Wunsch des Betreibers ist es eine Einstellung geworden, damit das
+  normale Spielfeld ruhig bleibt.
   Verborgene Inseln („?") bekommen weiterhin keines von beiden — das würde ihre Zahl
   verraten.
 - **„Bridgelet bewerten"** in den Einstellungen.

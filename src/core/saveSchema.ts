@@ -141,6 +141,7 @@ function readSettings(value: unknown, fallback: Settings): Settings {
     vibration: readBoolean(value['vibration'], DEFAULT_SETTINGS.vibration),
     theme: isThemePreference(theme) ? theme : DEFAULT_SETTINGS.theme,
     leftHanded: readBoolean(value['leftHanded'], DEFAULT_SETTINGS.leftHanded),
+    colorblind: readBoolean(value['colorblind'], DEFAULT_SETTINGS.colorblind),
     locale: isLocale(locale) ? locale : DEFAULT_SETTINGS.locale,
     // Fehlt das Feld, stammt der Spielstand aus einer Fassung ohne
     // Sprachwahl — dort war die Sprache nie eine Entscheidung des Spielers.

@@ -58,6 +58,8 @@
   "settings.theme.dark": "Dunkel",
   "settings.theme.light": "Hell",
   "settings.leftHanded": "Linkshänder-Layout",
+  "settings.colorblind": "Farbenblind-Modus",
+  "settings.colorblindHint": "Häkchen für fertige Inseln, gestrichelter Rand bei zu vielen Brücken",
   "settings.language": "Sprache",
   "settings.privacy": "Datenschutzeinstellungen",
   "settings.privacyHint": "Werbeeinwilligung erneut öffnen",
