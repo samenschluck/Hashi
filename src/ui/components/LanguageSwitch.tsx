@@ -6,9 +6,9 @@ import { useAppStore } from '../../state/appStore.ts';
  * Sprachwahl als Flaggen.
  *
  * **Warum Flaggen und keine Beschriftung:** Wer die App in einer Sprache
- * vorfindet, die er nicht liest, kann einen Menuepunkt „Einstellungen" nicht
- * finden. Flaggen erkennt er trotzdem — deshalb steht diese Umschaltung direkt
- * im Hauptmenue und nicht nur in den Einstellungen.
+ * vorfindet, die er nicht liest, erkennt Flaggen trotzdem. Die Umschaltung
+ * steht in den Einstellungen; den Weg dorthin zeigt im Hauptmenue die geteilte
+ * Flagge `SplitFlag` am Menuepunkt „Einstellungen".
  *
  * **Warum gezeichnete Flaggen und keine Emoji:** 🇩🇪 und 🇬🇧 sind Paare aus
  * Regionalindikatoren. Fehlt der Schriftart die Zusammenziehung — auf aelteren
@@ -93,6 +93,46 @@ function GermanFlag({ className }: { readonly className: string }): React.JSX.El
 }
 
 function BritishFlag({ className }: { readonly className: string }): React.JSX.Element {
+  return (
+    <svg viewBox="0 0 60 30" className={className} aria-hidden="true" focusable="false">
+      <UnionJackShapes />
+    </svg>
+  );
+}
+
+/**
+ * Halb Union Jack, halb Deutschlandfahne — das Erkennungszeichen am Menuepunkt
+ * „Einstellungen".
+ *
+ * Wer die App in einer Sprache vorfindet, die er nicht liest, kann das Wort
+ * „Einstellungen" nicht finden. Die geteilte Flagge zeigt ihm trotzdem, wo die
+ * Sprachwahl steckt. Umgeschaltet wird erst in den Einstellungen selbst.
+ *
+ * Geteilt wird senkrecht: Links bleibt das Kreuz des Union Jack erkennbar,
+ * rechts alle drei deutschen Streifen. Ein schraeger Schnitt saehe eleganter
+ * aus, wuerde aber den schwarzen Streifen fast verschwinden lassen.
+ */
+export function SplitFlag({ className = '' }: { readonly className?: string }): React.JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 60 30"
+      className={`h-4 w-8 shrink-0 rounded-[2px] ring-1 ring-black/30 ${className}`}
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* Ein inneres <svg> schneidet von selbst ab: es zeigt nur die linke Haelfte. */}
+      <svg x="0" y="0" width="30" height="30" viewBox="0 0 30 30">
+        <UnionJackShapes />
+      </svg>
+      <rect x="30" width="30" height="10" fill="#000000" />
+      <rect x="30" y="10" width="30" height="10" fill="#DD0000" />
+      <rect x="30" y="20" width="30" height="10" fill="#FFCE00" />
+    </svg>
+  );
+}
+
+/** Union Jack im Koordinatenraum 60 × 30. */
+function UnionJackShapes(): React.JSX.Element {
   // Der Union Jack ist nicht punktsymmetrisch: Die roten Diagonalen sitzen
   // gegenueber der weissen Mitte versetzt. Der Ausschnitt `counterchange`
   // blendet jeweils die Haelfte aus, in der Rot hinter Weiss zurueckspringt.
@@ -101,7 +141,7 @@ function BritishFlag({ className }: { readonly className: string }): React.JSX.E
   // ist er weiterhin, denn der laufende Zaehler steckt in den Ziffern.
   const counterchange = `union-jack-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   return (
-    <svg viewBox="0 0 60 30" className={className} aria-hidden="true" focusable="false">
+    <>
       <clipPath id={counterchange}>
         <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
       </clipPath>
@@ -115,6 +155,6 @@ function BritishFlag({ className }: { readonly className: string }): React.JSX.E
       />
       <path d="M30,0 v30 M0,15 h60" stroke="#FFFFFF" strokeWidth="10" />
       <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" />
-    </svg>
+    </>
   );
 }

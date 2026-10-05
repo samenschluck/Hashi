@@ -299,6 +299,21 @@ Käufe, nichts zu regeln), Community-Forum (bräuchte einen Server), Bildschirml
 das Spielfeld (eigenes Projekt). Für später vorgemerkt: geführte erste Runde,
 beschriftete Store-Screenshots, Googles In-App-Bewertungsdialog.
 
+## Sprachwahl nur noch in den Einstellungen, Darstellung entfernt
+
+Nach dem Gerätetest von 1.0.2 auf Wunsch des Betreibers:
+
+- **Die Sprachumschaltung steht nur noch in den Einstellungen.** Im Hauptmenü trägt
+  der Menüpunkt „Einstellungen" stattdessen eine geteilte Flagge, halb Union Jack,
+  halb Deutschlandfahne. Wer die App nicht lesen kann, findet so trotzdem den Weg zur
+  Sprachwahl. Senkrecht geteilt, weil bei einem schrägen Schnitt der schwarze Streifen
+  fast verschwindet.
+- **Die Einstellung „Erscheinungsbild" (System/Dunkel/Hell) ist entfernt.** Sie wirkte
+  ohnehin nur auf das Spielfeld, die übrige Oberfläche war immer dunkel. Die App ist
+  jetzt durchgehend dunkel, also genau so, wie sie mit der Voreinstellung „System"
+  bisher aussah. Alte Spielstände enthalten das Feld noch, es wird beim Einlesen
+  stillschweigend verworfen.
+
 ## Bekannte Probleme und Anmerkungen
 
 - Kein Android SDK in der Entwicklungsumgebung: Der Gradle-/AAB-Build ist nur über den

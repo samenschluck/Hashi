@@ -1,12 +1,10 @@
 import { ADS, HINTS, STARS, STORAGE, type Difficulty } from '../config/game.ts';
 
-export type ThemePreference = 'dark' | 'light' | 'system';
 export type Locale = 'de' | 'en';
 
 export interface Settings {
   readonly sound: boolean;
   readonly vibration: boolean;
-  readonly theme: ThemePreference;
   /** Bedienleiste gespiegelt fuer Linkshaender. */
   readonly leftHanded: boolean;
   /**
@@ -86,7 +84,6 @@ export interface SaveData {
 export const DEFAULT_SETTINGS: Settings = {
   sound: true,
   vibration: true,
-  theme: 'system',
   leftHanded: false,
   colorblind: false,
   // Englisch, nicht Deutsch: `src/core/` kennt keine Systemsprache, deshalb ist

@@ -71,8 +71,9 @@ describe('migrateSave', () => {
     // Der Farbenblind-Modus ist eine bewusste Wahl — ein alter Spielstand
     // bekommt ihn nicht ungefragt eingeschaltet.
     expect(save.settings.colorblind).toBe(false);
-    // Unbekannter Wert faellt auf den Standard zurueck.
-    expect(save.settings.theme).toBe('system');
+    // Ein alter Spielstand enthaelt noch die entfernte Einstellung `theme`.
+    // Sie wird stillschweigend verworfen, statt das Einlesen zu stoeren.
+    expect('theme' in save.settings).toBe(false);
     expect(save.settings.sound).toBe(true);
 
     // Ein alter Spielstand kennt keine Sterne: er bekommt 0 und kann sie beim

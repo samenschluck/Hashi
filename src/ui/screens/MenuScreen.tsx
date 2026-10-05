@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAppStore } from '../../state/appStore.ts';
-import { LanguageSwitch } from '../components/LanguageSwitch.tsx';
+import { SplitFlag } from '../components/LanguageSwitch.tsx';
 import { RewardDialog } from '../components/RewardDialog.tsx';
 import { Button } from '../components/Ui.tsx';
 
@@ -11,19 +11,14 @@ export function MenuScreen(): React.JSX.Element {
   const busy = useAppStore((store) => store.busy);
   const [showRefill, setShowRefill] = useState(false);
 
-  // `overflow-y-auto`: Mit der Sprachzeile wird es auf sehr niedrigen
-  // Bildschirmen knapp. Da `justify-between` den oberen Rand stehen laesst,
-  // ist der Inhalt dann schiebbar statt abgeschnitten.
+  // `overflow-y-auto`: Auf sehr niedrigen Bildschirmen wird es knapp. Da
+  // `justify-between` den oberen Rand stehen laesst, ist der Inhalt dann
+  // schiebbar statt abgeschnitten.
   return (
     <div className="screen-column flex h-full flex-col justify-between gap-6 overflow-y-auto px-6 py-8">
       <div className="mt-8 text-center">
         <h1 className="text-4xl font-semibold tracking-tight">{t('app.name')}</h1>
         <p className="mt-1 text-sm text-slate-400">{t('app.tagline')}</p>
-        {/* Direkt unter dem Titel, nicht in den Einstellungen versteckt: Wer die
-            App in einer fremden Sprache vorfindet, sieht die Flaggen sofort. */}
-        <div className="mt-4 flex justify-center">
-          <LanguageSwitch />
-        </div>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -67,7 +62,12 @@ export function MenuScreen(): React.JSX.Element {
             navigate('settings');
           }}
         >
-          {t('menu.settings')}
+          {/* Die geteilte Flagge zeigt auch ohne Sprachkenntnis, dass hier die
+              Sprachwahl steckt. */}
+          <span className="inline-flex items-center gap-2">
+            {t('menu.settings')}
+            <SplitFlag />
+          </span>
         </Button>
       </div>
 

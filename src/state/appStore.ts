@@ -139,7 +139,6 @@ export const useAppStore = create<AppStore>((set, get) => {
     setHapticsEnabled(settings.vibration);
     setSoundEnabled(settings.sound);
     if (typeof document !== 'undefined') {
-      document.documentElement.dataset['theme'] = settings.theme;
       document.documentElement.lang = settings.locale;
     }
   };
