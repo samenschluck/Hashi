@@ -117,11 +117,15 @@ Bedingungen rund um die Tagesrätsel**, z. B.:
 #### Werbevideo-Skins für 24 Stunden
 
 - **Täglich** wird je Kategorie **ein zufälliger, noch nicht freigeschalteter Skin**
-  angeboten:
-  **eine Brücke, ein Knotenpunkt, ein Hintergrund, eine Schriftart.**
+  angeboten — **in allen Kategorien, die es gibt**: Knotenpunkte, Brücken, Mauern,
+  Hintergrund, Schriftart. Kommt später eine Kategorie hinzu, ist sie automatisch dabei.
 - **Pro Kategorie ein Werbevideo.** Wer es ansieht, kann diesen Skin **24 Stunden**
   benutzen.
 - Danach fällt er automatisch auf die vorherige Auswahl zurück.
+- **Eigenes Limit, getrennt von den Tipp-Videos.** Die Skin-Videos sind schon von sich
+  aus begrenzt: ein Video pro Kategorie und Tag. Sie zählen deshalb **nicht** zum
+  Tageslimit der Tipp-Videos (siehe unten) — sonst würde wer Skins ausprobiert, keine
+  Tipps mehr nachladen können.
 
 Umsetzungshinweise:
 
@@ -134,6 +138,10 @@ Umsetzungshinweise:
 
 - Entfernt **die gesamte Werbung.**
 - Die **24-Stunden-Skins gibt es dann ohne Video**, ein Tipp genügt.
+- **Tipps: alles wie vorher, nur ohne Video.** „Tipps aufladen" schreibt die Tipps
+  sofort gut. Menge und Tageslimit bleiben gleich (heute: 3 Tipps pro Aufladen,
+  höchstens 5-mal am Tag, `ADS.maxRewardedPerDay`). Auch die 2 Gratis-Tipps pro Tag
+  bleiben unverändert.
 - Im Code ist das Kennzeichen `adsRemoved` schon vorbereitet und wird vom Banner
   beachtet. Es fehlt der eigentliche Kauf.
 
@@ -168,13 +176,6 @@ Was der Kauf zusätzlich verlangt:
 #### Noch offen — bei der Umsetzung klären
 
 - Genaue Anzahl der Skins und konkrete Themen
-- Sollen **Mauern** auch im täglichen Video-Angebot sein? (Bisher genannt: Brücke,
-  Knotenpunkt, Hintergrund, Schriftart.)
-- Zählen die Skin-Videos zum bestehenden Tageslimit für Werbevideos (derzeit 5 pro Tag),
-  oder bekommen sie ein eigenes?
-- Mit „Werbung entfernen" fallen auch die Videos für **Tipps** weg. Wie kommt man dann
-  an Tipps? Vorschläge: mehr tägliche Gratis-Tipps (derzeit 2), oder Tipps bleiben
-  über einen Tipp ohne Video nachfüllbar.
 - Preis des Kaufs
 - Gilt der Kauf auch für bereits gekaufte Geräte desselben Google-Kontos? (Standard bei
   Play Billing: ja, über „Kauf wiederherstellen".)
