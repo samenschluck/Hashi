@@ -8,8 +8,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 // Hinweis: Bei `no-restricted-imports` gewinnt der zuletzt passende Block.
 // Deshalb steht die allgemeine Regel oben und die spezielleren stehen darunter.
 export default defineConfig(
-  // `docs/play` ist ein eingecheckter Build-Ausgabeordner, kein Quelltext.
-  globalIgnores(['dist', 'docs/play', 'android', 'coverage', 'node_modules']),
+  globalIgnores(['dist', 'android', 'coverage', 'node_modules']),
 
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,

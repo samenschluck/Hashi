@@ -143,9 +143,9 @@ Oberfläche neu erzeugen.
   funktioniert, aber irgendwann fällt die Krücke weg — dann auf die jeweils nächste
   Hauptversion heben. Nicht vorab erledigt, weil ein Release-Workflow nur durch einen
   echten Lauf prüfbar ist und ein Fehlschlag genau dann kommt, wenn man ihn braucht.
-- **Browser-Fassung unter `docs/play/`** — eingecheckter Web-Build zum Testen ohne Gerät.
-  Nach Änderungen am Spiel mit `npm run pages:play` neu erzeugen, sonst zeigt die
-  öffentliche Seite einen veralteten Stand. Darf vor dem Release gelöscht werden.
+- **Browser-Fassung entfernt** (06.10.2026) — der Web-Build unter `docs/play/` war nur
+  zum Testen ohne Gerät gedacht. Öffentlich und werbefrei hätte er neben der Store-App
+  eine veraltete Gratis-Fassung angeboten.
 
 ---
 
