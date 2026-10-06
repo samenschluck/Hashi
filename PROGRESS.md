@@ -314,6 +314,19 @@ Nach dem Gerätetest von 1.0.2 auf Wunsch des Betreibers:
   bisher aussah. Alte Spielstände enthalten das Feld noch, es wird beim Einlesen
   stillschweigend verworfen.
 
+## Live
+
+**06.10.2026 — Bridgelet ist öffentlich im Play Store**, Version 1.0.2 (versionCode 4).
+
+Gegenüber dem geschlossenen Test (1.0.1) enthält sie: Link zur Datenschutzerklärung in
+der App, „Bridgelet bewerten", den Farbenblind-Modus als Einstellung, die Sprachwahl
+nur noch in den Einstellungen (mit geteilter Flagge als Wegweiser im Hauptmenü) und
+keine Einstellung „Erscheinungsbild" mehr. Dazu neue Store-Bilder mit Überschrift und
+Spielszene in Deutsch und Englisch für Telefon und beide Tablet-Größen.
+
+Offen nach dem Start: AdMob mit dem Store verknüpfen, damit die `app-ads.txt`-Prüfung
+greift (siehe `TODO.md`).
+
 ## Bekannte Probleme und Anmerkungen
 
 - Kein Android SDK in der Entwicklungsumgebung: Der Gradle-/AAB-Build ist nur über den

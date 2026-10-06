@@ -121,34 +121,16 @@ Tester nachträgt, verschiebt damit den Starttermin.
 
 ---
 
-## 🟢 Produktion
+## 🟢 Live im Play Store
 
-**Stand 30.09.2026:** Produktionszugang von Google erteilt. Version 1.0.1
-(versionCode 3) wurde im geschlossenen Test geprüft und freigegeben — mit den beiden
-Korrekturen aus dem Test (Banner nach Neustart, Startsprache nach Systemsprache).
+**Seit 06.10.2026 öffentlich:** Version 1.0.2 (versionCode 4).
+`https://play.google.com/store/apps/details?id=com.bridgelet.game`
 
-**Für die Produktion gebaut: Version 1.0.2 (versionCode 4).** Drei Änderungen aus dem
-Feedback-Bericht der Tester-Community:
+Nächster freier versionCode: **5**.
 
-- **Datenschutzerklärung in der App verlinkt** (Einstellungen). Googles Richtlinie zu
-  Nutzerdaten verlangt sie an beiden Stellen — in der Play Console **und** in der App.
-  Bisher gab es nur den Eintrag in der Console.
-- **Farbenblind-Modus als Einstellung.** „Fertig" (grün) und „zu viele Brücken" (rot)
-  sind bei Rot-Grün-Schwäche nicht zu unterscheiden. Eingeschaltet trägt „fertig" ein
-  Häkchen und „zu viel" einen gestrichelten Rand. Standardmäßig aus — im normalen Spiel
-  bleibt das Feld ohne diese Zeichen.
-- **„Bridgelet bewerten"** in den Einstellungen, öffnet die Store-Seite.
-
-Schritte in der Play Console:
-
-1. _Produktion → Länder/Regionen_ — Länder auswählen. Die Auswahl des geschlossenen Tests
-   gilt hier nicht.
-2. _Produktion → Neuen Release erstellen_ → AAB von Lauf „Android Release (AAB)" hochladen
-   (Artefakt wird nach **14 Tagen gelöscht**).
-3. Über _Veröffentlichungen – Übersicht_ zur Prüfung senden.
-
-Vor dem öffentlichen Store-Eintrag optional: `npm run store:screenshots:all` — die
-vorhandenen Screenshots zeigen das Hauptmenü noch ohne die Sprachzeile.
+Store-Bilder: 42 Stück mit Überschrift und Spielszene unter `store/screenshots/`,
+erzeugt mit `npm run store:screenshots:all`. Bei sichtbaren Änderungen an der
+Oberfläche neu erzeugen.
 
 ## 🟡 Erledigt, aber im Blick behalten
 
@@ -178,10 +160,10 @@ vorhandenen Screenshots zeigen das Hauptmenü noch ohne die Sprachzeile.
 
 ---
 
-## 🟠 Direkt nach der Veröffentlichung
+## 🟠 Jetzt fällig — direkt nach der Veröffentlichung
 
-Beides setzt eine **öffentlich auffindbare** App im Play Store voraus und ist deshalb
-vorher unmöglich:
+Beides setzt eine **öffentlich auffindbare** App im Play Store voraus. Seit dem
+06.10.2026 ist das der Fall:
 
 - **AdMob: App-Shop verknüpfen.** In der AdMob-Konsole unter „App-Shops angeben" nach
   `com.bridgelet.game` suchen und verknüpfen. Bis dahin bleibt die App unverifiziert,
