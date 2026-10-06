@@ -128,6 +128,8 @@ Tester nachträgt, verschiebt damit den Starttermin.
 
 Nächster freier versionCode: **5**.
 
+Geplantes nächstes Update (Bibliotheken, Skins, „Werbung entfernen"): `ROADMAP.md`.
+
 Store-Bilder: 42 Stück mit Überschrift und Spielszene unter `store/screenshots/`,
 erzeugt mit `npm run store:screenshots:all`. Bei sichtbaren Änderungen an der
 Oberfläche neu erzeugen.
